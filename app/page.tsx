@@ -37,7 +37,7 @@ const DEFAULT_COOLDOWN_SEC = 60;
 const cluster: "mainnet-beta" | "devnet" =
   (process.env.NEXT_PUBLIC_SOLANA_CLUSTER as "mainnet-beta" | "devnet" | undefined) ?? "devnet";
 
-const TOKEN_MINT = process.env.NEXT_PUBLIC_PUMPFUN_TOKEN_MINT ?? "";
+const TOKEN_MINT = "C4eMZ38U2K8gLAKHk6x3tU7NKnMP2RSSvMLWG5hUpump";
 const TWITTER_URL = "https://x.com/luckypennyfun";
 
 function shortenAddress(addr: string) {
