@@ -2,7 +2,8 @@
 
 import confetti from "canvas-confetti";
 import { motion } from "framer-motion";
-import { LogOut } from "lucide-react";
+import { Check, Copy, LogOut } from "lucide-react";
+import Image from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import Board, { type DropEvent } from "@/components/Board";
@@ -36,6 +37,15 @@ const DEFAULT_COOLDOWN_SEC = 60;
 const cluster: "mainnet-beta" | "devnet" =
   (process.env.NEXT_PUBLIC_SOLANA_CLUSTER as "mainnet-beta" | "devnet" | undefined) ?? "devnet";
 
+const TOKEN_MINT = process.env.NEXT_PUBLIC_PUMPFUN_TOKEN_MINT ?? "";
+const TWITTER_URL = "https://x.com/luckypennyfun";
+
+function shortenAddress(addr: string) {
+  if (!addr) return "";
+  if (addr.length <= 12) return addr;
+  return `${addr.slice(0, 4)}…${addr.slice(-4)}`;
+}
+
 export default function HomePage() {
   const [me, setMe] = useState<Me>({ user: null, cooldownRemainingMs: 0, cooldownSeconds: DEFAULT_COOLDOWN_SEC });
   const [loadingMe, setLoadingMe] = useState(true);
@@ -50,6 +60,18 @@ export default function HomePage() {
   const [dropping, setDropping] = useState(false);
   const [announce, setAnnounce] = useState<string>("");
   const [cameo, setCameo] = useState<{ show: boolean; multiplier: number }>({ show: false, multiplier: 0 });
+  const [copied, setCopied] = useState(false);
+
+  const onCopyCA = useCallback(async () => {
+    if (!TOKEN_MINT) return;
+    try {
+      await navigator.clipboard.writeText(TOKEN_MINT);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 1500);
+    } catch {
+      // ignore
+    }
+  }, []);
 
   const seenSeedsRef = useRef<Set<string>>(new Set());
 
@@ -224,8 +246,23 @@ export default function HomePage() {
       )}
 
       <main className="relative z-0 mx-auto flex h-[100dvh] max-h-[100dvh] w-full max-w-[1400px] flex-col gap-2 overflow-hidden px-2 py-2 sm:gap-3 sm:px-4 sm:py-3">
-        <header className="flex shrink-0 items-center justify-between gap-3">
-          <div className="flex items-center gap-2">
+        <header className="flex shrink-0 flex-wrap items-center justify-between gap-2 sm:gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.7, rotate: -20 }}
+              animate={{ opacity: 1, scale: 1, rotate: 0 }}
+              transition={{ duration: 0.5, type: "spring", stiffness: 220, damping: 14 }}
+              className="relative h-9 w-9 shrink-0 overflow-hidden rounded-full ring-2 ring-yellow-300/70 shadow-[0_0_18px_rgba(253,224,71,0.45)] sm:h-11 sm:w-11"
+            >
+              <Image
+                src="/logo.png"
+                alt="Lucky Penny logo"
+                fill
+                sizes="44px"
+                priority
+                className="object-cover"
+              />
+            </motion.div>
             <motion.h1
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -238,20 +275,60 @@ export default function HomePage() {
               Plinko · Burn · Solana
             </span>
           </div>
-          {me.user && (
-            <div className="flex items-center gap-2 text-sm text-white/90">
-              <span className="rounded-full bg-black/40 px-3 py-1 font-semibold">
-                {me.user.username}
-              </span>
+
+          <div className="flex items-center gap-2 text-sm text-white/90">
+            {TOKEN_MINT && (
               <button
-                onClick={onLogout}
-                className="grid h-8 w-8 place-items-center rounded-full bg-black/40 text-white/80 hover:bg-black/60"
-                aria-label="Sign out"
+                onClick={onCopyCA}
+                title={`Copy contract address: ${TOKEN_MINT}`}
+                aria-label="Copy contract address"
+                className="group flex items-center gap-1.5 rounded-full border border-yellow-300/40 bg-black/40 px-2.5 py-1 font-mono text-[11px] uppercase tracking-wider text-yellow-200 transition hover:border-yellow-300/80 hover:bg-black/60 sm:text-xs"
               >
-                <LogOut className="h-4 w-4" />
+                <span className="hidden text-[10px] font-sans font-semibold uppercase tracking-widest text-white/60 sm:inline">
+                  CA
+                </span>
+                <span>{shortenAddress(TOKEN_MINT)}</span>
+                {copied ? (
+                  <Check className="h-3.5 w-3.5 text-emerald-400" />
+                ) : (
+                  <Copy className="h-3.5 w-3.5 opacity-70 group-hover:opacity-100" />
+                )}
               </button>
-            </div>
-          )}
+            )}
+
+            <a
+              href={TWITTER_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Follow Lucky Penny on X"
+              title="Follow @luckypennyfun on X"
+              className="grid h-8 w-8 place-items-center rounded-full border border-white/15 bg-black/40 text-white/90 transition hover:border-white/40 hover:bg-black/60 sm:h-9 sm:w-9"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                className="h-3.5 w-3.5 sm:h-4 sm:w-4"
+                fill="currentColor"
+                aria-hidden="true"
+              >
+                <path d="M18.244 2H21.5l-7.51 8.58L23 22h-6.84l-5.36-7.01L4.6 22H1.34l8.04-9.19L1 2h6.99l4.84 6.39L18.244 2Zm-1.2 18h1.84L7.05 4H5.1l11.944 16Z" />
+              </svg>
+            </a>
+
+            {me.user && (
+              <>
+                <span className="rounded-full bg-black/40 px-3 py-1 font-semibold">
+                  {me.user.username}
+                </span>
+                <button
+                  onClick={onLogout}
+                  className="grid h-8 w-8 place-items-center rounded-full bg-black/40 text-white/80 hover:bg-black/60"
+                  aria-label="Sign out"
+                >
+                  <LogOut className="h-4 w-4" />
+                </button>
+              </>
+            )}
+          </div>
         </header>
 
         <div className="shrink-0">

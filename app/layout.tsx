@@ -9,7 +9,7 @@ const fredoka = Fredoka({
 });
 
 export const metadata: Metadata = {
-  title: "Lucky Penny Day · Plinko Buy & Burn",
+  title: "Lucky Penny",
   description:
     "Drop a lucky penny every minute. The treasury buys & burns a pump.fun token live on Solana.",
 };
