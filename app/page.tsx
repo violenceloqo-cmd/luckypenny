@@ -3,14 +3,14 @@
 import confetti from "canvas-confetti";
 import { motion } from "framer-motion";
 import { Check, Copy, LogOut } from "lucide-react";
-import Image from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import Board, { type DropEvent } from "@/components/Board";
 import DropButton from "@/components/DropButton";
-import LeprechaunCameo from "@/components/LeprechaunCameo";
+import FlightCameo from "@/components/FlightCameo";
 import LiveFeed, { type FeedDrop, useLiveFeedTicker } from "@/components/LiveFeed";
 import LoginCard from "@/components/LoginCard";
+import PaperAirplaneIcon from "@/components/PaperAirplaneIcon";
 import StatsBar from "@/components/Stats";
 import ThemeBackground from "@/components/ThemeBackground";
 import { isBigWin } from "@/lib/game/multipliers";
@@ -37,7 +37,7 @@ const DEFAULT_COOLDOWN_SEC = 60;
 const cluster: "mainnet-beta" | "devnet" =
   (process.env.NEXT_PUBLIC_SOLANA_CLUSTER as "mainnet-beta" | "devnet" | undefined) ?? "devnet";
 
-const TOKEN_MINT = "C4eMZ38U2K8gLAKHk6x3tU7NKnMP2RSSvMLWG5hUpump";
+const TOKEN_MINT = "7Zxc7xp9eGRnkS3fDDJJEZJL5QfjQZxECQkgLfrpump";
 const TWITTER_URL = "https://x.com/luckypennyfun";
 
 function shortenAddress(addr: string) {
@@ -56,8 +56,8 @@ export default function HomePage() {
     totalTokensBurned: "0",
     biggestMultiplier: 0,
   });
-  const [pendingBalls, setPendingBalls] = useState<DropEvent[]>([]);
-  const [dropping, setDropping] = useState(false);
+  const [pendingFlights, setPendingFlights] = useState<DropEvent[]>([]);
+  const [launching, setLaunching] = useState(false);
   const [announce, setAnnounce] = useState<string>("");
   const [cameo, setCameo] = useState<{ show: boolean; multiplier: number }>({ show: false, multiplier: 0 });
   const [copied, setCopied] = useState(false);
@@ -104,7 +104,6 @@ export default function HomePage() {
     };
   }, [loadMe, loadFeed]);
 
-  // Subscribe to realtime drops so the board animates everyone's drops.
   useEffect(() => {
     const supa = getSupabaseClient();
     const channel = supa
@@ -132,7 +131,7 @@ export default function HomePage() {
               },
               ...cur,
             ].slice(0, 100));
-            setPendingBalls((cur) => [...cur, { id: row.id, seed: row.server_seed, username: row.username }]);
+            setPendingFlights((cur) => [...cur, { id: row.id, seed: row.server_seed, username: row.username }]);
           }
         },
       )
@@ -175,9 +174,9 @@ export default function HomePage() {
     };
   }, []);
 
-  const onDrop = useCallback(async () => {
-    if (dropping) return;
-    setDropping(true);
+  const onLaunch = useCallback(async () => {
+    if (launching) return;
+    setLaunching(true);
     try {
       const r = await fetch("/api/drop", { method: "POST" });
       const data = await r.json();
@@ -185,27 +184,27 @@ export default function HomePage() {
         if (typeof data.cooldownRemainingMs === "number") {
           setMe((cur) => ({ ...cur, cooldownRemainingMs: data.cooldownRemainingMs }));
         }
-        setAnnounce(data.error ?? "Drop failed");
+        setAnnounce(data.error ?? "Launch failed");
         return;
       }
       setMe((cur) => ({ ...cur, cooldownRemainingMs: cur.cooldownSeconds * 1000 }));
       setStats((s) => ({ ...s, totalDrops: s.totalDrops + 1 }));
-      setAnnounce(`Penny dropped — landing in ${data.multiplier}x slot.`);
+      setAnnounce(`Airplane launched — aiming for ${data.multiplier}x slot.`);
     } finally {
-      setDropping(false);
+      setLaunching(false);
     }
-  }, [dropping]);
+  }, [launching]);
 
-  const onBallLanded = useCallback(
+  const onPlaneLanded = useCallback(
     (ev: DropEvent, slot: number, multiplier: number) => {
-      setPendingBalls((cur) => cur.filter((b) => b.id !== ev.id));
+      setPendingFlights((cur) => cur.filter((p) => p.id !== ev.id));
       setAnnounce(`Landed: ${multiplier}x`);
       if (isBigWin(slot)) {
         confetti({
           particleCount: 180,
           spread: 90,
           origin: { y: 0.7 },
-          colors: ["#fde047", "#10b981", "#fbbf24", "#ffffff"],
+          colors: ["#93c5fd", "#2563eb", "#ffffff", "#e63946"],
           scalar: 1.1,
         });
       }
@@ -222,18 +221,17 @@ export default function HomePage() {
     setMe({ user: null, cooldownRemainingMs: 0, cooldownSeconds: DEFAULT_COOLDOWN_SEC });
   }, []);
 
-  // Keyboard: Space to drop when focus is on body
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.code !== "Space") return;
       const t = e.target as HTMLElement | null;
       if (t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.isContentEditable)) return;
       e.preventDefault();
-      if (me.user && me.cooldownRemainingMs <= 0 && !dropping) void onDrop();
+      if (me.user && me.cooldownRemainingMs <= 0 && !launching) void onLaunch();
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [dropping, me.cooldownRemainingMs, me.user, onDrop]);
+  }, [launching, me.cooldownRemainingMs, me.user, onLaunch]);
 
   return (
     <>
@@ -252,28 +250,24 @@ export default function HomePage() {
               initial={{ opacity: 0, scale: 0.7, rotate: -20 }}
               animate={{ opacity: 1, scale: 1, rotate: 0 }}
               transition={{ duration: 0.5, type: "spring", stiffness: 220, damping: 14 }}
-              className="relative h-9 w-9 shrink-0 overflow-hidden rounded-full ring-2 ring-yellow-300/70 shadow-[0_0_18px_rgba(253,224,71,0.45)] sm:h-11 sm:w-11"
+              className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-white/90 ring-2 ring-sky-300/80 shadow-[0_0_18px_rgba(96,165,250,0.45)] sm:h-11 sm:w-11"
             >
-              <Image
-                src="/logo.png"
-                alt="Lucky Penny logo"
-                fill
-                sizes="44px"
-                priority
-                className="object-cover"
-              />
+              <PaperAirplaneIcon size={28} />
             </motion.div>
-            <motion.h1
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4 }}
-              className="text-xl font-black gold-text sm:text-2xl"
-            >
-              Lucky Penny Day
-            </motion.h1>
-            <span className="hidden rounded-full border border-white/15 bg-black/30 px-2 py-0.5 text-[10px] uppercase tracking-widest text-white/80 sm:inline">
-              Plinko · Burn · Solana
-            </span>
+            <div>
+              <motion.h1
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4 }}
+                className="text-lg fold-text sm:text-xl"
+                style={{ fontFamily: "var(--font-bungee)" }}
+              >
+                Paper Airplane Day
+              </motion.h1>
+              <span className="hidden text-[10px] uppercase tracking-widest text-white/75 sm:inline">
+                Plinko · Burn · Solana
+              </span>
+            </div>
           </div>
 
           <div className="flex items-center gap-2 text-sm text-white/90">
@@ -282,14 +276,14 @@ export default function HomePage() {
                 onClick={onCopyCA}
                 title={`Copy contract address: ${TOKEN_MINT}`}
                 aria-label="Copy contract address"
-                className="group flex items-center gap-1.5 rounded-full border border-yellow-300/40 bg-black/40 px-2.5 py-1 font-mono text-[11px] uppercase tracking-wider text-yellow-200 transition hover:border-yellow-300/80 hover:bg-black/60 sm:text-xs"
+                className="group flex items-center gap-1.5 rounded-full border border-sky-300/40 bg-black/40 px-2.5 py-1 font-mono text-[11px] uppercase tracking-wider text-sky-100 transition hover:border-sky-300/80 hover:bg-black/60 sm:text-xs"
               >
                 <span className="hidden text-[10px] font-sans font-semibold uppercase tracking-widest text-white/60 sm:inline">
                   CA
                 </span>
                 <span>{shortenAddress(TOKEN_MINT)}</span>
                 {copied ? (
-                  <Check className="h-3.5 w-3.5 text-emerald-400" />
+                  <Check className="h-3.5 w-3.5 text-sky-300" />
                 ) : (
                   <Copy className="h-3.5 w-3.5 opacity-70 group-hover:opacity-100" />
                 )}
@@ -300,8 +294,8 @@ export default function HomePage() {
               href={TWITTER_URL}
               target="_blank"
               rel="noopener noreferrer"
-              aria-label="Follow Lucky Penny on X"
-              title="Follow @luckypennyfun on X"
+              aria-label="Follow on X"
+              title="Follow on X"
               className="grid h-8 w-8 place-items-center rounded-full border border-white/15 bg-black/40 text-white/90 transition hover:border-white/40 hover:bg-black/60 sm:h-9 sm:w-9"
             >
               <svg
@@ -341,38 +335,35 @@ export default function HomePage() {
         </div>
 
         <div className="grid min-h-0 flex-1 grid-cols-1 gap-3 lg:grid-cols-[minmax(0,1fr)_260px] xl:grid-cols-[minmax(0,1fr)_300px]">
-          {/* Board + drop button — stays inside its column with no scroll */}
           <section className="flex min-h-0 flex-col items-center justify-center gap-3">
             <div className="flex min-h-0 w-full flex-1 items-center justify-center">
               <div
                 className="flex h-full max-h-full items-center justify-center"
                 style={{ aspectRatio: "672 / 534" }}
               >
-                <Board pending={pendingBalls} onBallLanded={onBallLanded} />
+                <Board pending={pendingFlights} onPlaneLanded={onPlaneLanded} />
               </div>
             </div>
             <DropButton
               cooldownMs={me.cooldownRemainingMs}
               cooldownTotalMs={me.cooldownSeconds * 1000}
-              onDrop={onDrop}
+              onDrop={onLaunch}
               disabled={!me.user}
-              busy={dropping}
+              busy={launching}
             />
           </section>
 
-          {/* Live feed: side rail on desktop, hidden under lg (kept compact) */}
           <aside className="order-last hidden min-h-0 lg:order-none lg:block">
             <LiveFeed drops={feed} cluster={cluster} />
           </aside>
         </div>
       </main>
 
-      {/* ARIA live region */}
       <div className="sr-only" role="status" aria-live="polite">
         {announce}
       </div>
 
-      <LeprechaunCameo show={cameo.show} multiplier={cameo.multiplier} />
+      <FlightCameo show={cameo.show} multiplier={cameo.multiplier} />
     </>
   );
 }

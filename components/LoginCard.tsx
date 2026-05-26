@@ -1,8 +1,9 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Sparkles } from "lucide-react";
 import { useState } from "react";
+
+import PaperAirplaneIcon from "@/components/PaperAirplaneIcon";
 
 interface LoginCardProps {
   onLoggedIn: (user: { uid: string; username: string }) => void;
@@ -37,27 +38,36 @@ export default function LoginCard({ onLoggedIn }: LoginCardProps) {
   };
 
   return (
-    <div className="fixed inset-0 z-30 grid place-items-center bg-black/40 p-4 backdrop-blur-sm">
+    <div className="fixed inset-0 z-30 grid place-items-center bg-[#0f2744]/50 p-4 backdrop-blur-sm">
       <motion.div
         initial={{ opacity: 0, y: 20, scale: 0.96 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ duration: 0.3, ease: "easeOut" }}
         className="glass relative w-full max-w-md rounded-3xl p-7 text-white"
       >
-        <div className="mb-5 flex items-center justify-center gap-2">
-          <Sparkles className="h-6 w-6 text-amber-300" />
-          <h1 className="text-2xl font-black gold-text">Lucky Penny Day</h1>
-          <Sparkles className="h-6 w-6 text-amber-300" />
+        <div className="mb-5 flex flex-col items-center gap-3">
+          <motion.div
+            animate={{ y: [0, -6, 0], rotate: [-8, 8, -8] }}
+            transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
+          >
+            <PaperAirplaneIcon size={56} />
+          </motion.div>
+          <h1
+            className="text-center text-2xl font-normal fold-text"
+            style={{ fontFamily: "var(--font-bungee)" }}
+          >
+            National Paper Airplane Day
+          </h1>
         </div>
 
         <p className="mb-6 text-center text-sm opacity-90">
-          Pick a username, drop a penny every 60 seconds, and watch the multiplier buy &amp; burn
-          a pump.fun token live on Solana.
+          Pick a callsign, launch one paper airplane per minute, and watch each flight multiply
+          SOL into a live pump.fun buy &amp; burn on Solana.
         </p>
 
         <form onSubmit={onSubmit} className="flex flex-col gap-3">
           <label className="text-xs uppercase tracking-widest opacity-80" htmlFor="username">
-            Username
+            Pilot name
           </label>
           <input
             id="username"
@@ -68,7 +78,7 @@ export default function LoginCard({ onLoggedIn }: LoginCardProps) {
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             placeholder="3–16 letters, numbers, underscore"
-            className="w-full rounded-xl border border-white/15 bg-white/10 px-4 py-3 text-white placeholder:text-white/40 focus:border-amber-300 focus:outline-none"
+            className="w-full rounded-xl border border-white/15 bg-white/10 px-4 py-3 text-white placeholder:text-white/40 focus:border-sky-300 focus:outline-none"
             maxLength={16}
             required
           />
@@ -82,14 +92,14 @@ export default function LoginCard({ onLoggedIn }: LoginCardProps) {
           <button
             type="submit"
             disabled={submitting || username.length < 3}
-            className="btn-emerald mt-2 rounded-xl px-4 py-3 font-extrabold uppercase tracking-wide disabled:cursor-not-allowed disabled:opacity-60"
+            className="btn-launch mt-2 rounded-xl px-4 py-3 font-extrabold uppercase tracking-wide disabled:cursor-not-allowed disabled:opacity-60"
           >
-            {submitting ? "Joining…" : "Enter the Meadow"}
+            {submitting ? "Boarding…" : "Enter the Hangar"}
           </button>
         </form>
 
         <p className="mt-5 text-center text-[11px] opacity-60">
-          No password. Username is a public handle — pick a unique one.
+          No password. Your pilot name is public — pick a unique one.
         </p>
       </motion.div>
     </div>

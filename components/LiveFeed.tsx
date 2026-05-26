@@ -28,15 +28,15 @@ export interface LiveFeedProps {
 function statusBadge(status: FeedDrop["status"]) {
   switch (status) {
     case "burned":
-      return "bg-amber-500/30 text-amber-100 border-amber-400/40";
+      return "bg-blue-500/30 text-blue-100 border-blue-400/40";
     case "bought":
-      return "bg-emerald-500/30 text-emerald-100 border-emerald-400/40";
+      return "bg-sky-500/30 text-sky-100 border-sky-400/40";
     case "skipped":
       return "bg-slate-500/30 text-slate-100 border-slate-400/40";
     case "failed":
       return "bg-rose-500/30 text-rose-100 border-rose-400/40";
     default:
-      return "bg-sky-500/30 text-sky-100 border-sky-400/40";
+      return "bg-indigo-500/30 text-indigo-100 border-indigo-400/40";
   }
 }
 
@@ -49,8 +49,8 @@ export default function LiveFeed({ drops, cluster }: LiveFeedProps) {
   return (
     <div className="glass flex h-full flex-col rounded-2xl p-3 text-white">
       <div className="mb-2 flex items-center justify-between px-1">
-        <h2 className="text-xs font-bold uppercase tracking-widest opacity-80">Live Feed</h2>
-        <span className="text-[10px] opacity-60">{drops.length} drops</span>
+        <h2 className="text-xs font-bold uppercase tracking-widest opacity-80">Flight Log</h2>
+        <span className="text-[10px] opacity-60">{drops.length} flights</span>
       </div>
       <div className="feed-scroll -mr-1 flex max-h-[60vh] flex-col gap-1.5 overflow-y-auto pr-1 lg:max-h-none">
         <AnimatePresence initial={false}>
@@ -73,7 +73,7 @@ export default function LiveFeed({ drops, cluster }: LiveFeedProps) {
               </div>
               <div className="mt-1 flex items-center justify-between gap-2 text-[11px] opacity-90">
                 <span>
-                  <span className="font-extrabold gold-text">{Number(d.multiplier)}x</span>
+                  <span className="font-extrabold text-sky-200">{Number(d.multiplier)}x</span>
                   {" "}→ {formatSol(Number(d.sol_out))} SOL
                 </span>
                 <span className="opacity-60">{formatTime(d.created_at)} ago</span>
@@ -102,7 +102,7 @@ export default function LiveFeed({ drops, cluster }: LiveFeedProps) {
         </AnimatePresence>
         {drops.length === 0 && (
           <div className="rounded-xl border border-dashed border-white/15 bg-black/20 py-6 text-center text-xs opacity-70">
-            Be the first to drop a penny.
+            Be the first to launch a paper airplane.
           </div>
         )}
       </div>
@@ -110,7 +110,6 @@ export default function LiveFeed({ drops, cluster }: LiveFeedProps) {
   );
 }
 
-// Tiny effect helper: tick once per minute so "Xs ago" labels stay fresh.
 export function useLiveFeedTicker() {
   const [, setT] = useState(0);
   useEffect(() => {

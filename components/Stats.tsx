@@ -1,6 +1,6 @@
 "use client";
 
-import { Coins, Flame, Sparkles, Users } from "lucide-react";
+import { Flame, Plane, Rocket, Trophy } from "lucide-react";
 
 import { formatSol, formatTokens } from "@/lib/utils";
 
@@ -22,7 +22,7 @@ function Tile({
 }) {
   return (
     <div className="glass flex min-w-0 items-center gap-3 rounded-2xl px-3 py-2.5 sm:px-4">
-      <div className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-amber-200 to-amber-600 text-amber-950 shadow-inner">
+      <div className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-sky-200 to-blue-600 text-blue-950 shadow-inner">
         {icon}
       </div>
       <div className="min-w-0 leading-tight">
@@ -42,12 +42,12 @@ export default function StatsBar({
   return (
     <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 sm:gap-3">
       <Tile
-        icon={<Users className="h-4 w-4" />}
-        label="Drops Today"
+        icon={<Plane className="h-4 w-4" />}
+        label="Flights Today"
         value={totalDrops.toLocaleString()}
       />
       <Tile
-        icon={<Coins className="h-4 w-4" />}
+        icon={<Rocket className="h-4 w-4" />}
         label="SOL Spent"
         value={`${formatSol(totalSolOut)} SOL`}
       />
@@ -57,8 +57,8 @@ export default function StatsBar({
         value={formatTokens(totalTokensBurned, 6)}
       />
       <Tile
-        icon={<Sparkles className="h-4 w-4" />}
-        label="Biggest Win"
+        icon={<Trophy className="h-4 w-4" />}
+        label="Best Flight"
         value={`${biggestMultiplier}x`}
       />
     </div>

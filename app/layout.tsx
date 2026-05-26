@@ -1,21 +1,27 @@
 import type { Metadata, Viewport } from "next";
-import { Fredoka } from "next/font/google";
+import { Bungee, Outfit } from "next/font/google";
 import "./globals.css";
 
-const fredoka = Fredoka({
-  variable: "--font-fredoka",
+const outfit = Outfit({
+  variable: "--font-outfit",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  weight: ["400", "500", "600", "700", "800"],
+});
+
+const bungee = Bungee({
+  variable: "--font-bungee",
+  subsets: ["latin"],
+  weight: "400",
 });
 
 export const metadata: Metadata = {
-  title: "Lucky Penny",
+  title: "National Paper Airplane Day",
   description:
-    "Drop a lucky penny every minute. The treasury buys & burns a pump.fun token live on Solana.",
+    "Launch a paper airplane every minute. Each flight multiplies SOL and burns pump.fun tokens on Solana.",
 };
 
 export const viewport: Viewport = {
-  themeColor: "#1f6b27",
+  themeColor: "#2563eb",
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
@@ -27,7 +33,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${fredoka.variable} h-full antialiased`}>
+    <html lang="en" className={`${outfit.variable} ${bungee.variable} h-full antialiased`}>
       <body className="min-h-full">{children}</body>
     </html>
   );

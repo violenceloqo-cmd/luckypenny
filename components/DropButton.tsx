@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 
+import PaperAirplaneIcon from "@/components/PaperAirplaneIcon";
 import { cn } from "@/lib/utils";
 
 export interface DropButtonProps {
@@ -14,9 +15,7 @@ export interface DropButtonProps {
 }
 
 interface Drain {
-  /** Original cooldown when this anchor was created (so display stays stable across rerenders). */
   anchorMs: number;
-  /** Live, ticking remaining; updated by interval. */
   remainingMs: number;
 }
 
@@ -27,13 +26,8 @@ export default function DropButton({
   onDrop,
   busy,
 }: DropButtonProps) {
-  // When `cooldownMs` changes we want to re-anchor without an explicit "synchronous
-  // setState in effect" (forbidden by React 19's purity lint). We derive from prop
-  // during render and only the interval ticks below cause additional updates.
   const [drain, setDrain] = useState<Drain>({ anchorMs: cooldownMs, remainingMs: cooldownMs });
   if (drain.anchorMs !== cooldownMs) {
-    // React 19-safe pattern: change state during render based on prop change.
-    // This is the recommended replacement for "reset state via effect".
     setDrain({ anchorMs: cooldownMs, remainingMs: cooldownMs });
   }
 
@@ -86,7 +80,7 @@ export default function DropButton({
             cx={size / 2}
             cy={size / 2}
             r={radius}
-            stroke="url(#cool-grad)"
+            stroke="url(#launch-grad)"
             strokeWidth={stroke}
             strokeLinecap="round"
             strokeDasharray={circumference}
@@ -94,9 +88,9 @@ export default function DropButton({
             fill="none"
           />
           <defs>
-            <linearGradient id="cool-grad" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stopColor="#fde68a" />
-              <stop offset="100%" stopColor="#b45309" />
+            <linearGradient id="launch-grad" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stopColor="#93c5fd" />
+              <stop offset="100%" stopColor="#1d4ed8" />
             </linearGradient>
           </defs>
         </svg>
@@ -106,31 +100,31 @@ export default function DropButton({
           whileHover={{ scale: isDisabled ? 1 : 1.02 }}
           onClick={onDrop}
           disabled={isDisabled}
-          aria-label="Drop the lucky penny"
+          aria-label="Launch paper airplane"
           className={cn(
-            "btn-emerald relative grid place-items-center rounded-full font-extrabold uppercase tracking-wide",
+            "btn-launch relative grid place-items-center rounded-full font-extrabold uppercase tracking-wide",
             "transition-all",
             isDisabled && "cursor-not-allowed opacity-60",
           )}
           style={{ width: size - stroke * 2, height: size - stroke * 2, margin: stroke }}
         >
           {busy ? (
-            <span className="text-xs">Dropping…</span>
+            <span className="text-xs">Launching…</span>
           ) : onCooldown ? (
             <span className="flex flex-col items-center leading-tight">
               <span className="text-2xl font-black tabular-nums">{seconds}s</span>
-              <span className="mt-0.5 text-[9px] tracking-widest opacity-80">COOLDOWN</span>
+              <span className="mt-0.5 text-[9px] tracking-widest opacity-80">RELOAD</span>
             </span>
           ) : (
             <span className="flex flex-col items-center leading-tight">
-              <span className="text-base">Drop</span>
-              <span className="text-[10px] opacity-80">the Penny</span>
+              <PaperAirplaneIcon size={28} className="mb-0.5" />
+              <span className="text-[10px] opacity-90">Launch</span>
             </span>
           )}
         </motion.button>
       </div>
       <div className="text-xs opacity-80">
-        <span className="font-semibold">0.01 SOL</span> per drop · one per minute
+        <span className="font-semibold">0.01 SOL</span> per flight · one per minute
       </div>
     </div>
   );
