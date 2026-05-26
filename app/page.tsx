@@ -38,7 +38,6 @@ const cluster: "mainnet-beta" | "devnet" =
   (process.env.NEXT_PUBLIC_SOLANA_CLUSTER as "mainnet-beta" | "devnet" | undefined) ?? "devnet";
 
 const TOKEN_MINT = "7Zxc7xp9eGRnkS3fDDJJEZJL5QfjQZxECQkgLfrpump";
-const TWITTER_URL = "https://x.com/luckypennyfun";
 
 function shortenAddress(addr: string) {
   if (!addr) return "";
@@ -289,24 +288,6 @@ export default function HomePage() {
                 )}
               </button>
             )}
-
-            <a
-              href={TWITTER_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Follow on X"
-              title="Follow on X"
-              className="grid h-8 w-8 place-items-center rounded-full border border-white/15 bg-black/40 text-white/90 transition hover:border-white/40 hover:bg-black/60 sm:h-9 sm:w-9"
-            >
-              <svg
-                viewBox="0 0 24 24"
-                className="h-3.5 w-3.5 sm:h-4 sm:w-4"
-                fill="currentColor"
-                aria-hidden="true"
-              >
-                <path d="M18.244 2H21.5l-7.51 8.58L23 22h-6.84l-5.36-7.01L4.6 22H1.34l8.04-9.19L1 2h6.99l4.84 6.39L18.244 2Zm-1.2 18h1.84L7.05 4H5.1l11.944 16Z" />
-              </svg>
-            </a>
 
             {me.user && (
               <>
