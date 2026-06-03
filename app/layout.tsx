@@ -15,13 +15,13 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
-  title: "SOL Drop — On-Chain Plinko",
+  title: "HYPE DROP — Hyperliquid Plinko",
   description:
-    "Drop SOL balls through a live Plinko board. Every drop multiplies on-chain and burns tokens on Solana.",
+    "Drop HYPE coins through a live Plinko board. Every drop multiplies on-chain and burns tokens.",
 };
 
 export const viewport: Viewport = {
-  themeColor: "#9945ff",
+  themeColor: "#0d2a2a",
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,

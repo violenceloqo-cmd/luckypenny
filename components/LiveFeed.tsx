@@ -28,15 +28,15 @@ export interface LiveFeedProps {
 function statusBadge(status: FeedDrop["status"]) {
   switch (status) {
     case "burned":
-      return "bg-emerald-500/20 text-emerald-300 border-emerald-400/35";
+      return "bg-[#97fce1]/15 text-[#b8fff0] border-[#97fce1]/30";
     case "bought":
-      return "bg-cyan-500/20 text-cyan-200 border-cyan-400/35";
+      return "bg-[#5ecfb8]/15 text-[#97fce1] border-[#5ecfb8]/30";
     case "skipped":
       return "bg-slate-500/20 text-slate-300 border-slate-400/35";
     case "failed":
       return "bg-rose-500/20 text-rose-300 border-rose-400/35";
     default:
-      return "bg-purple-500/20 text-purple-200 border-purple-400/35";
+      return "bg-[#1a4545]/40 text-[#97fce1]/80 border-[#97fce1]/20";
   }
 }
 
@@ -51,8 +51,8 @@ export default function LiveFeed({ drops, cluster }: LiveFeedProps) {
       <div className="mb-2 flex items-center justify-between border-b border-white/8 pb-2 px-1">
         <div className="flex items-center gap-2">
           <span className="relative flex h-2 w-2">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#14F195] opacity-60" />
-            <span className="relative inline-flex h-2 w-2 rounded-full bg-[#14F195]" />
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#97fce1] opacity-60" />
+            <span className="relative inline-flex h-2 w-2 rounded-full bg-[#97fce1]" />
           </span>
           <h2 className="text-xs font-bold uppercase tracking-widest text-white/70">Live Drops</h2>
         </div>
@@ -79,9 +79,9 @@ export default function LiveFeed({ drops, cluster }: LiveFeedProps) {
               </div>
               <div className="mt-1 flex items-center justify-between gap-2 text-[11px]">
                 <span>
-                  <span className="font-extrabold text-[#14F195]">{Number(d.multiplier)}x</span>
+                  <span className="font-extrabold text-[#97fce1]">{Number(d.multiplier)}x</span>
                   {" → "}
-                  <span className="font-mono text-[#00D1FF]">{formatSol(Number(d.sol_out))} SOL</span>
+                  <span className="font-mono text-[#b8fff0]">{formatSol(Number(d.sol_out))} SOL</span>
                 </span>
                 <span className="text-white/40">{formatTime(d.created_at)} ago</span>
               </div>
@@ -89,14 +89,14 @@ export default function LiveFeed({ drops, cluster }: LiveFeedProps) {
                 <div className="mt-1 flex items-center justify-between gap-2 text-[10px] text-white/50">
                   <span>
                     burned{" "}
-                    <span className="font-mono text-purple-300">{formatTokens(d.tokens_burned, 6)}</span>
+                    <span className="font-mono text-[#5ecfb8]">{formatTokens(d.tokens_burned, 6)}</span>
                   </span>
                   {(d.burn_sig || d.buy_sig) && (
                     <a
                       href={explorerHref((d.burn_sig || d.buy_sig) as string, cluster)}
                       target="_blank"
                       rel="noreferrer"
-                      className="inline-flex items-center gap-1 text-[#00D1FF] hover:text-[#14F195]"
+                      className="inline-flex items-center gap-1 text-[#97fce1] hover:text-[#b8fff0]"
                     >
                       {shortSig(d.burn_sig || d.buy_sig)}
                       <ExternalLink className="h-3 w-3" />
@@ -108,8 +108,8 @@ export default function LiveFeed({ drops, cluster }: LiveFeedProps) {
           ))}
         </AnimatePresence>
         {drops.length === 0 && (
-          <div className="rounded-lg border border-dashed border-purple-500/25 bg-black/30 py-8 text-center text-xs text-white/45">
-            Waiting for the first SOL drop…
+          <div className="rounded-lg border border-dashed border-[#97fce1]/20 bg-[#0a2222]/40 py-8 text-center text-xs text-white/45">
+            Waiting for the first HYPE drop…
           </div>
         )}
       </div>

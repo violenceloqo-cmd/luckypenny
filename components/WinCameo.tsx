@@ -2,14 +2,14 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 
-import SolanaBallIcon from "@/components/SolanaBallIcon";
+import HypeCoinIcon from "@/components/HypeCoinIcon";
 
 interface CameoProps {
   show: boolean;
   multiplier: number;
 }
 
-function BallCascade() {
+function CoinCascade() {
   return (
     <div className="flex gap-1.5" aria-hidden="true">
       {[0, 1, 2].map((i) => (
@@ -18,7 +18,7 @@ function BallCascade() {
           animate={{ y: [0, -10, 0], scale: [1, 1.08, 1] }}
           transition={{ duration: 0.9, repeat: Infinity, delay: i * 0.12 }}
         >
-          <SolanaBallIcon size={40 + i * 10} />
+          <HypeCoinIcon size={40 + i * 10} />
         </motion.div>
       ))}
     </div>
@@ -37,11 +37,11 @@ export default function WinCameo({ show, multiplier }: CameoProps) {
           className="pointer-events-none fixed bottom-3 right-3 z-20 flex flex-col items-end"
           aria-hidden="true"
         >
-          <BallCascade />
+          <CoinCascade />
           <motion.div
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
-            className="sol-badge mt-2 px-4 py-2 text-sm font-black"
+            className="hype-badge mt-2 px-4 py-2 text-sm font-black"
           >
             {multiplier}x · MEGA DROP
           </motion.div>

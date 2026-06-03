@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 
-import SolanaBallIcon from "@/components/SolanaBallIcon";
+import HypeCoinIcon from "@/components/HypeCoinIcon";
 
 interface FloatingOrb {
   left: number;
@@ -25,50 +25,50 @@ function generateOrbs(count: number, seed: number): FloatingOrb[] {
       top: 5 + rand() * 70,
       scale: 0.35 + rand() * 0.65,
       delay: rand() * 6,
-      opacity: 0.15 + rand() * 0.35,
+      opacity: 0.12 + rand() * 0.28,
     });
   }
   return out;
 }
 
 export default function ThemeBackground() {
-  const orbs = useMemo(() => generateOrbs(18, 99173), []);
+  const orbs = useMemo(() => generateOrbs(14, 99173), []);
 
   return (
-    <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden bg-[#07070d]">
-      {/* Solana gradient mesh */}
+    <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden bg-[#071818]">
+      {/* Hyperliquid liquid mesh */}
       <div
         className="absolute inset-0"
         style={{
           background: `
-            radial-gradient(ellipse 80% 60% at 15% 10%, rgba(153, 69, 255, 0.35) 0%, transparent 55%),
-            radial-gradient(ellipse 70% 50% at 85% 20%, rgba(0, 209, 255, 0.2) 0%, transparent 50%),
-            radial-gradient(ellipse 90% 70% at 50% 100%, rgba(20, 241, 149, 0.12) 0%, transparent 45%),
-            linear-gradient(180deg, #0a0a14 0%, #07070d 40%, #050508 100%)
+            radial-gradient(ellipse 80% 60% at 20% 15%, rgba(151, 252, 225, 0.14) 0%, transparent 55%),
+            radial-gradient(ellipse 70% 50% at 80% 25%, rgba(94, 207, 184, 0.1) 0%, transparent 50%),
+            radial-gradient(ellipse 90% 70% at 50% 100%, rgba(151, 252, 225, 0.08) 0%, transparent 45%),
+            linear-gradient(180deg, #0d2a2a 0%, #071818 45%, #051010 100%)
           `,
         }}
         aria-hidden="true"
       />
 
-      {/* Crypto grid */}
+      {/* Liquid grid */}
       <div
-        className="grid-pulse absolute inset-0 opacity-40"
+        className="grid-pulse absolute inset-0 opacity-35"
         style={{
           backgroundImage:
-            "linear-gradient(rgba(153, 69, 255, 0.12) 1px, transparent 1px), linear-gradient(90deg, rgba(153, 69, 255, 0.12) 1px, transparent 1px)",
+            "linear-gradient(rgba(151, 252, 225, 0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(151, 252, 225, 0.08) 1px, transparent 1px)",
           backgroundSize: "48px 48px",
           maskImage: "radial-gradient(ellipse 90% 80% at 50% 40%, black 20%, transparent 75%)",
         }}
         aria-hidden="true"
       />
 
-      {/* Scan line accent */}
+      {/* Top accent line */}
       <div
-        className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#14F195]/40 to-transparent"
+        className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#97fce1]/35 to-transparent"
         aria-hidden="true"
       />
 
-      {/* Floating SOL orbs */}
+      {/* Floating HYPE coins */}
       {orbs.map((o, i) => (
         <div
           key={i}
@@ -82,15 +82,15 @@ export default function ThemeBackground() {
           }}
           aria-hidden="true"
         >
-          <SolanaBallIcon size={48} glow={false} />
+          <HypeCoinIcon size={48} glow={false} />
         </div>
       ))}
 
-      {/* Bottom glow strip — terminal feel */}
+      {/* Bottom liquid glow */}
       <div
-        className="absolute inset-x-0 bottom-0 h-32"
+        className="liquid-shimmer absolute inset-x-0 bottom-0 h-40"
         style={{
-          background: "linear-gradient(to top, rgba(153, 69, 255, 0.08), transparent)",
+          background: "linear-gradient(to top, rgba(151, 252, 225, 0.06), transparent)",
         }}
         aria-hidden="true"
       />

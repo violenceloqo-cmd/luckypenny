@@ -13,7 +13,7 @@ import {
   slotX,
 } from "@/lib/game/physics";
 import { outcomeFromSeed } from "@/lib/game/rng";
-import { drawSolLogo } from "@/lib/solLogo";
+import { drawHypeCoin, getHypeLogoImage } from "@/lib/hypeLogo";
 
 export interface DropEvent {
   id: string;
@@ -36,7 +36,7 @@ export interface BoardProps {
   onBallLanded: (event: DropEvent, slot: number, multiplier: number) => void;
 }
 
-/** Plinko board — Solana orbs drop from the top through pegs into multiplier slots. */
+/** Plinko board — HYPE coins drop from the top through pegs into multiplier slots. */
 export default function Board({ pending, onBallLanded }: BoardProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const wrapRef = useRef<HTMLDivElement | null>(null);
@@ -75,6 +75,8 @@ export default function Board({ pending, onBallLanded }: BoardProps) {
     const wrap = wrapRef.current;
     if (!canvas || !wrap) return;
 
+    getHypeLogoImage();
+
     const layout = DEFAULT_LAYOUT;
 
     function computeFit() {
@@ -103,46 +105,26 @@ export default function Board({ pending, onBallLanded }: BoardProps) {
     function drawPeg(ctx: CanvasRenderingContext2D, x: number, y: number) {
       const r = layout.pegRadius;
       const g = ctx.createRadialGradient(x - 1, y - 1, 0, x, y, r + 2);
-      g.addColorStop(0, "#c4b5fd");
-      g.addColorStop(0.45, "#9945ff");
-      g.addColorStop(1, "#4c1d95");
+      g.addColorStop(0, "#b8fff0");
+      g.addColorStop(0.45, "#5ecfb8");
+      g.addColorStop(1, "#1a4545");
       ctx.fillStyle = g;
       ctx.beginPath();
       ctx.arc(x, y, r, 0, Math.PI * 2);
       ctx.fill();
-      ctx.strokeStyle = "rgba(20, 241, 149, 0.35)";
+      ctx.strokeStyle = "rgba(151, 252, 225, 0.35)";
       ctx.lineWidth = 0.6;
-      ctx.stroke();
-    }
-
-    function drawSolanaBall(ctx: CanvasRenderingContext2D, x: number, y: number) {
-      const r = layout.ballRadius;
-      const g = ctx.createRadialGradient(x - r * 0.35, y - r * 0.35, 0, x, y, r);
-      g.addColorStop(0, "#14F195");
-      g.addColorStop(0.45, "#00D1FF");
-      g.addColorStop(1, "#9945FF");
-      ctx.fillStyle = g;
-      ctx.beginPath();
-      ctx.arc(x, y, r, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.fillStyle = "rgba(255,255,255,0.32)";
-      ctx.beginPath();
-      ctx.arc(x - r * 0.28, y - r * 0.28, r * 0.22, 0, Math.PI * 2);
-      ctx.fill();
-      drawSolLogo(ctx, x, y, r * 0.72);
-      ctx.strokeStyle = "rgba(255,255,255,0.25)";
-      ctx.lineWidth = 0.8;
       ctx.stroke();
     }
 
     function drawWall(ctx: CanvasRenderingContext2D, x: number, topY: number, botY: number) {
       const w = 3;
-      ctx.fillStyle = "#1e1b4b";
+      ctx.fillStyle = "#0a2222";
       ctx.fillRect(x - w / 2, topY, w, botY - topY);
-      ctx.strokeStyle = "rgba(153, 69, 255, 0.6)";
+      ctx.strokeStyle = "rgba(151, 252, 225, 0.35)";
       ctx.lineWidth = 0.6;
       ctx.strokeRect(x - w / 2, topY, w, botY - topY);
-      ctx.fillStyle = "#14F195";
+      ctx.fillStyle = "#97fce1";
       ctx.beginPath();
       ctx.arc(x, topY, 2.5, 0, Math.PI * 2);
       ctx.fill();
@@ -183,11 +165,11 @@ export default function Board({ pending, onBallLanded }: BoardProps) {
       ctx.lineTo(botRightX, botY);
       ctx.lineTo(botLeftX, botY);
       ctx.closePath();
-      ctx.fillStyle = "rgba(10, 10, 20, 0.95)";
+      ctx.fillStyle = "rgba(7, 24, 24, 0.96)";
       ctx.fill();
       ctx.clip();
 
-      ctx.strokeStyle = "rgba(153, 69, 255, 0.08)";
+      ctx.strokeStyle = "rgba(151, 252, 225, 0.06)";
       ctx.lineWidth = 0.5;
       for (let gy = topY + 10; gy < botY; gy += 16) {
         ctx.beginPath();
@@ -211,9 +193,9 @@ export default function Board({ pending, onBallLanded }: BoardProps) {
       ctx.closePath();
       ctx.lineWidth = 4;
       const borderGrad = ctx.createLinearGradient(topLeftX, topY, botRightX, botY);
-      borderGrad.addColorStop(0, "#14F195");
-      borderGrad.addColorStop(0.5, "#9945FF");
-      borderGrad.addColorStop(1, "#00D1FF");
+      borderGrad.addColorStop(0, "#b8fff0");
+      borderGrad.addColorStop(0.5, "#97fce1");
+      borderGrad.addColorStop(1, "#5ecfb8");
       ctx.strokeStyle = borderGrad;
       ctx.stroke();
       ctx.lineWidth = 1;
@@ -229,7 +211,7 @@ export default function Board({ pending, onBallLanded }: BoardProps) {
       const binTopY = layout.slotY - SLOT_BIN_HEIGHT / 2;
       const binBotY = layout.slotY + SLOT_BIN_HEIGHT / 2;
 
-      ctx.strokeStyle = "rgba(20, 241, 149, 0.4)";
+      ctx.strokeStyle = "rgba(151, 252, 225, 0.4)";
       ctx.lineWidth = 2;
       ctx.beginPath();
       ctx.moveTo(botLeftX + 4, binBotY);
@@ -246,7 +228,7 @@ export default function Board({ pending, onBallLanded }: BoardProps) {
       for (const b of balls) {
         const idx = Math.min(b.frame, b.path.length - 1);
         const pt = b.path[idx];
-        drawSolanaBall(ctx, pt.x, pt.y);
+        drawHypeCoin(ctx, pt.x, pt.y, layout.ballRadius);
         b.frame += 1;
         if (b.frame >= b.path.length) {
           if (!b.finished) {
@@ -287,14 +269,14 @@ export default function Board({ pending, onBallLanded }: BoardProps) {
           const width = layout.colSpacing * scaleInfo.scale - 6;
           const tier =
             m >= 100
-              ? "from-emerald-200 via-green-400 to-emerald-700 text-emerald-950 border-emerald-400/60"
+              ? "from-[#b8fff0] via-[#97fce1] to-[#5ecfb8] text-[#071818] border-[#97fce1]/70"
               : m >= 10
-                ? "from-violet-200 via-purple-400 to-purple-700 text-purple-950 border-purple-400/50"
+                ? "from-[#a8f5e8] via-[#7ee8d4] to-[#4dbda8] text-[#071818] border-[#97fce1]/55"
                 : m >= 3
-                  ? "from-cyan-200 via-sky-400 to-cyan-600 text-cyan-950 border-cyan-400/40"
+                  ? "from-[#8ee8d8] via-[#6dd9c4] to-[#3a9e8a] text-[#071818] border-[#97fce1]/40"
                   : m >= 1
-                    ? "from-slate-200 via-slate-400 to-slate-600 text-slate-900 border-slate-400/30"
-                    : "from-rose-200 via-rose-400 to-rose-600 text-rose-950 border-rose-400/40";
+                    ? "from-[#1a4545] via-[#123333] to-[#0a2222] text-[#97fce1] border-[#97fce1]/25"
+                    : "from-[#2a1a1a] via-[#331818] to-[#221010] text-[#f5a8a8] border-rose-400/30";
           const flashing = slotFlash === i;
           return (
             <div

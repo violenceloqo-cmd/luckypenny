@@ -9,7 +9,7 @@ import Board, { type DropEvent } from "@/components/Board";
 import DropButton from "@/components/DropButton";
 import LiveFeed, { type FeedDrop, useLiveFeedTicker } from "@/components/LiveFeed";
 import LoginCard from "@/components/LoginCard";
-import SolanaBallIcon from "@/components/SolanaBallIcon";
+import HypeCoinIcon from "@/components/HypeCoinIcon";
 import StatsBar from "@/components/Stats";
 import ThemeBackground from "@/components/ThemeBackground";
 import WinCameo from "@/components/WinCameo";
@@ -188,7 +188,7 @@ export default function HomePage() {
       }
       setMe((cur) => ({ ...cur, cooldownRemainingMs: cur.cooldownSeconds * 1000 }));
       setStats((s) => ({ ...s, totalDrops: s.totalDrops + 1 }));
-      setAnnounce(`SOL ball dropped — targeting ${data.multiplier}x slot.`);
+      setAnnounce(`HYPE coin dropped — targeting ${data.multiplier}x slot.`);
     } finally {
       setDropping(false);
     }
@@ -203,7 +203,7 @@ export default function HomePage() {
           particleCount: 180,
           spread: 90,
           origin: { y: 0.7 },
-          colors: ["#14F195", "#9945FF", "#00D1FF", "#ffffff"],
+          colors: ["#97fce1", "#b8fff0", "#5ecfb8", "#ffffff"],
           scalar: 1.1,
         });
       }
@@ -249,22 +249,22 @@ export default function HomePage() {
               initial={{ opacity: 0, scale: 0.7 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.5, type: "spring", stiffness: 220, damping: 14 }}
-              className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-black/50 ring-1 ring-purple-500/40 shadow-[0_0_24px_rgba(20,241,149,0.25)] sm:h-11 sm:w-11"
+              className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-[#0a2222]/80 ring-1 ring-[#97fce1]/30 shadow-[0_0_24px_rgba(151,252,225,0.2)] sm:h-11 sm:w-11"
             >
-              <SolanaBallIcon size={28} />
+              <HypeCoinIcon size={28} />
             </motion.div>
             <div>
               <motion.h1
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4 }}
-                className="text-lg sol-text sm:text-xl"
+                className="text-lg hype-text sm:text-xl"
                 style={{ fontFamily: "var(--font-display)" }}
               >
-                SOL DROP
+                HYPE DROP
               </motion.h1>
               <span className="hidden text-[10px] uppercase tracking-[0.2em] text-white/40 sm:inline">
-                Plinko · Burn · Mainnet
+                Plinko · Hyperliquid · Burn
               </span>
             </div>
           </div>
@@ -275,14 +275,14 @@ export default function HomePage() {
                 onClick={onCopyCA}
                 title={`Copy contract address: ${TOKEN_MINT}`}
                 aria-label="Copy contract address"
-                className="group flex items-center gap-1.5 rounded-lg border border-purple-500/35 bg-black/50 px-2.5 py-1 font-mono text-[11px] text-[#14F195] transition hover:border-[#14F195]/50 hover:bg-black/70 sm:text-xs"
+                className="group flex items-center gap-1.5 rounded-lg border border-[#97fce1]/25 bg-[#0a2222]/70 px-2.5 py-1 font-mono text-[11px] text-[#97fce1] transition hover:border-[#97fce1]/50 hover:bg-[#0a2222] sm:text-xs"
               >
                 <span className="hidden text-[10px] font-sans font-semibold uppercase tracking-widest text-white/40 sm:inline">
                   Mint
                 </span>
                 <span>{shortenAddress(TOKEN_MINT)}</span>
                 {copied ? (
-                  <Check className="h-3.5 w-3.5 text-[#14F195]" />
+                  <Check className="h-3.5 w-3.5 text-[#97fce1]" />
                 ) : (
                   <Copy className="h-3.5 w-3.5 opacity-60 group-hover:opacity-100" />
                 )}
@@ -291,12 +291,12 @@ export default function HomePage() {
 
             {me.user && (
               <>
-                <span className="rounded-lg border border-white/10 bg-black/50 px-3 py-1 font-mono text-xs font-semibold text-white/80">
+                <span className="rounded-lg border border-[#97fce1]/15 bg-[#0a2222]/70 px-3 py-1 font-mono text-xs font-semibold text-white/80">
                   {me.user.username}
                 </span>
                 <button
                   onClick={onLogout}
-                  className="grid h-8 w-8 place-items-center rounded-lg border border-white/10 bg-black/50 text-white/70 hover:border-white/25 hover:text-white sm:h-9 sm:w-9"
+                  className="grid h-8 w-8 place-items-center rounded-lg border border-[#97fce1]/15 bg-[#0a2222]/70 text-white/70 hover:border-[#97fce1]/30 hover:text-white sm:h-9 sm:w-9"
                   aria-label="Sign out"
                 >
                   <LogOut className="h-4 w-4" />

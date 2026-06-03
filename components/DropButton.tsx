@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 
-import SolanaBallIcon from "@/components/SolanaBallIcon";
+import HypeCoinIcon from "@/components/HypeCoinIcon";
 import { cn } from "@/lib/utils";
 
 export interface DropButtonProps {
@@ -89,9 +89,9 @@ export default function DropButton({
           />
           <defs>
             <linearGradient id="drop-grad" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stopColor="#14F195" />
-              <stop offset="50%" stopColor="#00D1FF" />
-              <stop offset="100%" stopColor="#9945FF" />
+              <stop offset="0%" stopColor="#b8fff0" />
+              <stop offset="50%" stopColor="#97fce1" />
+              <stop offset="100%" stopColor="#5ecfb8" />
             </linearGradient>
           </defs>
         </svg>
@@ -101,7 +101,7 @@ export default function DropButton({
           whileHover={{ scale: isDisabled ? 1 : 1.03 }}
           onClick={onDrop}
           disabled={isDisabled}
-          aria-label="Drop SOL ball"
+          aria-label="Drop HYPE coin"
           className={cn(
             "btn-drop relative grid place-items-center rounded-full font-extrabold uppercase tracking-wide",
             "transition-all",
@@ -110,7 +110,7 @@ export default function DropButton({
           style={{ width: size - stroke * 2, height: size - stroke * 2, margin: stroke }}
         >
           {busy ? (
-            <span className="text-xs text-[#14F195]">Dropping…</span>
+            <span className="text-xs text-[#97fce1]">Dropping…</span>
           ) : onCooldown ? (
             <span className="flex flex-col items-center leading-tight">
               <span className="mono-stat text-2xl font-black text-white">{seconds}s</span>
@@ -118,14 +118,14 @@ export default function DropButton({
             </span>
           ) : (
             <span className="flex flex-col items-center leading-tight">
-              <SolanaBallIcon size={32} className="mb-1" />
-              <span className="text-[10px] tracking-widest text-[#14F195]">DROP</span>
+              <HypeCoinIcon size={32} className="mb-1" />
+              <span className="text-[10px] tracking-widest text-[#97fce1]">DROP</span>
             </span>
           )}
         </motion.button>
       </div>
       <div className="text-xs text-white/50">
-        <span className="font-semibold text-[#14F195]">0.01 SOL</span> per drop · one per minute
+        <span className="font-semibold text-[#97fce1]">0.01 SOL</span> per drop · one per minute
       </div>
     </div>
   );

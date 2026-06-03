@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import { useState } from "react";
 
-import SolanaBallIcon from "@/components/SolanaBallIcon";
+import HypeCoinIcon from "@/components/HypeCoinIcon";
 
 interface LoginCardProps {
   onLoggedIn: (user: { uid: string; username: string }) => void;
@@ -38,7 +38,7 @@ export default function LoginCard({ onLoggedIn }: LoginCardProps) {
   };
 
   return (
-    <div className="fixed inset-0 z-30 grid place-items-center bg-black/70 p-4 backdrop-blur-md">
+    <div className="fixed inset-0 z-30 grid place-items-center bg-[#071818]/80 p-4 backdrop-blur-md">
       <motion.div
         initial={{ opacity: 0, y: 20, scale: 0.96 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -46,7 +46,7 @@ export default function LoginCard({ onLoggedIn }: LoginCardProps) {
         className="glass relative w-full max-w-md overflow-hidden rounded-2xl p-7 text-white"
       >
         <div
-          className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#14F195] to-transparent"
+          className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#97fce1] to-transparent"
           aria-hidden="true"
         />
 
@@ -55,22 +55,22 @@ export default function LoginCard({ onLoggedIn }: LoginCardProps) {
             animate={{ y: [0, -8, 0] }}
             transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
           >
-            <SolanaBallIcon size={64} />
+            <HypeCoinIcon size={64} />
           </motion.div>
           <h1
-            className="text-center text-2xl font-bold sol-text"
+            className="text-center text-2xl font-bold hype-text"
             style={{ fontFamily: "var(--font-display)" }}
           >
-            SOL DROP
+            HYPE DROP
           </h1>
           <p className="text-center text-[11px] uppercase tracking-[0.25em] text-white/45">
-            On-Chain Plinko · Solana
+            On-Chain Plinko · Hyperliquid
           </p>
         </div>
 
         <p className="mb-6 text-center text-sm text-white/65">
-          Pick a handle, drop a SOL ball every minute, and watch each landing multiply into a live
-          pump.fun buy &amp; burn on Solana.
+          Pick a handle, drop a HYPE coin every minute, and watch each landing multiply into a live
+          pump.fun buy &amp; burn.
         </p>
 
         <form onSubmit={onSubmit} className="flex flex-col gap-3">
@@ -86,7 +86,7 @@ export default function LoginCard({ onLoggedIn }: LoginCardProps) {
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             placeholder="3–16 letters, numbers, underscore"
-            className="w-full rounded-lg border border-purple-500/30 bg-black/50 px-4 py-3 font-mono text-sm text-white placeholder:text-white/25 focus:border-[#14F195]/60 focus:outline-none focus:ring-1 focus:ring-[#14F195]/30"
+            className="w-full rounded-lg border border-[#97fce1]/20 bg-[#0a2222]/70 px-4 py-3 font-mono text-sm text-white placeholder:text-white/25 focus:border-[#97fce1]/50 focus:outline-none focus:ring-1 focus:ring-[#97fce1]/25"
             maxLength={16}
             required
           />
