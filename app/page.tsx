@@ -37,7 +37,7 @@ const DEFAULT_COOLDOWN_SEC = 60;
 const cluster: "mainnet-beta" | "devnet" =
   (process.env.NEXT_PUBLIC_SOLANA_CLUSTER as "mainnet-beta" | "devnet" | undefined) ?? "devnet";
 
-const TOKEN_MINT = "7Zxc7xp9eGRnkS3fDDJJEZJL5QfjQZxECQkgLfrpump";
+const TOKEN_MINT = "9e7vhV6zkY3P32LNc2GRZsWt9GLZPLzdowekJwERpump";
 
 function shortenAddress(addr: string) {
   if (!addr) return "";
