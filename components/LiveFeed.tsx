@@ -28,15 +28,15 @@ export interface LiveFeedProps {
 function statusBadge(status: FeedDrop["status"]) {
   switch (status) {
     case "burned":
-      return "bg-blue-500/30 text-blue-100 border-blue-400/40";
+      return "bg-emerald-500/20 text-emerald-300 border-emerald-400/35";
     case "bought":
-      return "bg-sky-500/30 text-sky-100 border-sky-400/40";
+      return "bg-cyan-500/20 text-cyan-200 border-cyan-400/35";
     case "skipped":
-      return "bg-slate-500/30 text-slate-100 border-slate-400/40";
+      return "bg-slate-500/20 text-slate-300 border-slate-400/35";
     case "failed":
-      return "bg-rose-500/30 text-rose-100 border-rose-400/40";
+      return "bg-rose-500/20 text-rose-300 border-rose-400/35";
     default:
-      return "bg-indigo-500/30 text-indigo-100 border-indigo-400/40";
+      return "bg-purple-500/20 text-purple-200 border-purple-400/35";
   }
 }
 
@@ -47,10 +47,16 @@ function explorerHref(sig: string, cluster: string) {
 
 export default function LiveFeed({ drops, cluster }: LiveFeedProps) {
   return (
-    <div className="glass flex h-full flex-col rounded-2xl p-3 text-white">
-      <div className="mb-2 flex items-center justify-between px-1">
-        <h2 className="text-xs font-bold uppercase tracking-widest opacity-80">Flight Log</h2>
-        <span className="text-[10px] opacity-60">{drops.length} flights</span>
+    <div className="glass flex h-full flex-col rounded-xl p-3 text-white">
+      <div className="mb-2 flex items-center justify-between border-b border-white/8 pb-2 px-1">
+        <div className="flex items-center gap-2">
+          <span className="relative flex h-2 w-2">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#14F195] opacity-60" />
+            <span className="relative inline-flex h-2 w-2 rounded-full bg-[#14F195]" />
+          </span>
+          <h2 className="text-xs font-bold uppercase tracking-widest text-white/70">Live Drops</h2>
+        </div>
+        <span className="font-mono text-[10px] text-white/40">{drops.length} tx</span>
       </div>
       <div className="feed-scroll -mr-1 flex max-h-[60vh] flex-col gap-1.5 overflow-y-auto pr-1 lg:max-h-none">
         <AnimatePresence initial={false}>
@@ -61,35 +67,36 @@ export default function LiveFeed({ drops, cluster }: LiveFeedProps) {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, scale: 0.97 }}
               transition={{ duration: 0.25 }}
-              className="rounded-xl border border-white/10 bg-black/25 px-3 py-2 text-xs"
+              className="rounded-lg border border-white/8 bg-black/40 px-3 py-2 text-xs"
             >
               <div className="flex items-center justify-between gap-2">
-                <span className="truncate font-bold">{d.username}</span>
+                <span className="truncate font-bold text-white/90">{d.username}</span>
                 <span
-                  className={`shrink-0 rounded-md border px-1.5 py-0.5 text-[10px] uppercase ${statusBadge(d.status)}`}
+                  className={`shrink-0 rounded border px-1.5 py-0.5 font-mono text-[10px] uppercase ${statusBadge(d.status)}`}
                 >
                   {d.status}
                 </span>
               </div>
-              <div className="mt-1 flex items-center justify-between gap-2 text-[11px] opacity-90">
+              <div className="mt-1 flex items-center justify-between gap-2 text-[11px]">
                 <span>
-                  <span className="font-extrabold text-sky-200">{Number(d.multiplier)}x</span>
-                  {" "}→ {formatSol(Number(d.sol_out))} SOL
+                  <span className="font-extrabold text-[#14F195]">{Number(d.multiplier)}x</span>
+                  {" → "}
+                  <span className="font-mono text-[#00D1FF]">{formatSol(Number(d.sol_out))} SOL</span>
                 </span>
-                <span className="opacity-60">{formatTime(d.created_at)} ago</span>
+                <span className="text-white/40">{formatTime(d.created_at)} ago</span>
               </div>
               {(d.burn_sig || d.buy_sig) && (
-                <div className="mt-1 flex items-center justify-between gap-2 text-[10px] opacity-80">
+                <div className="mt-1 flex items-center justify-between gap-2 text-[10px] text-white/50">
                   <span>
                     burned{" "}
-                    <span className="font-mono">{formatTokens(d.tokens_burned, 6)}</span>
+                    <span className="font-mono text-purple-300">{formatTokens(d.tokens_burned, 6)}</span>
                   </span>
                   {(d.burn_sig || d.buy_sig) && (
                     <a
                       href={explorerHref((d.burn_sig || d.buy_sig) as string, cluster)}
                       target="_blank"
                       rel="noreferrer"
-                      className="inline-flex items-center gap-1 underline hover:opacity-100"
+                      className="inline-flex items-center gap-1 text-[#00D1FF] hover:text-[#14F195]"
                     >
                       {shortSig(d.burn_sig || d.buy_sig)}
                       <ExternalLink className="h-3 w-3" />
@@ -101,8 +108,8 @@ export default function LiveFeed({ drops, cluster }: LiveFeedProps) {
           ))}
         </AnimatePresence>
         {drops.length === 0 && (
-          <div className="rounded-xl border border-dashed border-white/15 bg-black/20 py-6 text-center text-xs opacity-70">
-            Be the first to launch a paper airplane.
+          <div className="rounded-lg border border-dashed border-purple-500/25 bg-black/30 py-8 text-center text-xs text-white/45">
+            Waiting for the first SOL drop…
           </div>
         )}
       </div>

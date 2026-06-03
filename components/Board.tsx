@@ -13,6 +13,7 @@ import {
   slotX,
 } from "@/lib/game/physics";
 import { outcomeFromSeed } from "@/lib/game/rng";
+import { drawSolLogo } from "@/lib/solLogo";
 
 export interface DropEvent {
   id: string;
@@ -20,7 +21,7 @@ export interface DropEvent {
   username: string;
 }
 
-interface ActivePlane {
+interface ActiveBall {
   id: string;
   username: string;
   path: { x: number; y: number }[];
@@ -32,17 +33,14 @@ interface ActivePlane {
 
 export interface BoardProps {
   pending: DropEvent[];
-  onPlaneLanded: (event: DropEvent, slot: number, multiplier: number) => void;
+  onBallLanded: (event: DropEvent, slot: number, multiplier: number) => void;
 }
 
-/**
- * Plinko board — paper airplanes glide through pegs and land in multiplier slots.
- * Path is seed-deterministic so every viewer sees the same flight.
- */
-export default function Board({ pending, onPlaneLanded }: BoardProps) {
+/** Plinko board — Solana orbs drop from the top through pegs into multiplier slots. */
+export default function Board({ pending, onBallLanded }: BoardProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const wrapRef = useRef<HTMLDivElement | null>(null);
-  const planesRef = useRef<ActivePlane[]>([]);
+  const ballsRef = useRef<ActiveBall[]>([]);
   const animationRef = useRef<number | null>(null);
   const [slotFlash, setSlotFlash] = useState<number | null>(null);
   const [scaleInfo, setScaleInfo] = useState({ scale: 1, offsetX: 0, offsetY: 0 });
@@ -51,12 +49,12 @@ export default function Board({ pending, onPlaneLanded }: BoardProps) {
     let cancelled = false;
     void (async () => {
       for (const ev of pending) {
-        if (planesRef.current.some((p) => p.id === ev.id)) continue;
+        if (ballsRef.current.some((b) => b.id === ev.id)) continue;
         const out = await outcomeFromSeed(ev.seed);
         if (cancelled) return;
         const anchors = buildAnchors(DEFAULT_LAYOUT, out.bits, out.slotIndex);
         const path = samplePath(anchors, 10);
-        planesRef.current.push({
+        ballsRef.current.push({
           id: ev.id,
           username: ev.username,
           path,
@@ -103,91 +101,51 @@ export default function Board({ pending, onPlaneLanded }: BoardProps) {
     ro.observe(wrap);
 
     function drawPeg(ctx: CanvasRenderingContext2D, x: number, y: number) {
-      const g = ctx.createRadialGradient(x - 1, y - 1, 0, x, y, layout.pegRadius + 1);
-      g.addColorStop(0, "#f8fafc");
-      g.addColorStop(0.5, "#cbd5e1");
-      g.addColorStop(1, "#64748b");
+      const r = layout.pegRadius;
+      const g = ctx.createRadialGradient(x - 1, y - 1, 0, x, y, r + 2);
+      g.addColorStop(0, "#c4b5fd");
+      g.addColorStop(0.45, "#9945ff");
+      g.addColorStop(1, "#4c1d95");
       ctx.fillStyle = g;
       ctx.beginPath();
-      ctx.arc(x, y, layout.pegRadius, 0, Math.PI * 2);
+      ctx.arc(x, y, r, 0, Math.PI * 2);
       ctx.fill();
-      ctx.strokeStyle = "rgba(15, 39, 68, 0.45)";
-      ctx.lineWidth = 0.8;
+      ctx.strokeStyle = "rgba(20, 241, 149, 0.35)";
+      ctx.lineWidth = 0.6;
       ctx.stroke();
     }
 
-    function drawPaperAirplane(
-      ctx: CanvasRenderingContext2D,
-      x: number,
-      y: number,
-      angle: number,
-    ) {
-      const s = layout.ballRadius * 0.55;
-      ctx.save();
-      ctx.translate(x, y);
-      ctx.rotate(angle);
-      ctx.scale(s, s);
-
-      // Body
+    function drawSolanaBall(ctx: CanvasRenderingContext2D, x: number, y: number) {
+      const r = layout.ballRadius;
+      const g = ctx.createRadialGradient(x - r * 0.35, y - r * 0.35, 0, x, y, r);
+      g.addColorStop(0, "#14F195");
+      g.addColorStop(0.45, "#00D1FF");
+      g.addColorStop(1, "#9945FF");
+      ctx.fillStyle = g;
       ctx.beginPath();
-      ctx.moveTo(-10, 0);
-      ctx.lineTo(14, -5);
-      ctx.lineTo(6, 0);
-      ctx.lineTo(14, 5);
-      ctx.closePath();
-      ctx.fillStyle = "#fffef9";
+      ctx.arc(x, y, r, 0, Math.PI * 2);
       ctx.fill();
-      ctx.strokeStyle = "#0f2744";
-      ctx.lineWidth = 0.35;
-      ctx.stroke();
-
-      // Fold wing (top)
+      ctx.fillStyle = "rgba(255,255,255,0.32)";
       ctx.beginPath();
-      ctx.moveTo(-10, 0);
-      ctx.lineTo(6, 0);
-      ctx.lineTo(14, -5);
-      ctx.closePath();
-      ctx.fillStyle = "#dbeafe";
+      ctx.arc(x - r * 0.28, y - r * 0.28, r * 0.22, 0, Math.PI * 2);
       ctx.fill();
-      ctx.strokeStyle = "#0f2744";
-      ctx.lineWidth = 0.25;
+      drawSolLogo(ctx, x, y, r * 0.72);
+      ctx.strokeStyle = "rgba(255,255,255,0.25)";
+      ctx.lineWidth = 0.8;
       ctx.stroke();
-
-      // Fold wing (bottom)
-      ctx.beginPath();
-      ctx.moveTo(6, 0);
-      ctx.lineTo(14, 5);
-      ctx.closePath();
-      ctx.fillStyle = "#bfdbfe";
-      ctx.fill();
-      ctx.strokeStyle = "#0f2744";
-      ctx.lineWidth = 0.25;
-      ctx.stroke();
-
-      // Red crease
-      ctx.beginPath();
-      ctx.moveTo(-6, 0);
-      ctx.lineTo(6, 0);
-      ctx.strokeStyle = "#e63946";
-      ctx.lineWidth = 0.4;
-      ctx.stroke();
-
-      ctx.restore();
     }
 
     function drawWall(ctx: CanvasRenderingContext2D, x: number, topY: number, botY: number) {
-      ctx.save();
-      ctx.fillStyle = "#475569";
-      ctx.strokeStyle = "#1e293b";
-      ctx.lineWidth = 0.8;
       const w = 3;
+      ctx.fillStyle = "#1e1b4b";
       ctx.fillRect(x - w / 2, topY, w, botY - topY);
+      ctx.strokeStyle = "rgba(153, 69, 255, 0.6)";
+      ctx.lineWidth = 0.6;
       ctx.strokeRect(x - w / 2, topY, w, botY - topY);
-      ctx.fillStyle = "#93c5fd";
+      ctx.fillStyle = "#14F195";
       ctx.beginPath();
-      ctx.arc(x, topY, 3, 0, Math.PI * 2);
+      ctx.arc(x, topY, 2.5, 0, Math.PI * 2);
       ctx.fill();
-      ctx.restore();
     }
 
     function drawFrame() {
@@ -218,7 +176,6 @@ export default function Board({ pending, onPlaneLanded }: BoardProps) {
       const botLeftX = bottomMargin;
       const botRightX = layout.width - bottomMargin;
 
-      // Board interior — notebook paper
       ctx.save();
       ctx.beginPath();
       ctx.moveTo(topLeftX, topY);
@@ -226,33 +183,41 @@ export default function Board({ pending, onPlaneLanded }: BoardProps) {
       ctx.lineTo(botRightX, botY);
       ctx.lineTo(botLeftX, botY);
       ctx.closePath();
-      ctx.fillStyle = "rgba(255, 254, 249, 0.92)";
+      ctx.fillStyle = "rgba(10, 10, 20, 0.95)";
       ctx.fill();
-
-      // Subtle grid lines inside board
       ctx.clip();
-      ctx.strokeStyle = "rgba(148, 163, 184, 0.25)";
+
+      ctx.strokeStyle = "rgba(153, 69, 255, 0.08)";
       ctx.lineWidth = 0.5;
-      for (let gy = topY + 12; gy < botY; gy += 14) {
+      for (let gy = topY + 10; gy < botY; gy += 16) {
         ctx.beginPath();
         ctx.moveTo(botLeftX, gy);
         ctx.lineTo(botRightX, gy);
         ctx.stroke();
       }
+      for (let gx = botLeftX + 10; gx < botRightX; gx += 16) {
+        ctx.beginPath();
+        ctx.moveTo(gx, topY);
+        ctx.lineTo(gx, botY);
+        ctx.stroke();
+      }
       ctx.restore();
 
-      // Frame outline
       ctx.beginPath();
       ctx.moveTo(topLeftX, topY);
       ctx.lineTo(topRightX, topY);
       ctx.lineTo(botRightX, botY);
       ctx.lineTo(botLeftX, botY);
       ctx.closePath();
-      ctx.lineWidth = 5;
-      ctx.strokeStyle = "#2563eb";
+      ctx.lineWidth = 4;
+      const borderGrad = ctx.createLinearGradient(topLeftX, topY, botRightX, botY);
+      borderGrad.addColorStop(0, "#14F195");
+      borderGrad.addColorStop(0.5, "#9945FF");
+      borderGrad.addColorStop(1, "#00D1FF");
+      ctx.strokeStyle = borderGrad;
       ctx.stroke();
-      ctx.lineWidth = 1.5;
-      ctx.strokeStyle = "rgba(255, 255, 255, 0.5)";
+      ctx.lineWidth = 1;
+      ctx.strokeStyle = "rgba(255, 255, 255, 0.15)";
       ctx.stroke();
 
       for (let r = 0; r < layout.rows; r++) {
@@ -264,44 +229,40 @@ export default function Board({ pending, onPlaneLanded }: BoardProps) {
       const binTopY = layout.slotY - SLOT_BIN_HEIGHT / 2;
       const binBotY = layout.slotY + SLOT_BIN_HEIGHT / 2;
 
-      ctx.save();
-      ctx.strokeStyle = "rgba(37, 99, 235, 0.45)";
+      ctx.strokeStyle = "rgba(20, 241, 149, 0.4)";
       ctx.lineWidth = 2;
       ctx.beginPath();
       ctx.moveTo(botLeftX + 4, binBotY);
       ctx.lineTo(botRightX - 4, binBotY);
       ctx.stroke();
-      ctx.restore();
 
       for (let s = 0; s < layout.slots - 1; s++) {
         const wallX = (slotX(layout, s) + slotX(layout, s + 1)) / 2;
         drawWall(ctx, wallX, binTopY, binBotY);
       }
 
-      const planes = planesRef.current;
-      const stillActive: ActivePlane[] = [];
-      for (const p of planes) {
-        const idx = Math.min(p.frame, p.path.length - 1);
-        const pt = p.path[idx];
-        const prev = p.path[Math.max(0, idx - 1)];
-        const angle = Math.atan2(pt.y - prev.y, pt.x - prev.x);
-        drawPaperAirplane(ctx, pt.x, pt.y, angle);
-        p.frame += 1;
-        if (p.frame >= p.path.length) {
-          if (!p.finished) {
-            p.finished = true;
-            setSlotFlash(p.slot);
-            window.setTimeout(() => setSlotFlash((cur) => (cur === p.slot ? null : cur)), 1100);
-            onPlaneLanded({ id: p.id, seed: "", username: p.username }, p.slot, p.multiplier);
+      const balls = ballsRef.current;
+      const stillActive: ActiveBall[] = [];
+      for (const b of balls) {
+        const idx = Math.min(b.frame, b.path.length - 1);
+        const pt = b.path[idx];
+        drawSolanaBall(ctx, pt.x, pt.y);
+        b.frame += 1;
+        if (b.frame >= b.path.length) {
+          if (!b.finished) {
+            b.finished = true;
+            setSlotFlash(b.slot);
+            window.setTimeout(() => setSlotFlash((cur) => (cur === b.slot ? null : cur)), 1100);
+            onBallLanded({ id: b.id, seed: "", username: b.username }, b.slot, b.multiplier);
           }
-          if (p.frame < p.path.length + 6) {
-            stillActive.push(p);
+          if (b.frame < b.path.length + 6) {
+            stillActive.push(b);
           }
         } else {
-          stillActive.push(p);
+          stillActive.push(b);
         }
       }
-      planesRef.current = stillActive;
+      ballsRef.current = stillActive;
 
       animationRef.current = requestAnimationFrame(drawFrame);
     }
@@ -311,7 +272,7 @@ export default function Board({ pending, onPlaneLanded }: BoardProps) {
       ro.disconnect();
       if (animationRef.current) cancelAnimationFrame(animationRef.current);
     };
-  }, [onPlaneLanded]);
+  }, [onBallLanded]);
 
   const layout = DEFAULT_LAYOUT;
   const labelTopPx = scaleInfo.offsetY + (layout.slotY - SLOT_BIN_HEIGHT / 2 + 4) * scaleInfo.scale;
@@ -326,19 +287,19 @@ export default function Board({ pending, onPlaneLanded }: BoardProps) {
           const width = layout.colSpacing * scaleInfo.scale - 6;
           const tier =
             m >= 100
-              ? "from-sky-100 via-blue-300 to-blue-700 text-blue-950"
+              ? "from-emerald-200 via-green-400 to-emerald-700 text-emerald-950 border-emerald-400/60"
               : m >= 10
-                ? "from-blue-50 via-sky-200 to-sky-500 text-sky-950"
+                ? "from-violet-200 via-purple-400 to-purple-700 text-purple-950 border-purple-400/50"
                 : m >= 3
-                  ? "from-indigo-100 via-indigo-200 to-indigo-500 text-indigo-950"
+                  ? "from-cyan-200 via-sky-400 to-cyan-600 text-cyan-950 border-cyan-400/40"
                   : m >= 1
-                    ? "from-slate-50 via-slate-200 to-slate-400 text-slate-900"
-                    : "from-rose-100 via-rose-200 to-rose-400 text-rose-950";
+                    ? "from-slate-200 via-slate-400 to-slate-600 text-slate-900 border-slate-400/30"
+                    : "from-rose-200 via-rose-400 to-rose-600 text-rose-950 border-rose-400/40";
           const flashing = slotFlash === i;
           return (
             <div
               key={i}
-              className={`absolute flex items-center justify-center rounded-md border border-blue-800/40 bg-gradient-to-b ${tier} font-black shadow-inner ${flashing ? "slot-flash" : ""}`}
+              className={`absolute flex items-center justify-center rounded-md border bg-gradient-to-b font-black shadow-inner ${tier} ${flashing ? "slot-flash" : ""}`}
               style={{
                 left: cx - width / 2,
                 top: labelTopPx,

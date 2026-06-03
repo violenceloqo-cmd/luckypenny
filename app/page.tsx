@@ -7,12 +7,12 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 import Board, { type DropEvent } from "@/components/Board";
 import DropButton from "@/components/DropButton";
-import FlightCameo from "@/components/FlightCameo";
 import LiveFeed, { type FeedDrop, useLiveFeedTicker } from "@/components/LiveFeed";
 import LoginCard from "@/components/LoginCard";
-import PaperAirplaneIcon from "@/components/PaperAirplaneIcon";
+import SolanaBallIcon from "@/components/SolanaBallIcon";
 import StatsBar from "@/components/Stats";
 import ThemeBackground from "@/components/ThemeBackground";
+import WinCameo from "@/components/WinCameo";
 import { isBigWin } from "@/lib/game/multipliers";
 import { getSupabaseClient } from "@/lib/supabase/client";
 
@@ -55,8 +55,8 @@ export default function HomePage() {
     totalTokensBurned: "0",
     biggestMultiplier: 0,
   });
-  const [pendingFlights, setPendingFlights] = useState<DropEvent[]>([]);
-  const [launching, setLaunching] = useState(false);
+  const [pendingDrops, setPendingDrops] = useState<DropEvent[]>([]);
+  const [dropping, setDropping] = useState(false);
   const [announce, setAnnounce] = useState<string>("");
   const [cameo, setCameo] = useState<{ show: boolean; multiplier: number }>({ show: false, multiplier: 0 });
   const [copied, setCopied] = useState(false);
@@ -130,7 +130,7 @@ export default function HomePage() {
               },
               ...cur,
             ].slice(0, 100));
-            setPendingFlights((cur) => [...cur, { id: row.id, seed: row.server_seed, username: row.username }]);
+            setPendingDrops((cur) => [...cur, { id: row.id, seed: row.server_seed, username: row.username }]);
           }
         },
       )
@@ -173,9 +173,9 @@ export default function HomePage() {
     };
   }, []);
 
-  const onLaunch = useCallback(async () => {
-    if (launching) return;
-    setLaunching(true);
+  const onDrop = useCallback(async () => {
+    if (dropping) return;
+    setDropping(true);
     try {
       const r = await fetch("/api/drop", { method: "POST" });
       const data = await r.json();
@@ -183,27 +183,27 @@ export default function HomePage() {
         if (typeof data.cooldownRemainingMs === "number") {
           setMe((cur) => ({ ...cur, cooldownRemainingMs: data.cooldownRemainingMs }));
         }
-        setAnnounce(data.error ?? "Launch failed");
+        setAnnounce(data.error ?? "Drop failed");
         return;
       }
       setMe((cur) => ({ ...cur, cooldownRemainingMs: cur.cooldownSeconds * 1000 }));
       setStats((s) => ({ ...s, totalDrops: s.totalDrops + 1 }));
-      setAnnounce(`Airplane launched — aiming for ${data.multiplier}x slot.`);
+      setAnnounce(`SOL ball dropped — targeting ${data.multiplier}x slot.`);
     } finally {
-      setLaunching(false);
+      setDropping(false);
     }
-  }, [launching]);
+  }, [dropping]);
 
-  const onPlaneLanded = useCallback(
+  const onBallLanded = useCallback(
     (ev: DropEvent, slot: number, multiplier: number) => {
-      setPendingFlights((cur) => cur.filter((p) => p.id !== ev.id));
+      setPendingDrops((cur) => cur.filter((p) => p.id !== ev.id));
       setAnnounce(`Landed: ${multiplier}x`);
       if (isBigWin(slot)) {
         confetti({
           particleCount: 180,
           spread: 90,
           origin: { y: 0.7 },
-          colors: ["#93c5fd", "#2563eb", "#ffffff", "#e63946"],
+          colors: ["#14F195", "#9945FF", "#00D1FF", "#ffffff"],
           scalar: 1.1,
         });
       }
@@ -226,11 +226,11 @@ export default function HomePage() {
       const t = e.target as HTMLElement | null;
       if (t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.isContentEditable)) return;
       e.preventDefault();
-      if (me.user && me.cooldownRemainingMs <= 0 && !launching) void onLaunch();
+      if (me.user && me.cooldownRemainingMs <= 0 && !dropping) void onDrop();
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [launching, me.cooldownRemainingMs, me.user, onLaunch]);
+  }, [dropping, me.cooldownRemainingMs, me.user, onDrop]);
 
   return (
     <>
@@ -246,25 +246,25 @@ export default function HomePage() {
         <header className="flex shrink-0 flex-wrap items-center justify-between gap-2 sm:gap-3">
           <div className="flex items-center gap-2 sm:gap-3">
             <motion.div
-              initial={{ opacity: 0, scale: 0.7, rotate: -20 }}
-              animate={{ opacity: 1, scale: 1, rotate: 0 }}
+              initial={{ opacity: 0, scale: 0.7 }}
+              animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.5, type: "spring", stiffness: 220, damping: 14 }}
-              className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-white/90 ring-2 ring-sky-300/80 shadow-[0_0_18px_rgba(96,165,250,0.45)] sm:h-11 sm:w-11"
+              className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-black/50 ring-1 ring-purple-500/40 shadow-[0_0_24px_rgba(20,241,149,0.25)] sm:h-11 sm:w-11"
             >
-              <PaperAirplaneIcon size={28} />
+              <SolanaBallIcon size={28} />
             </motion.div>
             <div>
               <motion.h1
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4 }}
-                className="text-lg fold-text sm:text-xl"
-                style={{ fontFamily: "var(--font-bungee)" }}
+                className="text-lg sol-text sm:text-xl"
+                style={{ fontFamily: "var(--font-display)" }}
               >
-                Paper Airplane Day
+                SOL DROP
               </motion.h1>
-              <span className="hidden text-[10px] uppercase tracking-widest text-white/75 sm:inline">
-                Plinko · Burn · Solana
+              <span className="hidden text-[10px] uppercase tracking-[0.2em] text-white/40 sm:inline">
+                Plinko · Burn · Mainnet
               </span>
             </div>
           </div>
@@ -275,28 +275,28 @@ export default function HomePage() {
                 onClick={onCopyCA}
                 title={`Copy contract address: ${TOKEN_MINT}`}
                 aria-label="Copy contract address"
-                className="group flex items-center gap-1.5 rounded-full border border-sky-300/40 bg-black/40 px-2.5 py-1 font-mono text-[11px] uppercase tracking-wider text-sky-100 transition hover:border-sky-300/80 hover:bg-black/60 sm:text-xs"
+                className="group flex items-center gap-1.5 rounded-lg border border-purple-500/35 bg-black/50 px-2.5 py-1 font-mono text-[11px] text-[#14F195] transition hover:border-[#14F195]/50 hover:bg-black/70 sm:text-xs"
               >
-                <span className="hidden text-[10px] font-sans font-semibold uppercase tracking-widest text-white/60 sm:inline">
-                  CA
+                <span className="hidden text-[10px] font-sans font-semibold uppercase tracking-widest text-white/40 sm:inline">
+                  Mint
                 </span>
                 <span>{shortenAddress(TOKEN_MINT)}</span>
                 {copied ? (
-                  <Check className="h-3.5 w-3.5 text-sky-300" />
+                  <Check className="h-3.5 w-3.5 text-[#14F195]" />
                 ) : (
-                  <Copy className="h-3.5 w-3.5 opacity-70 group-hover:opacity-100" />
+                  <Copy className="h-3.5 w-3.5 opacity-60 group-hover:opacity-100" />
                 )}
               </button>
             )}
 
             {me.user && (
               <>
-                <span className="rounded-full bg-black/40 px-3 py-1 font-semibold">
+                <span className="rounded-lg border border-white/10 bg-black/50 px-3 py-1 font-mono text-xs font-semibold text-white/80">
                   {me.user.username}
                 </span>
                 <button
                   onClick={onLogout}
-                  className="grid h-8 w-8 place-items-center rounded-full bg-black/40 text-white/80 hover:bg-black/60"
+                  className="grid h-8 w-8 place-items-center rounded-lg border border-white/10 bg-black/50 text-white/70 hover:border-white/25 hover:text-white sm:h-9 sm:w-9"
                   aria-label="Sign out"
                 >
                   <LogOut className="h-4 w-4" />
@@ -322,15 +322,15 @@ export default function HomePage() {
                 className="flex h-full max-h-full items-center justify-center"
                 style={{ aspectRatio: "672 / 534" }}
               >
-                <Board pending={pendingFlights} onPlaneLanded={onPlaneLanded} />
+                <Board pending={pendingDrops} onBallLanded={onBallLanded} />
               </div>
             </div>
             <DropButton
               cooldownMs={me.cooldownRemainingMs}
               cooldownTotalMs={me.cooldownSeconds * 1000}
-              onDrop={onLaunch}
+              onDrop={onDrop}
               disabled={!me.user}
-              busy={launching}
+              busy={dropping}
             />
           </section>
 
@@ -344,7 +344,7 @@ export default function HomePage() {
         {announce}
       </div>
 
-      <FlightCameo show={cameo.show} multiplier={cameo.multiplier} />
+      <WinCameo show={cameo.show} multiplier={cameo.multiplier} />
     </>
   );
 }

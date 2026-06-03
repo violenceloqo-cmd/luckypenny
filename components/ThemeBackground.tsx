@@ -2,107 +2,98 @@
 
 import { useMemo } from "react";
 
-import PaperAirplaneIcon from "@/components/PaperAirplaneIcon";
+import SolanaBallIcon from "@/components/SolanaBallIcon";
 
-interface FloatingPlane {
+interface FloatingOrb {
   left: number;
   top: number;
   scale: number;
   delay: number;
-  rotate: number;
+  opacity: number;
 }
 
-function generatePlanes(count: number, seed: number): FloatingPlane[] {
+function generateOrbs(count: number, seed: number): FloatingOrb[] {
   let s = seed >>> 0;
   const rand = () => {
     s = (s * 1664525 + 1013904223) >>> 0;
     return s / 4294967296;
   };
-  const out: FloatingPlane[] = [];
+  const out: FloatingOrb[] = [];
   for (let i = 0; i < count; i++) {
     out.push({
       left: rand() * 100,
-      top: 8 + rand() * 55,
-      scale: 0.45 + rand() * 0.9,
-      delay: rand() * 8,
-      rotate: -30 + rand() * 60,
+      top: 5 + rand() * 70,
+      scale: 0.35 + rand() * 0.65,
+      delay: rand() * 6,
+      opacity: 0.15 + rand() * 0.35,
     });
   }
   return out;
 }
 
-function Cloud({ x, y, scale = 1, opacity = 0.9 }: { x: string; y: string; scale?: number; opacity?: number }) {
-  return (
-    <div
-      className="cloud-drift pointer-events-none absolute"
-      style={{ left: x, top: y, transform: `scale(${scale})`, opacity }}
-      aria-hidden="true"
-    >
-      <svg width="200" height="72" viewBox="0 0 200 72">
-        <g fill="#ffffff">
-          <ellipse cx="36" cy="44" rx="36" ry="24" />
-          <ellipse cx="82" cy="32" rx="38" ry="28" />
-          <ellipse cx="138" cy="42" rx="34" ry="22" />
-          <ellipse cx="172" cy="48" rx="26" ry="18" />
-        </g>
-      </svg>
-    </div>
-  );
-}
-
 export default function ThemeBackground() {
-  const planes = useMemo(() => generatePlanes(14, 42426), []);
+  const orbs = useMemo(() => generateOrbs(18, 99173), []);
 
   return (
-    <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
-      {/* Notebook grid at bottom */}
+    <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden bg-[#07070d]">
+      {/* Solana gradient mesh */}
       <div
-        className="absolute inset-x-0 bottom-0 h-[38%] opacity-30"
+        className="absolute inset-0"
+        style={{
+          background: `
+            radial-gradient(ellipse 80% 60% at 15% 10%, rgba(153, 69, 255, 0.35) 0%, transparent 55%),
+            radial-gradient(ellipse 70% 50% at 85% 20%, rgba(0, 209, 255, 0.2) 0%, transparent 50%),
+            radial-gradient(ellipse 90% 70% at 50% 100%, rgba(20, 241, 149, 0.12) 0%, transparent 45%),
+            linear-gradient(180deg, #0a0a14 0%, #07070d 40%, #050508 100%)
+          `,
+        }}
+        aria-hidden="true"
+      />
+
+      {/* Crypto grid */}
+      <div
+        className="grid-pulse absolute inset-0 opacity-40"
         style={{
           backgroundImage:
-            "linear-gradient(#94a3b8 1px, transparent 1px), linear-gradient(90deg, #94a3b8 1px, transparent 1px)",
-          backgroundSize: "28px 28px",
-          maskImage: "linear-gradient(to top, black 40%, transparent)",
+            "linear-gradient(rgba(153, 69, 255, 0.12) 1px, transparent 1px), linear-gradient(90deg, rgba(153, 69, 255, 0.12) 1px, transparent 1px)",
+          backgroundSize: "48px 48px",
+          maskImage: "radial-gradient(ellipse 90% 80% at 50% 40%, black 20%, transparent 75%)",
         }}
         aria-hidden="true"
       />
 
-      {/* Sun glow */}
+      {/* Scan line accent */}
       <div
-        className="absolute right-[10%] top-[5%] h-28 w-28 rounded-full"
-        style={{
-          background: "radial-gradient(circle, #fff 0%, #fde68a 35%, rgba(253, 224, 171, 0) 70%)",
-          boxShadow: "0 0 100px rgba(253, 224, 171, 0.6)",
-        }}
+        className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#14F195]/40 to-transparent"
         aria-hidden="true"
       />
 
-      <Cloud x="4%" y="10%" scale={0.85} />
-      <Cloud x="55%" y="6%" scale={1.05} opacity={0.75} />
-      <Cloud x="78%" y="18%" scale={0.7} opacity={0.65} />
-
-      {/* Distant horizon line */}
-      <div
-        className="absolute inset-x-0 bottom-[32%] h-px bg-gradient-to-r from-transparent via-white/50 to-transparent"
-        aria-hidden="true"
-      />
-
-      {planes.map((p, i) => (
+      {/* Floating SOL orbs */}
+      {orbs.map((o, i) => (
         <div
           key={i}
-          className="plane-float absolute opacity-70"
+          className="orb-float absolute"
           style={{
-            left: `${p.left}%`,
-            top: `${p.top}%`,
-            transform: `scale(${p.scale}) rotate(${p.rotate}deg)`,
-            animationDelay: `${p.delay}s`,
-            filter: "drop-shadow(0 4px 6px rgba(15, 39, 68, 0.2))",
+            left: `${o.left}%`,
+            top: `${o.top}%`,
+            transform: `scale(${o.scale})`,
+            animationDelay: `${o.delay}s`,
+            opacity: o.opacity,
           }}
           aria-hidden="true"
         >
-          <PaperAirplaneIcon size={40} />
+          <SolanaBallIcon size={48} glow={false} />
         </div>
       ))}
+
+      {/* Bottom glow strip — terminal feel */}
+      <div
+        className="absolute inset-x-0 bottom-0 h-32"
+        style={{
+          background: "linear-gradient(to top, rgba(153, 69, 255, 0.08), transparent)",
+        }}
+        aria-hidden="true"
+      />
     </div>
   );
 }

@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Bungee, Outfit } from "next/font/google";
+import { Outfit, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 
 const outfit = Outfit({
@@ -8,20 +8,20 @@ const outfit = Outfit({
   weight: ["400", "500", "600", "700", "800"],
 });
 
-const bungee = Bungee({
-  variable: "--font-bungee",
+const spaceGrotesk = Space_Grotesk({
+  variable: "--font-display",
   subsets: ["latin"],
-  weight: "400",
+  weight: ["500", "600", "700"],
 });
 
 export const metadata: Metadata = {
-  title: "National Paper Airplane Day",
+  title: "SOL Drop — On-Chain Plinko",
   description:
-    "Launch a paper airplane every minute. Each flight multiplies SOL and burns pump.fun tokens on Solana.",
+    "Drop SOL balls through a live Plinko board. Every drop multiplies on-chain and burns tokens on Solana.",
 };
 
 export const viewport: Viewport = {
-  themeColor: "#2563eb",
+  themeColor: "#9945ff",
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
@@ -33,7 +33,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${outfit.variable} ${bungee.variable} h-full antialiased`}>
+    <html lang="en" className={`${outfit.variable} ${spaceGrotesk.variable} h-full antialiased`}>
       <body className="min-h-full">{children}</body>
     </html>
   );
