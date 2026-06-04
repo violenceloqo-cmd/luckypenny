@@ -16,6 +16,7 @@ import ThemeBackground from "@/components/ThemeBackground";
 import WinCameo from "@/components/WinCameo";
 import { isBigWin } from "@/lib/game/multipliers";
 import { getSupabaseClient } from "@/lib/supabase/client";
+import { getPublicTokenMint } from "@/lib/token";
 
 interface Me {
   user: { uid: string; username: string } | null;
@@ -35,7 +36,7 @@ interface DropsResponse {
 
 const DEFAULT_COOLDOWN_SEC = 60;
 
-const TOKEN_MINT = process.env.NEXT_PUBLIC_PUMPFUN_TOKEN_MINT ?? "";
+const TOKEN_MINT = getPublicTokenMint();
 
 function shortenAddress(addr: string) {
   if (!addr) return "";

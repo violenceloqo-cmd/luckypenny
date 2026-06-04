@@ -1,4 +1,6 @@
 import { Connection, Keypair, LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js";
+
+import { getServerTokenMint } from "@/lib/token";
 import bs58 from "bs58";
 
 import { normalizeCluster } from "./cluster";
@@ -49,9 +51,7 @@ export function getTreasuryKeypair(): Keypair {
 
 export function getTokenMint(): PublicKey {
   if (cachedMint) return cachedMint;
-  const m = process.env.PUMPFUN_TOKEN_MINT;
-  if (!m) throw new Error("PUMPFUN_TOKEN_MINT is not set");
-  cachedMint = new PublicKey(m);
+  cachedMint = new PublicKey(getServerTokenMint());
   return cachedMint;
 }
 
