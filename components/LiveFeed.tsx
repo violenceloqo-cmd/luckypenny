@@ -5,6 +5,7 @@ import { ExternalLink } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import { formatSol, formatTime, formatTokens, shortSig } from "@/lib/utils";
+import { solscanTxUrl } from "@/lib/solana/cluster";
 
 export interface FeedDrop {
   id: string;
@@ -17,44 +18,51 @@ export interface FeedDrop {
   buy_sig?: string | null;
   burn_sig?: string | null;
   tokens_burned?: string | null;
+  error?: string | null;
   created_at: string;
+}
+
+function shortError(message: string | null | undefined): string | null {
+  if (!message) return null;
+  if (message.startsWith("Treasury underfunded")) return message;
+  const insufficient = message.match(/insufficient lamports/i);
+  if (insufficient) return "Treasury underfunded for this buy";
+  return message.length > 96 ? `${message.slice(0, 96)}…` : message;
 }
 
 export interface LiveFeedProps {
   drops: FeedDrop[];
-  cluster: "mainnet-beta" | "devnet";
 }
 
 function statusBadge(status: FeedDrop["status"]) {
   switch (status) {
     case "burned":
-      return "bg-[#97fce1]/15 text-[#b8fff0] border-[#97fce1]/30";
+      return "bg-[#f7931a]/20 text-[#ffb84d] border-[#f7931a]/35";
     case "bought":
-      return "bg-[#5ecfb8]/15 text-[#97fce1] border-[#5ecfb8]/30";
+      return "bg-[#ff6b00]/15 text-[#f7931a] border-[#ff6b00]/30";
     case "skipped":
       return "bg-slate-500/20 text-slate-300 border-slate-400/35";
     case "failed":
       return "bg-rose-500/20 text-rose-300 border-rose-400/35";
     default:
-      return "bg-[#1a4545]/40 text-[#97fce1]/80 border-[#97fce1]/20";
+      return "bg-[#3a1a08]/50 text-[#f7931a]/80 border-[#f7931a]/20";
   }
 }
 
-function explorerHref(sig: string, cluster: string) {
-  const c = cluster === "mainnet-beta" ? "" : `?cluster=${cluster}`;
-  return `https://explorer.solana.com/tx/${sig}${c}`;
+function explorerHref(sig: string) {
+  return solscanTxUrl(sig);
 }
 
-export default function LiveFeed({ drops, cluster }: LiveFeedProps) {
+export default function LiveFeed({ drops }: LiveFeedProps) {
   return (
     <div className="glass flex h-full flex-col rounded-xl p-3 text-white">
       <div className="mb-2 flex items-center justify-between border-b border-white/8 pb-2 px-1">
         <div className="flex items-center gap-2">
           <span className="relative flex h-2 w-2">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#97fce1] opacity-60" />
-            <span className="relative inline-flex h-2 w-2 rounded-full bg-[#97fce1]" />
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#f7931a] opacity-60" />
+            <span className="relative inline-flex h-2 w-2 rounded-full bg-[#f7931a]" />
           </span>
-          <h2 className="text-xs font-bold uppercase tracking-widest text-white/70">Live Drops</h2>
+          <h2 className="text-xs font-bold uppercase tracking-widest text-white/70">Live Liquidations</h2>
         </div>
         <span className="font-mono text-[10px] text-white/40">{drops.length} tx</span>
       </div>
@@ -79,26 +87,30 @@ export default function LiveFeed({ drops, cluster }: LiveFeedProps) {
               </div>
               <div className="mt-1 flex items-center justify-between gap-2 text-[11px]">
                 <span>
-                  <span className="font-extrabold text-[#97fce1]">{Number(d.multiplier)}x</span>
+                  <span className="font-extrabold text-[#f7931a]">{Number(d.multiplier)}x</span>
                   {" → "}
-                  <span className="font-mono text-[#b8fff0]">{formatSol(Number(d.sol_out))} SOL</span>
+                  <span className="font-mono text-[#ffb84d]">{formatSol(Number(d.sol_out))}</span>
                 </span>
                 <span className="text-white/40">{formatTime(d.created_at)} ago</span>
               </div>
+              {d.status === "failed" && d.error && (
+                <div className="mt-1 text-[10px] text-rose-300/90">{shortError(d.error)}</div>
+              )}
               {(d.burn_sig || d.buy_sig) && (
                 <div className="mt-1 flex items-center justify-between gap-2 text-[10px] text-white/50">
                   <span>
                     burned{" "}
-                    <span className="font-mono text-[#5ecfb8]">{formatTokens(d.tokens_burned, 6)}</span>
+                    <span className="font-mono text-[#ff6b00]">{formatTokens(d.tokens_burned, 6)}</span>
                   </span>
                   {(d.burn_sig || d.buy_sig) && (
                     <a
-                      href={explorerHref((d.burn_sig || d.buy_sig) as string, cluster)}
+                      href={explorerHref((d.burn_sig || d.buy_sig) as string)}
                       target="_blank"
                       rel="noreferrer"
-                      className="inline-flex items-center gap-1 text-[#97fce1] hover:text-[#b8fff0]"
+                      className="inline-flex items-center gap-1 text-[#f7931a] hover:text-[#ffb84d]"
+                      title={d.burn_sig ? "View burn on Solscan" : "View buy on Solscan"}
                     >
-                      {shortSig(d.burn_sig || d.buy_sig)}
+                      {d.burn_sig ? shortSig(d.burn_sig) : shortSig(d.buy_sig)}
                       <ExternalLink className="h-3 w-3" />
                     </a>
                   )}
@@ -108,8 +120,8 @@ export default function LiveFeed({ drops, cluster }: LiveFeedProps) {
           ))}
         </AnimatePresence>
         {drops.length === 0 && (
-          <div className="rounded-lg border border-dashed border-[#97fce1]/20 bg-[#0a2222]/40 py-8 text-center text-xs text-white/45">
-            Waiting for the first HYPE drop…
+          <div className="rounded-lg border border-dashed border-[#f7931a]/25 bg-[#1a0c04]/50 py-8 text-center text-xs text-white/45">
+            Waiting for Michull&apos;s first BTC drop…
           </div>
         )}
       </div>

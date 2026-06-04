@@ -11,7 +11,7 @@ export async function GET() {
   const { data: drops } = await reader
     .from("drops")
     .select(
-      "id, username, slot_index, multiplier, sol_in, sol_out, status, buy_sig, burn_sig, tokens_burned, created_at",
+      "id, username, slot_index, multiplier, sol_in, sol_out, status, buy_sig, burn_sig, tokens_burned, error, created_at",
     )
     .order("created_at", { ascending: false })
     .limit(30);

@@ -1,6 +1,5 @@
 import {
-  createAssociatedTokenAccountIdempotentInstruction,
-  createTransferCheckedInstruction,
+  createBurnCheckedInstruction,
   getAccount,
   getAssociatedTokenAddress,
   getMint,
@@ -19,19 +18,6 @@ export interface BurnResult {
   signature: string;
   amount: bigint;
 }
-
-/**
- * The community-recognized "burn" wallet on Solana. Nobody holds the private
- * key (it's the all-1s address), so any tokens sent here are permanently
- * locked. Trackers like Solscan / Birdeye display this as a burn destination.
- *
- * Note: this does NOT reduce the SPL mint's total supply — the tokens still
- * exist, they're just unreachable. If you need real supply reduction, use the
- * SPL `Burn` instruction instead.
- */
-export const INCINERATOR_ADDRESS = new PublicKey(
-  "1nc1nerator11111111111111111111111111111111",
-);
 
 /** pump.fun mints use Token-2022; older SPL tokens use the legacy program. */
 export async function getTokenProgramForMint(
@@ -65,12 +51,12 @@ export async function readTokenBalance(
 }
 
 /**
- * "Burn" `amount` raw units of `mint` by transferring from the treasury's ATA
- * to the incinerator wallet's ATA. Creates the incinerator ATA idempotently
- * on the first drop.
+ * Permanently burn `amount` raw units from the treasury ATA via the SPL Token
+ * program's `BurnChecked` instruction. This reduces mint supply on-chain and
+ * shows as a burn on Solscan (unlike sending tokens to the incinerator wallet).
  *
  * Caller is responsible for figuring out the amount (typically: read balance
- * before pumpfunBuy, read after, transfer the delta).
+ * before pumpfunBuy, read after, burn the delta).
  */
 export async function burnTokens(
   connection: Connection,
@@ -91,29 +77,13 @@ export async function burnTokens(
     false,
     programId,
   );
-  const toAta = await getAssociatedTokenAddress(
-    mint,
-    INCINERATOR_ADDRESS,
-    true,
-    programId,
-  );
 
   const tx = new Transaction();
   tx.add(ComputeBudgetProgram.setComputeUnitPrice({ microLamports: 50_000 }));
   tx.add(
-    createAssociatedTokenAccountIdempotentInstruction(
-      treasury.publicKey,
-      toAta,
-      INCINERATOR_ADDRESS,
-      mint,
-      programId,
-    ),
-  );
-  tx.add(
-    createTransferCheckedInstruction(
+    createBurnCheckedInstruction(
       fromAta,
       mint,
-      toAta,
       treasury.publicKey,
       amount,
       mintInfo.decimals,
@@ -126,6 +96,14 @@ export async function burnTokens(
   tx.recentBlockhash = blockhash;
   tx.feePayer = treasury.publicKey;
   tx.sign(treasury);
+
+  const simulation = await connection.simulateTransaction(tx);
+  if (simulation.value.err) {
+    const logs = simulation.value.logs?.slice(-6).join(" | ") ?? "";
+    throw new Error(
+      `burn simulation failed: ${JSON.stringify(simulation.value.err)}${logs ? ` — ${logs}` : ""}`,
+    );
+  }
 
   const sig = await connection.sendRawTransaction(tx.serialize(), {
     skipPreflight: false,

@@ -1,13 +1,19 @@
-import { Connection, Keypair, PublicKey } from "@solana/web3.js";
+import { Connection, Keypair, LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js";
 import bs58 from "bs58";
+
+import { normalizeCluster } from "./cluster";
+
+/** Rent-exempt minimum for a Token-2022 ATA (~0.00207 SOL). */
+export const TOKEN_ATA_RENT_LAMPORTS = 2_100_000;
+/** Headroom for priority fees + base tx fees on buy and burn. */
+export const TX_FEE_BUFFER_LAMPORTS = 600_000;
 
 let cachedConnection: Connection | null = null;
 let cachedKeypair: Keypair | null = null;
 let cachedMint: PublicKey | null = null;
 
 export function getCluster(): "mainnet-beta" | "devnet" {
-  const c = (process.env.SOLANA_CLUSTER ?? "devnet").toLowerCase();
-  return c === "mainnet-beta" || c === "mainnet" ? "mainnet-beta" : "devnet";
+  return normalizeCluster(process.env.SOLANA_CLUSTER);
 }
 
 export function isMainnet(): boolean {
@@ -52,4 +58,21 @@ export function getTokenMint(): PublicKey {
 export function getMaxSolPerDrop(): number {
   const v = Number(process.env.MAX_SOL_PER_DROP ?? "1");
   return Number.isFinite(v) && v > 0 ? v : 1;
+}
+
+export function getPumpPriorityFeeSol(): number {
+  const v = Number(process.env.PUMP_PRIORITY_FEE_SOL ?? "0.0005");
+  return Number.isFinite(v) && v >= 0 ? v : 0.0005;
+}
+
+/** Minimum lamports the treasury needs to attempt a pump.fun buy + SPL burn. */
+export function estimateBuyAndBurnLamports(solAmount: number): number {
+  const buyLamports = Math.ceil(solAmount * LAMPORTS_PER_SOL);
+  const priorityLamports = Math.ceil(getPumpPriorityFeeSol() * LAMPORTS_PER_SOL);
+  return buyLamports + priorityLamports + TOKEN_ATA_RENT_LAMPORTS + TX_FEE_BUFFER_LAMPORTS;
+}
+
+export async function getTreasurySolBalance(connection: Connection, treasury: PublicKey): Promise<number> {
+  const lamports = await connection.getBalance(treasury, "confirmed");
+  return lamports / LAMPORTS_PER_SOL;
 }

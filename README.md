@@ -84,8 +84,9 @@ For each drop, after the outcome is recorded:
    has no devnet deployment.)
 4. Mainnet: POST to `https://pumpportal.fun/api/trade-local`, get the serialized
    transaction, sign with `TREASURY_SECRET_KEY`, submit, and confirm.
-5. Read the treasury's ATA balance delta and SPL-burn that many tokens with
-   the treasury as the burn authority.
+5. Read the treasury's ATA balance delta and burn that many tokens with the SPL
+   Token program's `BurnChecked` instruction (permanent supply reduction, visible
+   on Solscan as a burn — not a transfer to the incinerator dead address).
 6. Update `drops` with `buy_sig`, `burn_sig`, `tokens_burned`, and `status='burned'`.
 
 Failures land the row in `status='failed'` with the error in `drops.error`. The

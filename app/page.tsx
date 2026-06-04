@@ -9,7 +9,8 @@ import Board, { type DropEvent } from "@/components/Board";
 import DropButton from "@/components/DropButton";
 import LiveFeed, { type FeedDrop, useLiveFeedTicker } from "@/components/LiveFeed";
 import LoginCard from "@/components/LoginCard";
-import HypeCoinIcon from "@/components/HypeCoinIcon";
+import BtcCoinIcon from "@/components/BtcCoinIcon";
+import MichullDropper from "@/components/MichullDropper";
 import StatsBar from "@/components/Stats";
 import ThemeBackground from "@/components/ThemeBackground";
 import WinCameo from "@/components/WinCameo";
@@ -34,10 +35,7 @@ interface DropsResponse {
 
 const DEFAULT_COOLDOWN_SEC = 60;
 
-const cluster: "mainnet-beta" | "devnet" =
-  (process.env.NEXT_PUBLIC_SOLANA_CLUSTER as "mainnet-beta" | "devnet" | undefined) ?? "devnet";
-
-const TOKEN_MINT = "9e7vhV6zkY3P32LNc2GRZsWt9GLZPLzdowekJwERpump";
+const TOKEN_MINT = process.env.NEXT_PUBLIC_PUMPFUN_TOKEN_MINT ?? "";
 
 function shortenAddress(addr: string) {
   if (!addr) return "";
@@ -148,6 +146,7 @@ export default function HomePage() {
                     buy_sig: row.buy_sig ?? null,
                     burn_sig: row.burn_sig ?? null,
                     tokens_burned: row.tokens_burned ?? null,
+                    error: row.error ?? null,
                   }
                 : d,
             ),
@@ -188,7 +187,7 @@ export default function HomePage() {
       }
       setMe((cur) => ({ ...cur, cooldownRemainingMs: cur.cooldownSeconds * 1000 }));
       setStats((s) => ({ ...s, totalDrops: s.totalDrops + 1 }));
-      setAnnounce(`HYPE coin dropped — targeting ${data.multiplier}x slot.`);
+      setAnnounce(`BTC dropped into the furnace — targeting ${data.multiplier}x slot.`);
     } finally {
       setDropping(false);
     }
@@ -203,7 +202,7 @@ export default function HomePage() {
           particleCount: 180,
           spread: 90,
           origin: { y: 0.7 },
-          colors: ["#97fce1", "#b8fff0", "#5ecfb8", "#ffffff"],
+          colors: ["#f7931a", "#ffb84d", "#ff4500", "#ffffff"],
           scalar: 1.1,
         });
       }
@@ -249,22 +248,22 @@ export default function HomePage() {
               initial={{ opacity: 0, scale: 0.7 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.5, type: "spring", stiffness: 220, damping: 14 }}
-              className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-[#0a2222]/80 ring-1 ring-[#97fce1]/30 shadow-[0_0_24px_rgba(151,252,225,0.2)] sm:h-11 sm:w-11"
+              className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-[#1a0c04]/90 ring-1 ring-[#f7931a]/35 shadow-[0_0_24px_rgba(247,147,26,0.3)] sm:h-11 sm:w-11"
             >
-              <HypeCoinIcon size={28} />
+              <BtcCoinIcon size={28} />
             </motion.div>
             <div>
               <motion.h1
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4 }}
-                className="text-lg hype-text sm:text-xl"
+                className="text-lg btc-text sm:text-xl"
                 style={{ fontFamily: "var(--font-display)" }}
               >
-                HYPE DROP
+                BTC LIQUIDATOR
               </motion.h1>
               <span className="hidden text-[10px] uppercase tracking-[0.2em] text-white/40 sm:inline">
-                Plinko · Hyperliquid · Burn
+                Michull Sellor · Burning Plinko
               </span>
             </div>
           </div>
@@ -275,14 +274,14 @@ export default function HomePage() {
                 onClick={onCopyCA}
                 title={`Copy contract address: ${TOKEN_MINT}`}
                 aria-label="Copy contract address"
-                className="group flex items-center gap-1.5 rounded-lg border border-[#97fce1]/25 bg-[#0a2222]/70 px-2.5 py-1 font-mono text-[11px] text-[#97fce1] transition hover:border-[#97fce1]/50 hover:bg-[#0a2222] sm:text-xs"
+                className="group flex items-center gap-1.5 rounded-lg border border-[#f7931a]/30 bg-[#1a0c04]/80 px-2.5 py-1 font-mono text-[11px] text-[#f7931a] transition hover:border-[#f7931a]/55 hover:bg-[#1a0c04] sm:text-xs"
               >
                 <span className="hidden text-[10px] font-sans font-semibold uppercase tracking-widest text-white/40 sm:inline">
                   Mint
                 </span>
                 <span>{shortenAddress(TOKEN_MINT)}</span>
                 {copied ? (
-                  <Check className="h-3.5 w-3.5 text-[#97fce1]" />
+                  <Check className="h-3.5 w-3.5 text-[#f7931a]" />
                 ) : (
                   <Copy className="h-3.5 w-3.5 opacity-60 group-hover:opacity-100" />
                 )}
@@ -291,12 +290,12 @@ export default function HomePage() {
 
             {me.user && (
               <>
-                <span className="rounded-lg border border-[#97fce1]/15 bg-[#0a2222]/70 px-3 py-1 font-mono text-xs font-semibold text-white/80">
+                <span className="rounded-lg border border-[#f7931a]/20 bg-[#1a0c04]/80 px-3 py-1 font-mono text-xs font-semibold text-white/80">
                   {me.user.username}
                 </span>
                 <button
                   onClick={onLogout}
-                  className="grid h-8 w-8 place-items-center rounded-lg border border-[#97fce1]/15 bg-[#0a2222]/70 text-white/70 hover:border-[#97fce1]/30 hover:text-white sm:h-9 sm:w-9"
+                  className="grid h-8 w-8 place-items-center rounded-lg border border-[#f7931a]/20 bg-[#1a0c04]/80 text-white/70 hover:border-[#f7931a]/40 hover:text-white sm:h-9 sm:w-9"
                   aria-label="Sign out"
                 >
                   <LogOut className="h-4 w-4" />
@@ -319,10 +318,12 @@ export default function HomePage() {
           <section className="flex min-h-0 flex-col items-center justify-center gap-3">
             <div className="flex min-h-0 w-full flex-1 items-center justify-center">
               <div
-                className="flex h-full max-h-full items-center justify-center"
-                style={{ aspectRatio: "672 / 534" }}
+                className="flex h-full max-h-full w-full items-center justify-center"
+                style={{ aspectRatio: "672 / 580" }}
               >
-                <Board pending={pendingDrops} onBallLanded={onBallLanded} />
+                <MichullDropper>
+                  <Board pending={pendingDrops} onBallLanded={onBallLanded} />
+                </MichullDropper>
               </div>
             </div>
             <DropButton
@@ -335,7 +336,7 @@ export default function HomePage() {
           </section>
 
           <aside className="order-last hidden min-h-0 lg:order-none lg:block">
-            <LiveFeed drops={feed} cluster={cluster} />
+            <LiveFeed drops={feed} />
           </aside>
         </div>
       </main>

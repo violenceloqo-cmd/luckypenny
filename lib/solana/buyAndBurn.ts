@@ -1,10 +1,12 @@
 import { burnTokens, readTokenBalance } from "./burn";
 import { pumpfunBuy } from "./pumpfun";
 import {
+  estimateBuyAndBurnLamports,
   getConnection,
   getMaxSolPerDrop,
   getTokenMint,
   getTreasuryKeypair,
+  getTreasurySolBalance,
   isMainnet,
 } from "./treasury";
 
@@ -22,6 +24,40 @@ export type BuyAndBurnOutcome =
     }
   | { ok: true; skipped: true; reason: string }
   | { ok: false; error: string; buySig?: string };
+
+function summarizeSolanaError(message: string): string {
+  const insufficient = message.match(/insufficient lamports (\d+), need (\d+)/i);
+  if (insufficient) {
+    const have = Number(insufficient[1]) / 1e9;
+    const need = Number(insufficient[2]) / 1e9;
+    return `Treasury underfunded: has ${have.toFixed(4)}, needs ${need.toFixed(4)} for this buy`;
+  }
+  if (message.includes("Attempt to debit an account but found no record of a prior credit")) {
+    return "Treasury underfunded: not enough balance for this buy";
+  }
+  if (message.includes("buy succeeded but token balance did not increase")) {
+    return "Buy confirmed but tokens not visible yet — retry or check RPC";
+  }
+  return message.length > 220 ? `${message.slice(0, 220)}…` : message;
+}
+
+async function waitForTokenDelta(
+  connection: ReturnType<typeof getConnection>,
+  owner: ReturnType<typeof getTreasuryKeypair>["publicKey"],
+  mint: ReturnType<typeof getTokenMint>,
+  before: bigint,
+  maxMs = 30_000,
+): Promise<bigint> {
+  const start = Date.now();
+  let delayMs = 400;
+  while (Date.now() - start < maxMs) {
+    const after = await readTokenBalance(connection, owner, mint);
+    if (after > before) return after - before;
+    await new Promise((r) => setTimeout(r, delayMs));
+    delayMs = Math.min(Math.round(delayMs * 1.4), 2500);
+  }
+  return 0n;
+}
 
 /**
  * Top-level orchestration: validate, buy on pump.fun, then burn the delta.
@@ -45,7 +81,7 @@ export async function buyAndBurn(input: BuyAndBurnInput): Promise<BuyAndBurnOutc
   }
 
   if (!isMainnet()) {
-    return { ok: true, skipped: true, reason: "non-mainnet cluster" };
+    return { ok: false, error: "Buy & burn only runs on Solana mainnet" };
   }
 
   let treasury;
@@ -62,6 +98,17 @@ export async function buyAndBurn(input: BuyAndBurnInput): Promise<BuyAndBurnOutc
     };
   }
 
+  const neededLamports = estimateBuyAndBurnLamports(solAmount);
+  const treasuryLamports = await connection.getBalance(treasury.publicKey, "confirmed");
+  if (treasuryLamports < neededLamports) {
+    const have = treasuryLamports / 1e9;
+    const need = neededLamports / 1e9;
+    return {
+      ok: false,
+      error: `Treasury underfunded: ${have.toFixed(4)} available, need ~${need.toFixed(4)} for ${solAmount} buy + burn fees`,
+    };
+  }
+
   let buySig: string | undefined;
   try {
     const before = await readTokenBalance(connection, treasury.publicKey, mint);
@@ -72,15 +119,13 @@ export async function buyAndBurn(input: BuyAndBurnInput): Promise<BuyAndBurnOutc
     });
     buySig = buy.signature;
 
-    // Give the RPC a moment to reflect the new ATA balance.
-    await new Promise((r) => setTimeout(r, 1500));
-    const after = await readTokenBalance(connection, treasury.publicKey, mint);
-    const delta = after > before ? after - before : 0n;
-
+    const delta = await waitForTokenDelta(connection, treasury.publicKey, mint, before);
     if (delta === 0n) {
       return {
         ok: false,
-        error: "buy succeeded but token balance did not increase (RPC lag?)",
+        error: summarizeSolanaError(
+          "buy succeeded but token balance did not increase after polling",
+        ),
         buySig,
       };
     }
@@ -95,6 +140,12 @@ export async function buyAndBurn(input: BuyAndBurnInput): Promise<BuyAndBurnOutc
       tokensBurned: burn.amount,
     };
   } catch (e) {
-    return { ok: false, error: (e as Error).message, buySig };
+    const raw = (e as Error).message;
+    const treasuryBal = await getTreasurySolBalance(connection, treasury.publicKey).catch(() => null);
+    const suffix =
+      treasuryBal !== null && treasuryBal < solAmount + 0.002
+        ? ` (treasury balance: ${treasuryBal.toFixed(4)})`
+        : "";
+    return { ok: false, error: summarizeSolanaError(raw) + suffix, buySig };
   }
 }

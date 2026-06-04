@@ -2,9 +2,9 @@
 
 import { useMemo } from "react";
 
-import HypeCoinIcon from "@/components/HypeCoinIcon";
+import BtcCoinIcon from "@/components/BtcCoinIcon";
 
-interface FloatingOrb {
+interface FloatingBtc {
   left: number;
   top: number;
   scale: number;
@@ -12,67 +12,64 @@ interface FloatingOrb {
   opacity: number;
 }
 
-function generateOrbs(count: number, seed: number): FloatingOrb[] {
+function generateCoins(count: number, seed: number): FloatingBtc[] {
   let s = seed >>> 0;
   const rand = () => {
     s = (s * 1664525 + 1013904223) >>> 0;
     return s / 4294967296;
   };
-  const out: FloatingOrb[] = [];
+  const out: FloatingBtc[] = [];
   for (let i = 0; i < count; i++) {
     out.push({
       left: rand() * 100,
-      top: 5 + rand() * 70,
-      scale: 0.35 + rand() * 0.65,
+      top: 5 + rand() * 75,
+      scale: 0.3 + rand() * 0.55,
       delay: rand() * 6,
-      opacity: 0.12 + rand() * 0.28,
+      opacity: 0.1 + rand() * 0.22,
     });
   }
   return out;
 }
 
 export default function ThemeBackground() {
-  const orbs = useMemo(() => generateOrbs(14, 99173), []);
+  const coins = useMemo(() => generateCoins(12, 42069), []);
 
   return (
-    <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden bg-[#071818]">
-      {/* Hyperliquid liquid mesh */}
+    <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden bg-[#0a0502]">
       <div
         className="absolute inset-0"
         style={{
           background: `
-            radial-gradient(ellipse 80% 60% at 20% 15%, rgba(151, 252, 225, 0.14) 0%, transparent 55%),
-            radial-gradient(ellipse 70% 50% at 80% 25%, rgba(94, 207, 184, 0.1) 0%, transparent 50%),
-            radial-gradient(ellipse 90% 70% at 50% 100%, rgba(151, 252, 225, 0.08) 0%, transparent 45%),
-            linear-gradient(180deg, #0d2a2a 0%, #071818 45%, #051010 100%)
+            radial-gradient(ellipse 90% 70% at 50% 0%, rgba(247, 147, 26, 0.35) 0%, transparent 55%),
+            radial-gradient(ellipse 60% 50% at 15% 40%, rgba(255, 100, 0, 0.12) 0%, transparent 50%),
+            radial-gradient(ellipse 70% 60% at 85% 60%, rgba(255, 69, 0, 0.1) 0%, transparent 50%),
+            radial-gradient(ellipse 100% 50% at 50% 100%, rgba(255, 50, 0, 0.15) 0%, transparent 45%),
+            linear-gradient(180deg, #2a1408 0%, #1a0c04 40%, #0a0502 100%)
           `,
         }}
         aria-hidden="true"
       />
 
-      {/* Liquid grid */}
       <div
-        className="grid-pulse absolute inset-0 opacity-35"
+        className="grid-pulse absolute inset-0 opacity-30"
         style={{
           backgroundImage:
-            "linear-gradient(rgba(151, 252, 225, 0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(151, 252, 225, 0.08) 1px, transparent 1px)",
-          backgroundSize: "48px 48px",
-          maskImage: "radial-gradient(ellipse 90% 80% at 50% 40%, black 20%, transparent 75%)",
+            "linear-gradient(rgba(247, 147, 26, 0.07) 1px, transparent 1px), linear-gradient(90deg, rgba(247, 147, 26, 0.07) 1px, transparent 1px)",
+          backgroundSize: "40px 40px",
+          maskImage: "radial-gradient(ellipse 90% 80% at 50% 45%, black 15%, transparent 75%)",
         }}
         aria-hidden="true"
       />
 
-      {/* Top accent line */}
       <div
-        className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#97fce1]/35 to-transparent"
+        className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#f7931a]/40 to-transparent"
         aria-hidden="true"
       />
 
-      {/* Floating HYPE coins */}
-      {orbs.map((o, i) => (
+      {coins.map((o, i) => (
         <div
           key={i}
-          className="orb-float absolute"
+          className="btc-float absolute"
           style={{
             left: `${o.left}%`,
             top: `${o.top}%`,
@@ -82,15 +79,14 @@ export default function ThemeBackground() {
           }}
           aria-hidden="true"
         >
-          <HypeCoinIcon size={48} glow={false} />
+          <BtcCoinIcon size={44} glow={false} />
         </div>
       ))}
 
-      {/* Bottom liquid glow */}
       <div
-        className="liquid-shimmer absolute inset-x-0 bottom-0 h-40"
+        className="flame-shimmer absolute inset-x-0 bottom-0 h-48"
         style={{
-          background: "linear-gradient(to top, rgba(151, 252, 225, 0.06), transparent)",
+          background: "linear-gradient(to top, rgba(255, 69, 0, 0.12), transparent)",
         }}
         aria-hidden="true"
       />

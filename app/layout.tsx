@@ -15,13 +15,13 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
-  title: "HYPE DROP — Hyperliquid Plinko",
+  title: "BTC Liquidator — Michull Sellor Plinko",
   description:
-    "Drop HYPE coins through a live Plinko board. Every drop multiplies on-chain and burns tokens.",
+    "Michull Sellor drops BTC through a burning Plinko furnace. Every landing liquidates on-chain via pump.fun buy and SPL burn.",
 };
 
 export const viewport: Viewport = {
-  themeColor: "#0d2a2a",
+  themeColor: "#f7931a",
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
