@@ -1,10 +1,9 @@
 "use client";
 
-import Image from "next/image";
 import { motion } from "framer-motion";
 import { useState } from "react";
 
-import BtcCoinIcon from "@/components/BtcCoinIcon";
+import BountyBagIcon from "@/components/BountyBagIcon";
 
 interface LoginCardProps {
   onLoggedIn: (user: { uid: string; username: string }) => void;
@@ -39,7 +38,7 @@ export default function LoginCard({ onLoggedIn }: LoginCardProps) {
   };
 
   return (
-    <div className="fixed inset-0 z-30 grid place-items-center bg-[#0a0502]/85 p-4 backdrop-blur-md">
+    <div className="fixed inset-0 z-30 grid place-items-center bg-[#060a06]/85 p-4 backdrop-blur-md">
       <motion.div
         initial={{ opacity: 0, y: 20, scale: 0.96 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -47,46 +46,36 @@ export default function LoginCard({ onLoggedIn }: LoginCardProps) {
         className="glass relative w-full max-w-md overflow-hidden rounded-2xl p-7 text-white"
       >
         <div
-          className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#f7931a] to-transparent"
+          className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#4ade80] to-transparent"
           aria-hidden="true"
         />
 
         <div className="mb-5 flex flex-col items-center gap-3">
           <motion.div
-            animate={{ y: [0, -6, 0] }}
+            animate={{ y: [0, -8, 0] }}
             transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-            className="relative"
           >
-            <Image
-              src="/michull-saylor.png"
-              alt="Michull Sellor"
-              width={88}
-              height={88}
-              className="rounded-lg object-contain"
-            />
-            <div className="absolute -bottom-2 -right-2">
-              <BtcCoinIcon size={28} />
-            </div>
+            <BountyBagIcon size={64} glow />
           </motion.div>
           <h1
-            className="text-center text-2xl font-bold btc-text"
+            className="text-center text-2xl font-bold bounty-text"
             style={{ fontFamily: "var(--font-display)" }}
           >
-            BTC LIQUIDATOR
+            BOUNTY DROP
           </h1>
           <p className="text-center text-[11px] uppercase tracking-[0.25em] text-white/45">
-            Michull Sellor · Burning Plinko
+            pump.fun bounties · Plinko rewards
           </p>
         </div>
 
         <p className="mb-6 text-center text-sm text-white/65">
-          Pick a handle and drop BTC into the furnace every minute. Each landing multiplies a live
-          pump.fun buy &amp; on-chain burn.
+          Post a bounty on pump.fun — here, every drop sends a money bag through the board. Where it
+          lands sets the reward multiplier for a live token buy &amp; burn.
         </p>
 
         <form onSubmit={onSubmit} className="flex flex-col gap-3">
           <label className="text-[10px] uppercase tracking-widest text-white/45" htmlFor="username">
-            Liquidator handle
+            Hunter handle
           </label>
           <input
             id="username"
@@ -97,7 +86,7 @@ export default function LoginCard({ onLoggedIn }: LoginCardProps) {
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             placeholder="3–16 letters, numbers, underscore"
-            className="w-full rounded-lg border border-[#f7931a]/25 bg-[#1a0c04]/80 px-4 py-3 font-mono text-sm text-white placeholder:text-white/25 focus:border-[#f7931a]/55 focus:outline-none focus:ring-1 focus:ring-[#f7931a]/30"
+            className="w-full rounded-lg border border-[#4ade80]/25 bg-[#0c140c]/80 px-4 py-3 font-mono text-sm text-white placeholder:text-white/25 focus:border-[#4ade80]/55 focus:outline-none focus:ring-1 focus:ring-[#4ade80]/30"
             maxLength={16}
             required
           />
@@ -113,7 +102,7 @@ export default function LoginCard({ onLoggedIn }: LoginCardProps) {
             disabled={submitting || username.length < 3}
             className="btn-drop mt-2 rounded-lg px-4 py-3 font-extrabold uppercase tracking-widest disabled:cursor-not-allowed disabled:opacity-50"
           >
-            {submitting ? "Entering furnace…" : "Enter Liquidator"}
+            {submitting ? "Entering vault…" : "Claim Hunter Spot"}
           </button>
         </form>
 

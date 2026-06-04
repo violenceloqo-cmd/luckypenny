@@ -33,6 +33,12 @@ export interface BoardLayout {
 
 export const SLOT_BIN_HEIGHT = 48;
 
+/** Frames per peg segment — higher = slower drop through the board. */
+export const PLINKO_FRAMES_PER_SEGMENT = 22;
+
+/** Progress per animation frame (0–1). Lower = slower playback. */
+export const PLINKO_DROP_FRAME_STEP = 0.72;
+
 export const DEFAULT_LAYOUT: BoardLayout = (() => {
   const rows = BOARD_ROWS;
   const slots = MULTIPLIERS.length;

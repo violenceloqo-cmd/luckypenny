@@ -9,8 +9,8 @@ import Board, { type DropEvent } from "@/components/Board";
 import DropButton from "@/components/DropButton";
 import LiveFeed, { type FeedDrop, useLiveFeedTicker } from "@/components/LiveFeed";
 import LoginCard from "@/components/LoginCard";
-import BtcCoinIcon from "@/components/BtcCoinIcon";
-import MichullDropper from "@/components/MichullDropper";
+import BountyBagIcon from "@/components/BountyBagIcon";
+import BountyDropper from "@/components/BountyDropper";
 import StatsBar from "@/components/Stats";
 import ThemeBackground from "@/components/ThemeBackground";
 import WinCameo from "@/components/WinCameo";
@@ -187,7 +187,7 @@ export default function HomePage() {
       }
       setMe((cur) => ({ ...cur, cooldownRemainingMs: cur.cooldownSeconds * 1000 }));
       setStats((s) => ({ ...s, totalDrops: s.totalDrops + 1 }));
-      setAnnounce(`BTC dropped into the furnace — targeting ${data.multiplier}x slot.`);
+      setAnnounce(`Bounty bag dropped — targeting ${data.multiplier}x reward slot.`);
     } finally {
       setDropping(false);
     }
@@ -202,7 +202,7 @@ export default function HomePage() {
           particleCount: 180,
           spread: 90,
           origin: { y: 0.7 },
-          colors: ["#f7931a", "#ffb84d", "#ff4500", "#ffffff"],
+          colors: ["#f5c518", "#ffe566", "#4ade80", "#ffffff"],
           scalar: 1.1,
         });
       }
@@ -248,22 +248,22 @@ export default function HomePage() {
               initial={{ opacity: 0, scale: 0.7 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.5, type: "spring", stiffness: 220, damping: 14 }}
-              className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-[#1a0c04]/90 ring-1 ring-[#f7931a]/35 shadow-[0_0_24px_rgba(247,147,26,0.3)] sm:h-11 sm:w-11"
+              className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-[#0c140c]/90 ring-1 ring-[#4ade80]/35 shadow-[0_0_24px_rgba(74,222,128,0.25)] sm:h-11 sm:w-11"
             >
-              <BtcCoinIcon size={28} />
+              <BountyBagIcon size={28} />
             </motion.div>
             <div>
               <motion.h1
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4 }}
-                className="text-lg btc-text sm:text-xl"
+                className="text-lg bounty-text sm:text-xl"
                 style={{ fontFamily: "var(--font-display)" }}
               >
-                BTC LIQUIDATOR
+                BOUNTY DROP
               </motion.h1>
               <span className="hidden text-[10px] uppercase tracking-[0.2em] text-white/40 sm:inline">
-                Michull Sellor · Burning Plinko
+                pump.fun bounties · Plinko rewards
               </span>
             </div>
           </div>
@@ -274,14 +274,14 @@ export default function HomePage() {
                 onClick={onCopyCA}
                 title={`Copy contract address: ${TOKEN_MINT}`}
                 aria-label="Copy contract address"
-                className="group flex items-center gap-1.5 rounded-lg border border-[#f7931a]/30 bg-[#1a0c04]/80 px-2.5 py-1 font-mono text-[11px] text-[#f7931a] transition hover:border-[#f7931a]/55 hover:bg-[#1a0c04] sm:text-xs"
+                className="group flex items-center gap-1.5 rounded-lg border border-[#4ade80]/30 bg-[#0c140c]/80 px-2.5 py-1 font-mono text-[11px] text-[#4ade80] transition hover:border-[#4ade80]/55 hover:bg-[#0c140c] sm:text-xs"
               >
                 <span className="hidden text-[10px] font-sans font-semibold uppercase tracking-widest text-white/40 sm:inline">
                   Mint
                 </span>
                 <span>{shortenAddress(TOKEN_MINT)}</span>
                 {copied ? (
-                  <Check className="h-3.5 w-3.5 text-[#f7931a]" />
+                  <Check className="h-3.5 w-3.5 text-[#4ade80]" />
                 ) : (
                   <Copy className="h-3.5 w-3.5 opacity-60 group-hover:opacity-100" />
                 )}
@@ -290,12 +290,12 @@ export default function HomePage() {
 
             {me.user && (
               <>
-                <span className="rounded-lg border border-[#f7931a]/20 bg-[#1a0c04]/80 px-3 py-1 font-mono text-xs font-semibold text-white/80">
+                <span className="rounded-lg border border-[#4ade80]/20 bg-[#0c140c]/80 px-3 py-1 font-mono text-xs font-semibold text-white/80">
                   {me.user.username}
                 </span>
                 <button
                   onClick={onLogout}
-                  className="grid h-8 w-8 place-items-center rounded-lg border border-[#f7931a]/20 bg-[#1a0c04]/80 text-white/70 hover:border-[#f7931a]/40 hover:text-white sm:h-9 sm:w-9"
+                  className="grid h-8 w-8 place-items-center rounded-lg border border-[#4ade80]/20 bg-[#0c140c]/80 text-white/70 hover:border-[#4ade80]/40 hover:text-white sm:h-9 sm:w-9"
                   aria-label="Sign out"
                 >
                   <LogOut className="h-4 w-4" />
@@ -321,9 +321,9 @@ export default function HomePage() {
                 className="flex h-full max-h-full w-full items-center justify-center"
                 style={{ aspectRatio: "672 / 580" }}
               >
-                <MichullDropper>
+                <BountyDropper>
                   <Board pending={pendingDrops} onBallLanded={onBallLanded} />
-                </MichullDropper>
+                </BountyDropper>
               </div>
             </div>
             <DropButton

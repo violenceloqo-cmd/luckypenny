@@ -15,13 +15,13 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
-  title: "BTC Liquidator — Michull Sellor Plinko",
+  title: "Bounty Drop — pump.fun Plinko Rewards",
   description:
-    "Michull Sellor drops BTC through a burning Plinko furnace. Every landing liquidates on-chain via pump.fun buy and SPL burn.",
+    "Drop bounty money bags through Plinko. Every landing pays a multiplier reward via pump.fun buy and on-chain SPL burn.",
 };
 
 export const viewport: Viewport = {
-  themeColor: "#f7931a",
+  themeColor: "#4ade80",
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,

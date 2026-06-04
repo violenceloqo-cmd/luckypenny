@@ -37,15 +37,15 @@ export interface LiveFeedProps {
 function statusBadge(status: FeedDrop["status"]) {
   switch (status) {
     case "burned":
-      return "bg-[#f7931a]/20 text-[#ffb84d] border-[#f7931a]/35";
+      return "bg-[#4ade80]/20 text-[#86efac] border-[#4ade80]/35";
     case "bought":
-      return "bg-[#ff6b00]/15 text-[#f7931a] border-[#ff6b00]/30";
+      return "bg-[#f5c518]/15 text-[#f5c518] border-[#f5c518]/30";
     case "skipped":
       return "bg-slate-500/20 text-slate-300 border-slate-400/35";
     case "failed":
       return "bg-rose-500/20 text-rose-300 border-rose-400/35";
     default:
-      return "bg-[#3a1a08]/50 text-[#f7931a]/80 border-[#f7931a]/20";
+      return "bg-[#141f14]/50 text-[#4ade80]/80 border-[#4ade80]/20";
   }
 }
 
@@ -59,12 +59,12 @@ export default function LiveFeed({ drops }: LiveFeedProps) {
       <div className="mb-2 flex items-center justify-between border-b border-white/8 pb-2 px-1">
         <div className="flex items-center gap-2">
           <span className="relative flex h-2 w-2">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#f7931a] opacity-60" />
-            <span className="relative inline-flex h-2 w-2 rounded-full bg-[#f7931a]" />
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#4ade80] opacity-60" />
+            <span className="relative inline-flex h-2 w-2 rounded-full bg-[#4ade80]" />
           </span>
-          <h2 className="text-xs font-bold uppercase tracking-widest text-white/70">Live Liquidations</h2>
+          <h2 className="text-xs font-bold uppercase tracking-widest text-white/70">Live Bounties</h2>
         </div>
-        <span className="font-mono text-[10px] text-white/40">{drops.length} tx</span>
+        <span className="font-mono text-[10px] text-white/40">{drops.length} claims</span>
       </div>
       <div className="feed-scroll -mr-1 flex max-h-[60vh] flex-col gap-1.5 overflow-y-auto pr-1 lg:max-h-none">
         <AnimatePresence initial={false}>
@@ -87,9 +87,9 @@ export default function LiveFeed({ drops }: LiveFeedProps) {
               </div>
               <div className="mt-1 flex items-center justify-between gap-2 text-[11px]">
                 <span>
-                  <span className="font-extrabold text-[#f7931a]">{Number(d.multiplier)}x</span>
+                  <span className="font-extrabold text-[#f5c518]">{Number(d.multiplier)}x</span>
                   {" → "}
-                  <span className="font-mono text-[#ffb84d]">{formatSol(Number(d.sol_out))}</span>
+                  <span className="font-mono text-[#4ade80]">{formatSol(Number(d.sol_out))}</span>
                 </span>
                 <span className="text-white/40">{formatTime(d.created_at)} ago</span>
               </div>
@@ -100,14 +100,14 @@ export default function LiveFeed({ drops }: LiveFeedProps) {
                 <div className="mt-1 flex items-center justify-between gap-2 text-[10px] text-white/50">
                   <span>
                     burned{" "}
-                    <span className="font-mono text-[#ff6b00]">{formatTokens(d.tokens_burned, 6)}</span>
+                    <span className="font-mono text-[#22c55e]">{formatTokens(d.tokens_burned, 6)}</span>
                   </span>
                   {(d.burn_sig || d.buy_sig) && (
                     <a
                       href={explorerHref((d.burn_sig || d.buy_sig) as string)}
                       target="_blank"
                       rel="noreferrer"
-                      className="inline-flex items-center gap-1 text-[#f7931a] hover:text-[#ffb84d]"
+                      className="inline-flex items-center gap-1 text-[#4ade80] hover:text-[#86efac]"
                       title={d.burn_sig ? "View burn on Solscan" : "View buy on Solscan"}
                     >
                       {d.burn_sig ? shortSig(d.burn_sig) : shortSig(d.buy_sig)}
@@ -120,8 +120,8 @@ export default function LiveFeed({ drops }: LiveFeedProps) {
           ))}
         </AnimatePresence>
         {drops.length === 0 && (
-          <div className="rounded-lg border border-dashed border-[#f7931a]/25 bg-[#1a0c04]/50 py-8 text-center text-xs text-white/45">
-            Waiting for Michull&apos;s first BTC drop…
+          <div className="rounded-lg border border-dashed border-[#4ade80]/25 bg-[#0c140c]/50 py-8 text-center text-xs text-white/45">
+            Waiting for the first bounty drop…
           </div>
         )}
       </div>
