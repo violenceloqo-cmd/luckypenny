@@ -17,6 +17,7 @@ import WinCameo from "@/components/WinCameo";
 import { isBigWin } from "@/lib/game/multipliers";
 import { getSupabaseClient } from "@/lib/supabase/client";
 import { getPublicTokenMint } from "@/lib/token";
+import { upsertFeedDrop } from "@/lib/feed";
 
 interface Me {
   user: { uid: string; username: string } | null;
@@ -71,7 +72,7 @@ export default function HomePage() {
     }
   }, []);
 
-  const seenSeedsRef = useRef<Set<string>>(new Set());
+  const seenAnimationRef = useRef<Set<string>>(new Set());
 
   useLiveFeedTicker();
 
@@ -87,7 +88,7 @@ export default function HomePage() {
     const data = (await r.json()) as DropsResponse;
     setFeed(data.drops);
     setStats(data.stats);
-    for (const d of data.drops) seenSeedsRef.current.add(d.id);
+    for (const d of data.drops) seenAnimationRef.current.add(d.id);
   }, []);
 
   useEffect(() => {
@@ -103,6 +104,13 @@ export default function HomePage() {
   }, [loadMe, loadFeed]);
 
   useEffect(() => {
+    const poll = window.setInterval(() => {
+      void loadFeed();
+    }, 20_000);
+    return () => window.clearInterval(poll);
+  }, [loadFeed]);
+
+  useEffect(() => {
     const supa = getSupabaseClient();
     const channel = supa
       .channel("public:drops")
@@ -111,24 +119,23 @@ export default function HomePage() {
         { event: "INSERT", schema: "public", table: "drops" },
         (payload) => {
           const row = payload.new as FeedDrop & { server_seed: string };
-          if (!seenSeedsRef.current.has(row.id)) {
-            seenSeedsRef.current.add(row.id);
-            setFeed((cur) => [
-              {
-                id: row.id,
-                username: row.username,
-                slot_index: row.slot_index,
-                multiplier: Number(row.multiplier),
-                sol_in: Number(row.sol_in),
-                sol_out: Number(row.sol_out),
-                status: row.status,
-                buy_sig: row.buy_sig ?? null,
-                burn_sig: row.burn_sig ?? null,
-                tokens_burned: row.tokens_burned ?? null,
-                created_at: row.created_at,
-              },
-              ...cur,
-            ].slice(0, 100));
+          setFeed((cur) =>
+            upsertFeedDrop(cur, {
+              id: row.id,
+              username: row.username,
+              slot_index: row.slot_index,
+              multiplier: Number(row.multiplier),
+              sol_in: Number(row.sol_in),
+              sol_out: Number(row.sol_out),
+              status: row.status,
+              buy_sig: row.buy_sig ?? null,
+              burn_sig: row.burn_sig ?? null,
+              tokens_burned: row.tokens_burned ?? null,
+              created_at: row.created_at,
+            }),
+          );
+          if (!seenAnimationRef.current.has(row.id)) {
+            seenAnimationRef.current.add(row.id);
             setPendingDrops((cur) => {
               if (cur.some((p) => p.id === row.id)) return cur;
               return [...cur, { id: row.id, seed: row.server_seed, username: row.username }];
@@ -142,18 +149,14 @@ export default function HomePage() {
         (payload) => {
           const row = payload.new as FeedDrop;
           setFeed((cur) =>
-            cur.map((d) =>
-              d.id === row.id
-                ? {
-                    ...d,
-                    status: row.status,
-                    buy_sig: row.buy_sig ?? null,
-                    burn_sig: row.burn_sig ?? null,
-                    tokens_burned: row.tokens_burned ?? null,
-                    error: row.error ?? null,
-                  }
-                : d,
-            ),
+            upsertFeedDrop(cur, {
+              id: row.id,
+              status: row.status,
+              buy_sig: row.buy_sig ?? null,
+              burn_sig: row.burn_sig ?? null,
+              tokens_burned: row.tokens_burned ?? null,
+              error: row.error ?? null,
+            }),
           );
           if (row.status === "burned" || row.status === "skipped") {
             setStats((s) => ({
@@ -193,11 +196,23 @@ export default function HomePage() {
       const dropId = data.dropId as string;
       const seed = data.seed as string;
       if (dropId && seed) {
-        seenSeedsRef.current.add(dropId);
+        seenAnimationRef.current.add(dropId);
         setPendingDrops((cur) => {
           if (cur.some((p) => p.id === dropId)) return cur;
           return [...cur, { id: dropId, seed, username: me.user!.username }];
         });
+        setFeed((cur) =>
+          upsertFeedDrop(cur, {
+            id: dropId,
+            username: me.user!.username,
+            slot_index: data.slotIndex as number,
+            multiplier: Number(data.multiplier),
+            sol_in: Number(data.solIn),
+            sol_out: Number(data.solOut),
+            status: "pending",
+            created_at: new Date().toISOString(),
+          }),
+        );
       }
 
       setMe((cur) => ({ ...cur, cooldownRemainingMs: cur.cooldownSeconds * 1000 }));
@@ -350,7 +365,7 @@ export default function HomePage() {
             />
           </section>
 
-          <aside className="order-last hidden min-h-0 lg:order-none lg:block">
+          <aside className="order-last min-h-0 lg:order-none">
             <LiveFeed drops={feed} />
           </aside>
         </div>

@@ -14,7 +14,7 @@ export async function GET() {
       "id, username, slot_index, multiplier, sol_in, sol_out, status, buy_sig, burn_sig, tokens_burned, error, created_at",
     )
     .order("created_at", { ascending: false })
-    .limit(30);
+    .limit(50);
 
   const { data: stats } = await reader
     .from("drops")
