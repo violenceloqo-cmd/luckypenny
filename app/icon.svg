@@ -1,8 +1,15 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <circle cx="32" cy="32" r="32" fill="#22c55e"/>
-  <path fill="#f5c518" d="M18 22 C14 30 12 44 32 50 C52 44 50 30 46 22 C44 18 36 16 32 16 C28 16 20 18 18 22 Z"/>
-  <ellipse cx="32" cy="20" rx="12" ry="5" fill="#8b5a2b"/>
-  <path d="M22 21 Q32 14 42 21" fill="none" stroke="#3d2810" stroke-width="2" stroke-linecap="round"/>
-  <circle cx="32" cy="17" r="4" fill="#5c3d1e"/>
-  <text x="32" y="38" text-anchor="middle" dominant-baseline="middle" fill="#0c140c" font-size="16" font-weight="800" font-family="system-ui,sans-serif">$</text>
+  <defs>
+    <radialGradient id="sphere" cx="35%" cy="30%" r="65%">
+      <stop offset="0%" stop-color="#14F195"/>
+      <stop offset="45%" stop-color="#00D1FF"/>
+      <stop offset="100%" stop-color="#9945FF"/>
+    </radialGradient>
+  </defs>
+  <circle cx="32" cy="32" r="32" fill="url(#sphere)"/>
+  <g transform="translate(32, 32)" fill="#fff" opacity="0.95">
+    <path d="M-14.3,-7.28 L16.9,-9.88 L14.3,-3.96 L35.75,-6.76 L16.9,-0.84 L19.5,5.08 L-14.3,2.48 L-9.35,11.44 L-8.25,-0.44 L-35.75,2.36 L-19.5,-1.32 L-14.3,-7.28 Z"/>
+    <path d="M-16.9,-0.44 L14.3,-3.04 L16.9,2.88 L35.75,0.08 L16.9,6 L19.5,11.92 L-14.3,9.32 L-9.35,18.28 L-8.25,6.4 L-35.75,3.6 L-19.5,-0.08 L-16.9,-0.44 Z"/>
+    <path d="M-14.3,6.72 L16.9,4.12 L14.3,10.04 L35.75,7.24 L16.9,13.16 L19.5,19.08 L-14.3,16.48 L-9.35,25.44 L-8.25,13.56 L-35.75,10.76 L-19.5,7.08 L-14.3,6.72 Z"/>
+  </g>
 </svg>

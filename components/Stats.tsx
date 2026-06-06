@@ -1,6 +1,6 @@
 "use client";
 
-import { Coins, CircleDot, Trophy, Gift } from "lucide-react";
+import { Coins, CircleDot, Flame, Trophy } from "lucide-react";
 
 import { formatSol, formatTokens } from "@/lib/utils";
 
@@ -52,27 +52,27 @@ export default function StatsBar({
     <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 sm:gap-3">
       <Tile
         icon={<CircleDot className="h-4 w-4" />}
-        label="Bounty Drops"
+        label="SOL Drops"
         value={totalDrops.toLocaleString()}
-        accent="#f5c518"
-      />
-      <Tile
-        icon={<Gift className="h-4 w-4" />}
-        label="Rewards Paid"
-        value={formatSol(totalSolOut)}
-        accent="#4ade80"
+        accent="#14F195"
       />
       <Tile
         icon={<Coins className="h-4 w-4" />}
+        label="SOL Out"
+        value={formatSol(totalSolOut)}
+        accent="#00D1FF"
+      />
+      <Tile
+        icon={<Flame className="h-4 w-4" />}
         label="Tokens Burned"
         value={formatTokens(totalTokensBurned, 6)}
-        accent="#22c55e"
+        accent="#9945FF"
       />
       <Tile
         icon={<Trophy className="h-4 w-4" />}
         label="Best Multiplier"
         value={`${biggestMultiplier}x`}
-        accent="#ffe566"
+        accent="#14F195"
       />
     </div>
   );

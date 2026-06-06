@@ -27,7 +27,7 @@ export interface LiveFeedProps {
 }
 
 const BURNED_BADGE =
-  "bg-[#4ade80]/20 text-[#86efac] border-[#4ade80]/35";
+  "bg-[#14F195]/20 text-[#86efac] border-[#14F195]/35";
 
 function explorerHref(sig: string) {
   return solscanTxUrl(sig);
@@ -44,12 +44,12 @@ export default function LiveFeed({ drops }: LiveFeedProps) {
       <div className="mb-2 flex items-center justify-between border-b border-white/8 pb-2 px-1">
         <div className="flex items-center gap-2">
           <span className="relative flex h-2 w-2">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#4ade80] opacity-60" />
-            <span className="relative inline-flex h-2 w-2 rounded-full bg-[#4ade80]" />
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#14F195] opacity-60" />
+            <span className="relative inline-flex h-2 w-2 rounded-full bg-[#14F195]" />
           </span>
-          <h2 className="text-xs font-bold uppercase tracking-widest text-white/70">Live Bounties</h2>
+          <h2 className="text-xs font-bold uppercase tracking-widest text-white/70">Live Drops</h2>
         </div>
-        <span className="font-mono text-[10px] text-white/40">{visibleDrops.length} claims</span>
+        <span className="font-mono text-[10px] text-white/40">{visibleDrops.length} drops</span>
       </div>
       <div className="feed-scroll -mr-1 flex max-h-[60vh] flex-col gap-1.5 overflow-y-auto pr-1 lg:max-h-none">
         <AnimatePresence initial={false}>
@@ -60,7 +60,7 @@ export default function LiveFeed({ drops }: LiveFeedProps) {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, scale: 0.97 }}
               transition={{ duration: 0.25 }}
-              className="rounded-lg border border-[#4ade80]/15 bg-black/40 px-3 py-2 text-xs"
+              className="rounded-lg border border-[#00D1FF]/15 bg-black/40 px-3 py-2 text-xs"
             >
               <div className="flex items-center justify-between gap-2">
                 <span className="truncate font-bold text-white/90">{d.username}</span>
@@ -72,9 +72,9 @@ export default function LiveFeed({ drops }: LiveFeedProps) {
               </div>
               <div className="mt-1 flex items-center justify-between gap-2 text-[11px]">
                 <span>
-                  <span className="font-extrabold text-[#f5c518]">{Number(d.multiplier)}x</span>
+                  <span className="font-extrabold text-[#00D1FF]">{Number(d.multiplier)}x</span>
                   {" → "}
-                  <span className="font-mono text-[#4ade80]">{formatSol(Number(d.sol_out))}</span>
+                  <span className="font-mono text-[#14F195]">{formatSol(Number(d.sol_out))}</span>
                 </span>
                 <span className="text-white/40">{formatTime(d.created_at)} ago</span>
               </div>
@@ -82,7 +82,7 @@ export default function LiveFeed({ drops }: LiveFeedProps) {
                 <div className="mt-1 flex items-center justify-between gap-2 text-[10px] text-white/50">
                   <span>
                     burned{" "}
-                    <span className="font-mono text-[#22c55e]">
+                    <span className="font-mono text-[#9945FF]">
                       {formatTokens(d.tokens_burned, 6)}
                     </span>
                   </span>
@@ -90,7 +90,7 @@ export default function LiveFeed({ drops }: LiveFeedProps) {
                     href={explorerHref((d.burn_sig || d.buy_sig) as string)}
                     target="_blank"
                     rel="noreferrer"
-                    className="inline-flex items-center gap-1 text-[#4ade80] hover:text-[#86efac]"
+                    className="inline-flex items-center gap-1 text-[#00D1FF] hover:text-[#14F195]"
                     title={d.burn_sig ? "View burn on Solscan" : "View buy on Solscan"}
                   >
                     {d.burn_sig ? shortSig(d.burn_sig) : shortSig(d.buy_sig!)}
@@ -102,8 +102,8 @@ export default function LiveFeed({ drops }: LiveFeedProps) {
           ))}
         </AnimatePresence>
         {visibleDrops.length === 0 && (
-          <div className="rounded-lg border border-dashed border-[#4ade80]/25 bg-[#0c140c]/50 py-8 text-center text-xs text-white/45">
-            Waiting for the first bounty drop…
+          <div className="rounded-lg border border-dashed border-[#00D1FF]/25 bg-[#0a0a14]/50 py-8 text-center text-xs text-white/45">
+            Waiting for the first SOL drop…
           </div>
         )}
       </div>

@@ -15,13 +15,13 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
-  title: "Bounty Drop — pump.fun Plinko Rewards",
+  title: "SOL Drop — Solana Plinko Buy & Burn",
   description:
-    "Drop bounty money bags through Plinko. Every landing pays a multiplier reward via pump.fun buy and on-chain SPL burn.",
+    "Drop Solana orbs through Plinko. Every landing multiplies a pump.fun token buy and on-chain SPL burn.",
 };
 
 export const viewport: Viewport = {
-  themeColor: "#4ade80",
+  themeColor: "#9945FF",
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,

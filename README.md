@@ -36,7 +36,7 @@ See `.env.example` for the full list. The non-obvious ones:
 | `SUPABASE_SERVICE_ROLE_KEY` | **Server-only.** Bypasses RLS so the drop route can insert rows. Get this from `Supabase Dashboard → Project Settings → API`. |
 | `AUTH_SECRET` | 32+ random bytes used to sign the session JWT cookie. Generate with `openssl rand -hex 32`. |
 | `TREASURY_SECRET_KEY` | Base58-encoded Solana keypair (or JSON-array `[1,2,...]`). The wallet that signs every pump.fun buy and burn. **Keep secret.** |
-| `PUMPFUN_TOKEN_MINT` | The mint address of the token to buy & burn. Default in code: `GyAhwBfaH1gZ8c8U2XrPt1U6wNoF65ZHfZsgL6rGpump`. |
+| `PUMPFUN_TOKEN_MINT` | The mint address of the token to buy & burn. Default in code: `6nDksFLJ7wRuizRY7MnnKRzNKBtgT8piDZHMUvSkpump`. |
 | `SOLANA_RPC_URL` | RPC endpoint — use Helius/Triton/QuickNode on mainnet for reliability. |
 | `SOLANA_CLUSTER` / `NEXT_PUBLIC_SOLANA_CLUSTER` | `mainnet-beta` or `devnet`. Devnet skips real buys (records as `skipped`). Must match. |
 | `MAX_SOL_PER_DROP` | Safety cap. The route refuses any drop whose `sol_out` exceeds this many SOL. Default `1`. |

@@ -1,19 +1,15 @@
 @import "tailwindcss";
 
 :root {
-  --bounty-gold: #f5c518;
-  --bounty-gold-bright: #ffe566;
-  --bounty-gold-dim: #b8860b;
-  --bounty-sack: #8b5a2b;
-  --pump-green: #4ade80;
-  --pump-green-dim: #22c55e;
-  --vault-bg: #0a120a;
-  --vault-bg-deep: #060a06;
-  --vault-bg-mid: #121c12;
-  --vault-panel: rgba(12, 20, 12, 0.92);
-  --vault-panel-border: rgba(74, 222, 128, 0.22);
-  --bounty-glow: rgba(245, 197, 24, 0.42);
-  --pump-glow: rgba(74, 222, 128, 0.35);
+  --sol-green: #14f195;
+  --sol-cyan: #00d1ff;
+  --sol-purple: #9945ff;
+  --sol-bg: #0a0a14;
+  --sol-bg-deep: #050508;
+  --sol-bg-mid: #12101f;
+  --sol-panel: rgba(10, 10, 20, 0.92);
+  --sol-panel-border: rgba(0, 209, 255, 0.2);
+  --sol-glow: rgba(20, 241, 149, 0.35);
 }
 
 html,
@@ -24,46 +20,46 @@ body {
 
 body {
   font-family: var(--font-outfit, "Outfit", system-ui, -apple-system, sans-serif);
-  color: #f0fdf4;
-  background: var(--vault-bg-deep);
+  color: #f8fafc;
+  background: var(--sol-bg-deep);
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
 }
 
-.bounty-text {
+.sol-text {
   background: linear-gradient(
     135deg,
     #ffffff 0%,
-    var(--bounty-gold-bright) 30%,
-    var(--bounty-gold) 55%,
-    var(--pump-green) 100%
+    var(--sol-green) 35%,
+    var(--sol-cyan) 65%,
+    var(--sol-purple) 100%
   );
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  filter: drop-shadow(0 0 18px rgba(74, 222, 128, 0.35));
+  filter: drop-shadow(0 0 18px rgba(0, 209, 255, 0.35));
 }
 
 .glass {
-  background: var(--vault-panel);
+  background: var(--sol-panel);
   backdrop-filter: blur(20px) saturate(140%);
   -webkit-backdrop-filter: blur(20px) saturate(140%);
-  border: 1px solid var(--vault-panel-border);
+  border: 1px solid var(--sol-panel-border);
   box-shadow:
-    0 0 0 1px rgba(245, 197, 24, 0.05) inset,
+    0 0 0 1px rgba(153, 69, 255, 0.06) inset,
     0 16px 48px rgba(0, 0, 0, 0.55),
-    0 0 40px rgba(74, 222, 128, 0.06);
+    0 0 40px rgba(0, 209, 255, 0.06);
 }
 
 .btn-drop {
-  background: linear-gradient(145deg, #1a2818 0%, #0c140c 100%);
-  color: #f0fdf4;
+  background: linear-gradient(145deg, #1a1530 0%, #0a0a14 100%);
+  color: #f8fafc;
   border: 2px solid transparent;
   background-clip: padding-box;
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.1),
-    0 0 0 1px rgba(74, 222, 128, 0.35),
-    0 0 28px rgba(245, 197, 24, 0.2),
+    0 0 0 1px rgba(0, 209, 255, 0.35),
+    0 0 28px rgba(153, 69, 255, 0.2),
     0 8px 32px rgba(0, 0, 0, 0.5);
   position: relative;
 }
@@ -73,7 +69,7 @@ body {
   position: absolute;
   inset: -2px;
   border-radius: inherit;
-  background: linear-gradient(135deg, var(--bounty-gold-bright), var(--bounty-gold), var(--pump-green));
+  background: linear-gradient(135deg, var(--sol-green), var(--sol-cyan), var(--sol-purple));
   z-index: -1;
   opacity: 0.85;
 }
@@ -81,8 +77,8 @@ body {
 .btn-drop:hover:not(:disabled) {
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.14),
-    0 0 0 1px rgba(74, 222, 128, 0.55),
-    0 0 40px rgba(245, 197, 24, 0.35),
+    0 0 0 1px rgba(0, 209, 255, 0.55),
+    0 0 40px rgba(20, 241, 149, 0.35),
     0 8px 32px rgba(0, 0, 0, 0.5);
   transform: translateY(-1px);
 }
@@ -91,40 +87,40 @@ body {
   transform: translateY(1px);
 }
 
-.bounty-badge {
+.sol-badge {
   border-radius: 0.75rem;
-  border: 1px solid rgba(245, 197, 24, 0.45);
-  background: linear-gradient(135deg, rgba(245, 197, 24, 0.22), rgba(74, 222, 128, 0.18));
-  color: #f0fdf4;
-  box-shadow: 0 0 32px rgba(74, 222, 128, 0.3);
+  border: 1px solid rgba(0, 209, 255, 0.45);
+  background: linear-gradient(135deg, rgba(20, 241, 149, 0.22), rgba(153, 69, 255, 0.18));
+  color: #f8fafc;
+  box-shadow: 0 0 32px rgba(0, 209, 255, 0.3);
 }
 
-.bounty-board {
+.sol-board {
   border-radius: 1rem;
   box-shadow:
-    0 0 0 2px rgba(74, 222, 128, 0.28),
-    0 0 48px rgba(245, 197, 24, 0.15),
-    inset 0 -24px 48px rgba(245, 197, 24, 0.08);
+    0 0 0 2px rgba(0, 209, 255, 0.25),
+    0 0 48px rgba(153, 69, 255, 0.15),
+    inset 0 -24px 48px rgba(20, 241, 149, 0.08);
 }
 
-.bounty-board::after {
+.sol-board::after {
   content: "";
   pointer-events: none;
   position: absolute;
   inset: auto 0 0 0;
   height: 35%;
   border-radius: 0 0 1rem 1rem;
-  background: linear-gradient(to top, rgba(245, 197, 24, 0.12), transparent);
-  animation: vault-pulse 2.5s ease-in-out infinite;
+  background: linear-gradient(to top, rgba(0, 209, 255, 0.1), transparent);
+  animation: sol-pulse 2.5s ease-in-out infinite;
 }
 
 @keyframes slot-flash {
   0%,
   100% {
-    box-shadow: 0 0 0 rgba(245, 197, 24, 0);
+    box-shadow: 0 0 0 rgba(0, 209, 255, 0);
   }
   50% {
-    box-shadow: 0 0 32px rgba(74, 222, 128, 0.85);
+    box-shadow: 0 0 32px rgba(20, 241, 149, 0.85);
   }
 }
 
@@ -132,27 +128,27 @@ body {
   animation: slot-flash 0.9s ease-out 2;
 }
 
-@keyframes float-bag {
+@keyframes float-sol {
   0%,
   100% {
-    transform: translateY(0) rotate(-5deg);
+    transform: translateY(0) rotate(-4deg);
   }
   50% {
-    transform: translateY(-14px) rotate(5deg);
+    transform: translateY(-14px) rotate(4deg);
   }
 }
 
-.bag-float {
-  animation: float-bag 5s ease-in-out infinite;
+.sol-float {
+  animation: float-sol 5s ease-in-out infinite;
 }
 
 @keyframes pulse-grid {
   0%,
   100% {
-    opacity: 0.18;
+    opacity: 0.15;
   }
   50% {
-    opacity: 0.38;
+    opacity: 0.32;
   }
 }
 
@@ -160,7 +156,7 @@ body {
   animation: pulse-grid 7s ease-in-out infinite;
 }
 
-@keyframes vault-pulse {
+@keyframes sol-pulse {
   0%,
   100% {
     opacity: 0.45;
@@ -170,12 +166,12 @@ body {
   }
 }
 
-.vault-shimmer {
-  animation: vault-pulse 3s ease-in-out infinite;
+.sol-shimmer {
+  animation: sol-pulse 3s ease-in-out infinite;
 }
 
 :focus-visible {
-  outline: 2px solid var(--pump-green);
+  outline: 2px solid var(--sol-cyan);
   outline-offset: 2px;
   border-radius: 8px;
 }
@@ -187,7 +183,7 @@ body {
   background: rgba(0, 0, 0, 0.35);
 }
 .feed-scroll::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, var(--bounty-gold), var(--pump-green));
+  background: linear-gradient(180deg, var(--sol-green), var(--sol-purple));
   border-radius: 3px;
 }
 

@@ -2,14 +2,14 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 
-import BountyBagIcon from "@/components/BountyBagIcon";
+import SolanaBallIcon from "@/components/SolanaBallIcon";
 
 interface CameoProps {
   show: boolean;
   multiplier: number;
 }
 
-function BagCascade() {
+function SolCascade() {
   return (
     <div className="flex items-end gap-1" aria-hidden="true">
       {[0, 1, 2].map((i) => (
@@ -18,7 +18,7 @@ function BagCascade() {
           animate={{ y: [0, -12, 0], scale: [1, 1.1, 1] }}
           transition={{ duration: 0.85, repeat: Infinity, delay: i * 0.1 }}
         >
-          <BountyBagIcon size={36 + i * 8} />
+          <SolanaBallIcon size={36 + i * 8} />
         </motion.div>
       ))}
     </div>
@@ -37,13 +37,13 @@ export default function WinCameo({ show, multiplier }: CameoProps) {
           className="pointer-events-none fixed bottom-3 right-3 z-20 flex flex-col items-end"
           aria-hidden="true"
         >
-          <BagCascade />
+          <SolCascade />
           <motion.div
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
-            className="bounty-badge mt-2 px-4 py-2 text-sm font-black"
+            className="sol-badge mt-2 px-4 py-2 text-sm font-black"
           >
-            {multiplier}x · MEGA BOUNTY
+            {multiplier}x · MEGA DROP
           </motion.div>
         </motion.div>
       )}

@@ -9,8 +9,8 @@ import Board, { type DropEvent } from "@/components/Board";
 import DropButton from "@/components/DropButton";
 import LiveFeed, { type FeedDrop, useLiveFeedTicker } from "@/components/LiveFeed";
 import LoginCard from "@/components/LoginCard";
-import BountyBagIcon from "@/components/BountyBagIcon";
-import BountyDropper from "@/components/BountyDropper";
+import SolanaBallIcon from "@/components/SolanaBallIcon";
+import SolDropper from "@/components/SolDropper";
 import StatsBar from "@/components/Stats";
 import ThemeBackground from "@/components/ThemeBackground";
 import WinCameo from "@/components/WinCameo";
@@ -129,7 +129,10 @@ export default function HomePage() {
               },
               ...cur,
             ].slice(0, 100));
-            setPendingDrops((cur) => [...cur, { id: row.id, seed: row.server_seed, username: row.username }]);
+            setPendingDrops((cur) => {
+              if (cur.some((p) => p.id === row.id)) return cur;
+              return [...cur, { id: row.id, seed: row.server_seed, username: row.username }];
+            });
           }
         },
       )
@@ -174,7 +177,7 @@ export default function HomePage() {
   }, []);
 
   const onDrop = useCallback(async () => {
-    if (dropping) return;
+    if (dropping || !me.user) return;
     setDropping(true);
     try {
       const r = await fetch("/api/drop", { method: "POST" });
@@ -186,13 +189,24 @@ export default function HomePage() {
         setAnnounce(data.error ?? "Drop failed");
         return;
       }
+
+      const dropId = data.dropId as string;
+      const seed = data.seed as string;
+      if (dropId && seed) {
+        seenSeedsRef.current.add(dropId);
+        setPendingDrops((cur) => {
+          if (cur.some((p) => p.id === dropId)) return cur;
+          return [...cur, { id: dropId, seed, username: me.user!.username }];
+        });
+      }
+
       setMe((cur) => ({ ...cur, cooldownRemainingMs: cur.cooldownSeconds * 1000 }));
       setStats((s) => ({ ...s, totalDrops: s.totalDrops + 1 }));
-      setAnnounce(`Bounty bag dropped — targeting ${data.multiplier}x reward slot.`);
+      setAnnounce(`SOL orb dropped — targeting ${data.multiplier}x slot.`);
     } finally {
       setDropping(false);
     }
-  }, [dropping]);
+  }, [dropping, me.user]);
 
   const onBallLanded = useCallback(
     (ev: DropEvent, slot: number, multiplier: number) => {
@@ -203,7 +217,7 @@ export default function HomePage() {
           particleCount: 180,
           spread: 90,
           origin: { y: 0.7 },
-          colors: ["#f5c518", "#ffe566", "#4ade80", "#ffffff"],
+          colors: ["#14F195", "#00D1FF", "#9945FF", "#ffffff"],
           scalar: 1.1,
         });
       }
@@ -249,22 +263,22 @@ export default function HomePage() {
               initial={{ opacity: 0, scale: 0.7 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.5, type: "spring", stiffness: 220, damping: 14 }}
-              className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-[#0c140c]/90 ring-1 ring-[#4ade80]/35 shadow-[0_0_24px_rgba(74,222,128,0.25)] sm:h-11 sm:w-11"
+              className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-[#0a0a14]/90 ring-1 ring-[#00D1FF]/35 shadow-[0_0_24px_rgba(0,209,255,0.25)] sm:h-11 sm:w-11"
             >
-              <BountyBagIcon size={28} />
+              <SolanaBallIcon size={28} />
             </motion.div>
             <div>
               <motion.h1
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4 }}
-                className="text-lg bounty-text sm:text-xl"
+                className="text-lg sol-text sm:text-xl"
                 style={{ fontFamily: "var(--font-display)" }}
               >
-                BOUNTY DROP
+                SOL DROP
               </motion.h1>
               <span className="hidden text-[10px] uppercase tracking-[0.2em] text-white/40 sm:inline">
-                pump.fun bounties · Plinko rewards
+                Solana Plinko · Buy &amp; Burn
               </span>
             </div>
           </div>
@@ -275,14 +289,14 @@ export default function HomePage() {
                 onClick={onCopyCA}
                 title={`Copy contract address: ${TOKEN_MINT}`}
                 aria-label="Copy contract address"
-                className="group flex items-center gap-1.5 rounded-lg border border-[#4ade80]/30 bg-[#0c140c]/80 px-2.5 py-1 font-mono text-[11px] text-[#4ade80] transition hover:border-[#4ade80]/55 hover:bg-[#0c140c] sm:text-xs"
+                className="group flex items-center gap-1.5 rounded-lg border border-[#00D1FF]/30 bg-[#0a0a14]/80 px-2.5 py-1 font-mono text-[11px] text-[#00D1FF] transition hover:border-[#00D1FF]/55 hover:bg-[#0a0a14] sm:text-xs"
               >
                 <span className="hidden text-[10px] font-sans font-semibold uppercase tracking-widest text-white/40 sm:inline">
                   Mint
                 </span>
                 <span>{shortenAddress(TOKEN_MINT)}</span>
                 {copied ? (
-                  <Check className="h-3.5 w-3.5 text-[#4ade80]" />
+                  <Check className="h-3.5 w-3.5 text-[#14F195]" />
                 ) : (
                   <Copy className="h-3.5 w-3.5 opacity-60 group-hover:opacity-100" />
                 )}
@@ -291,12 +305,12 @@ export default function HomePage() {
 
             {me.user && (
               <>
-                <span className="rounded-lg border border-[#4ade80]/20 bg-[#0c140c]/80 px-3 py-1 font-mono text-xs font-semibold text-white/80">
+                <span className="rounded-lg border border-[#00D1FF]/20 bg-[#0a0a14]/80 px-3 py-1 font-mono text-xs font-semibold text-white/80">
                   {me.user.username}
                 </span>
                 <button
                   onClick={onLogout}
-                  className="grid h-8 w-8 place-items-center rounded-lg border border-[#4ade80]/20 bg-[#0c140c]/80 text-white/70 hover:border-[#4ade80]/40 hover:text-white sm:h-9 sm:w-9"
+                  className="grid h-8 w-8 place-items-center rounded-lg border border-[#00D1FF]/20 bg-[#0a0a14]/80 text-white/70 hover:border-[#00D1FF]/40 hover:text-white sm:h-9 sm:w-9"
                   aria-label="Sign out"
                 >
                   <LogOut className="h-4 w-4" />
@@ -322,9 +336,9 @@ export default function HomePage() {
                 className="flex h-full max-h-full w-full items-center justify-center"
                 style={{ aspectRatio: "672 / 580" }}
               >
-                <BountyDropper>
+                <SolDropper>
                   <Board pending={pendingDrops} onBallLanded={onBallLanded} />
-                </BountyDropper>
+                </SolDropper>
               </div>
             </div>
             <DropButton
