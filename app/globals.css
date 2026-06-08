@@ -1,15 +1,18 @@
 @import "tailwindcss";
 
 :root {
-  --sol-green: #14f195;
-  --sol-cyan: #00d1ff;
-  --sol-purple: #9945ff;
-  --sol-bg: #0a0a14;
-  --sol-bg-deep: #050508;
-  --sol-bg-mid: #12101f;
-  --sol-panel: rgba(10, 10, 20, 0.92);
-  --sol-panel-border: rgba(0, 209, 255, 0.2);
-  --sol-glow: rgba(20, 241, 149, 0.35);
+  --poke-red: #ee1515;
+  --poke-red-dark: #c30a0a;
+  --poke-yellow: #ffcb05;
+  --poke-yellow-dark: #e6a800;
+  --poke-white: #f5f5f5;
+  --poke-black: #1d1d1b;
+  --poke-bg: #141418;
+  --poke-bg-deep: #0a0a0c;
+  --poke-bg-mid: #1e1e24;
+  --poke-panel: rgba(20, 20, 24, 0.92);
+  --poke-panel-border: rgba(238, 21, 21, 0.25);
+  --poke-glow: rgba(255, 203, 5, 0.35);
 }
 
 html,
@@ -21,45 +24,45 @@ body {
 body {
   font-family: var(--font-outfit, "Outfit", system-ui, -apple-system, sans-serif);
   color: #f8fafc;
-  background: var(--sol-bg-deep);
+  background: var(--poke-bg-deep);
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
 }
 
-.sol-text {
+.poke-text {
   background: linear-gradient(
     135deg,
     #ffffff 0%,
-    var(--sol-green) 35%,
-    var(--sol-cyan) 65%,
-    var(--sol-purple) 100%
+    var(--poke-yellow) 30%,
+    var(--poke-red) 65%,
+    #ffffff 100%
   );
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  filter: drop-shadow(0 0 18px rgba(0, 209, 255, 0.35));
+  filter: drop-shadow(0 0 18px rgba(238, 21, 21, 0.35));
 }
 
 .glass {
-  background: var(--sol-panel);
+  background: var(--poke-panel);
   backdrop-filter: blur(20px) saturate(140%);
   -webkit-backdrop-filter: blur(20px) saturate(140%);
-  border: 1px solid var(--sol-panel-border);
+  border: 1px solid var(--poke-panel-border);
   box-shadow:
-    0 0 0 1px rgba(153, 69, 255, 0.06) inset,
+    0 0 0 1px rgba(255, 203, 5, 0.06) inset,
     0 16px 48px rgba(0, 0, 0, 0.55),
-    0 0 40px rgba(0, 209, 255, 0.06);
+    0 0 40px rgba(238, 21, 21, 0.08);
 }
 
 .btn-drop {
-  background: linear-gradient(145deg, #1a1530 0%, #0a0a14 100%);
+  background: linear-gradient(145deg, #2a1515 0%, #141418 100%);
   color: #f8fafc;
   border: 2px solid transparent;
   background-clip: padding-box;
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.1),
-    0 0 0 1px rgba(0, 209, 255, 0.35),
-    0 0 28px rgba(153, 69, 255, 0.2),
+    0 0 0 1px rgba(238, 21, 21, 0.35),
+    0 0 28px rgba(255, 203, 5, 0.15),
     0 8px 32px rgba(0, 0, 0, 0.5);
   position: relative;
 }
@@ -69,7 +72,7 @@ body {
   position: absolute;
   inset: -2px;
   border-radius: inherit;
-  background: linear-gradient(135deg, var(--sol-green), var(--sol-cyan), var(--sol-purple));
+  background: linear-gradient(135deg, var(--poke-yellow), var(--poke-red), var(--poke-red-dark));
   z-index: -1;
   opacity: 0.85;
 }
@@ -77,8 +80,8 @@ body {
 .btn-drop:hover:not(:disabled) {
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.14),
-    0 0 0 1px rgba(0, 209, 255, 0.55),
-    0 0 40px rgba(20, 241, 149, 0.35),
+    0 0 0 1px rgba(238, 21, 21, 0.55),
+    0 0 40px rgba(255, 203, 5, 0.35),
     0 8px 32px rgba(0, 0, 0, 0.5);
   transform: translateY(-1px);
 }
@@ -87,40 +90,40 @@ body {
   transform: translateY(1px);
 }
 
-.sol-badge {
+.poke-badge {
   border-radius: 0.75rem;
-  border: 1px solid rgba(0, 209, 255, 0.45);
-  background: linear-gradient(135deg, rgba(20, 241, 149, 0.22), rgba(153, 69, 255, 0.18));
+  border: 1px solid rgba(255, 203, 5, 0.45);
+  background: linear-gradient(135deg, rgba(238, 21, 21, 0.22), rgba(255, 203, 5, 0.18));
   color: #f8fafc;
-  box-shadow: 0 0 32px rgba(0, 209, 255, 0.3);
+  box-shadow: 0 0 32px rgba(238, 21, 21, 0.3);
 }
 
-.sol-board {
+.poke-board {
   border-radius: 1rem;
   box-shadow:
-    0 0 0 2px rgba(0, 209, 255, 0.25),
-    0 0 48px rgba(153, 69, 255, 0.15),
-    inset 0 -24px 48px rgba(20, 241, 149, 0.08);
+    0 0 0 2px rgba(238, 21, 21, 0.25),
+    0 0 48px rgba(255, 203, 5, 0.12),
+    inset 0 -24px 48px rgba(238, 21, 21, 0.08);
 }
 
-.sol-board::after {
+.poke-board::after {
   content: "";
   pointer-events: none;
   position: absolute;
   inset: auto 0 0 0;
   height: 35%;
   border-radius: 0 0 1rem 1rem;
-  background: linear-gradient(to top, rgba(0, 209, 255, 0.1), transparent);
-  animation: sol-pulse 2.5s ease-in-out infinite;
+  background: linear-gradient(to top, rgba(238, 21, 21, 0.1), transparent);
+  animation: poke-pulse 2.5s ease-in-out infinite;
 }
 
 @keyframes slot-flash {
   0%,
   100% {
-    box-shadow: 0 0 0 rgba(0, 209, 255, 0);
+    box-shadow: 0 0 0 rgba(255, 203, 5, 0);
   }
   50% {
-    box-shadow: 0 0 32px rgba(20, 241, 149, 0.85);
+    box-shadow: 0 0 32px rgba(255, 203, 5, 0.85);
   }
 }
 
@@ -128,7 +131,7 @@ body {
   animation: slot-flash 0.9s ease-out 2;
 }
 
-@keyframes float-sol {
+@keyframes float-poke {
   0%,
   100% {
     transform: translateY(0) rotate(-4deg);
@@ -138,8 +141,8 @@ body {
   }
 }
 
-.sol-float {
-  animation: float-sol 5s ease-in-out infinite;
+.poke-float {
+  animation: float-poke 5s ease-in-out infinite;
 }
 
 @keyframes pulse-grid {
@@ -156,7 +159,7 @@ body {
   animation: pulse-grid 7s ease-in-out infinite;
 }
 
-@keyframes sol-pulse {
+@keyframes poke-pulse {
   0%,
   100% {
     opacity: 0.45;
@@ -166,12 +169,12 @@ body {
   }
 }
 
-.sol-shimmer {
-  animation: sol-pulse 3s ease-in-out infinite;
+.poke-shimmer {
+  animation: poke-pulse 3s ease-in-out infinite;
 }
 
 :focus-visible {
-  outline: 2px solid var(--sol-cyan);
+  outline: 2px solid var(--poke-yellow);
   outline-offset: 2px;
   border-radius: 8px;
 }
@@ -183,7 +186,7 @@ body {
   background: rgba(0, 0, 0, 0.35);
 }
 .feed-scroll::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, var(--sol-green), var(--sol-purple));
+  background: linear-gradient(180deg, var(--poke-red), var(--poke-yellow));
   border-radius: 3px;
 }
 

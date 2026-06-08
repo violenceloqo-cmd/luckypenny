@@ -28,7 +28,7 @@ export interface LiveFeedProps {
 }
 
 const BURNED_BADGE =
-  "bg-[#14F195]/20 text-[#86efac] border-[#14F195]/35";
+  "bg-[#EE1515]/20 text-[#fca5a5] border-[#EE1515]/35";
 
 function SolscanLink({
   sig,
@@ -42,7 +42,7 @@ function SolscanLink({
       href={solscanTxUrl(sig)}
       target="_blank"
       rel="noreferrer"
-      className="inline-flex items-center gap-1 rounded border border-[#00D1FF]/25 bg-[#00D1FF]/10 px-1.5 py-0.5 text-[#00D1FF] hover:border-[#14F195]/40 hover:text-[#14F195]"
+      className="inline-flex items-center gap-1 rounded border border-[#FFCB05]/25 bg-[#FFCB05]/10 px-1.5 py-0.5 text-[#FFCB05] hover:border-[#EE1515]/40 hover:text-[#EE1515]"
       title={`View ${label.toLowerCase()} on Solscan`}
     >
       {label} {shortSig(sig)}
@@ -62,12 +62,12 @@ export default function LiveFeed({ drops, className = "" }: LiveFeedProps) {
       <div className="mb-2 flex items-center justify-between border-b border-white/8 pb-2 px-1">
         <div className="flex items-center gap-2">
           <span className="relative flex h-2 w-2">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#14F195] opacity-60" />
-            <span className="relative inline-flex h-2 w-2 rounded-full bg-[#14F195]" />
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#EE1515] opacity-60" />
+            <span className="relative inline-flex h-2 w-2 rounded-full bg-[#EE1515]" />
           </span>
-          <h2 className="text-xs font-bold uppercase tracking-widest text-white/70">Live Drops</h2>
+          <h2 className="text-xs font-bold uppercase tracking-widest text-white/70">Live Throws</h2>
         </div>
-        <span className="font-mono text-[10px] text-white/40">{visibleDrops.length} drops</span>
+        <span className="font-mono text-[10px] text-white/40">{visibleDrops.length} catches</span>
       </div>
       <div className="feed-scroll -mr-1 flex min-h-0 flex-1 flex-col gap-1.5 overflow-y-auto pr-1 max-h-[40vh] lg:max-h-none">
         <AnimatePresence initial={false}>
@@ -78,7 +78,7 @@ export default function LiveFeed({ drops, className = "" }: LiveFeedProps) {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, scale: 0.97 }}
               transition={{ duration: 0.25 }}
-              className="rounded-lg border border-[#00D1FF]/15 bg-black/40 px-3 py-2 text-xs"
+              className="rounded-lg border border-[#EE1515]/15 bg-black/40 px-3 py-2 text-xs"
             >
               <div className="flex items-center justify-between gap-2">
                 <span className="truncate font-bold text-white/90">{d.username}</span>
@@ -90,9 +90,9 @@ export default function LiveFeed({ drops, className = "" }: LiveFeedProps) {
               </div>
               <div className="mt-1 flex items-center justify-between gap-2 text-[11px]">
                 <span>
-                  <span className="font-extrabold text-[#00D1FF]">{Number(d.multiplier)}x</span>
+                  <span className="font-extrabold text-[#FFCB05]">{Number(d.multiplier)}x</span>
                   {" → "}
-                  <span className="font-mono text-[#14F195]">{formatSol(Number(d.sol_out))}</span>
+                  <span className="font-mono text-[#EE1515]">{formatSol(Number(d.sol_out))}</span>
                 </span>
                 <span className="text-white/40">{formatTime(d.created_at)} ago</span>
               </div>
@@ -101,7 +101,7 @@ export default function LiveFeed({ drops, className = "" }: LiveFeedProps) {
                 {d.tokens_burned && (
                   <span className="text-white/45">
                     burned{" "}
-                    <span className="font-mono text-[#9945FF]">
+                    <span className="font-mono text-[#F5F5F5]">
                       {formatTokens(d.tokens_burned, 6)}
                     </span>
                   </span>
@@ -116,8 +116,8 @@ export default function LiveFeed({ drops, className = "" }: LiveFeedProps) {
           ))}
         </AnimatePresence>
         {visibleDrops.length === 0 && (
-          <div className="rounded-lg border border-dashed border-[#00D1FF]/25 bg-[#0a0a14]/50 py-8 text-center text-xs text-white/45">
-            Waiting for the first SOL drop…
+          <div className="rounded-lg border border-dashed border-[#EE1515]/25 bg-[#141418]/50 py-8 text-center text-xs text-white/45">
+            Waiting for the first Pokéball throw…
           </div>
         )}
       </div>
