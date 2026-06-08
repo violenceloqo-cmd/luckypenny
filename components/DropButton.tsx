@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 
-import FinBallIcon from "@/components/FinBallIcon";
+import BountyBagIcon from "@/components/BountyBagIcon";
 import { cn } from "@/lib/utils";
 
 export interface DropButtonProps {
@@ -89,9 +89,9 @@ export default function DropButton({
           />
           <defs>
             <linearGradient id="drop-grad" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stopColor="#E4F4FC" />
-              <stop offset="50%" stopColor="#59B8F5" />
-              <stop offset="100%" stopColor="#3A98D8" />
+              <stop offset="0%" stopColor="#ffe566" />
+              <stop offset="50%" stopColor="#4ade80" />
+              <stop offset="100%" stopColor="#f5c518" />
             </linearGradient>
           </defs>
         </svg>
@@ -101,7 +101,7 @@ export default function DropButton({
           whileHover={{ scale: isDisabled ? 1 : 1.03 }}
           onClick={onDrop}
           disabled={isDisabled}
-          aria-label="Drop Fin ball"
+          aria-label="Drop bounty bag"
           className={cn(
             "btn-drop relative grid place-items-center rounded-full font-extrabold uppercase tracking-wide",
             "transition-all",
@@ -110,7 +110,7 @@ export default function DropButton({
           style={{ width: size - stroke * 2, height: size - stroke * 2, margin: stroke }}
         >
           {busy ? (
-            <span className="text-xs text-[#59B8F5]">Dropping…</span>
+            <span className="text-xs text-[#4ade80]">Dropping…</span>
           ) : onCooldown ? (
             <span className="flex flex-col items-center leading-tight">
               <span className="mono-stat text-2xl font-black text-white">{seconds}s</span>
@@ -118,14 +118,14 @@ export default function DropButton({
             </span>
           ) : (
             <span className="flex flex-col items-center leading-tight">
-              <FinBallIcon size={32} className="mb-1" />
-              <span className="text-[10px] tracking-widest text-[#59B8F5]">DROP FIN</span>
+              <BountyBagIcon size={32} className="mb-1" />
+              <span className="text-[10px] tracking-widest text-[#4ade80]">DROP BAG</span>
             </span>
           )}
         </motion.button>
       </div>
       <div className="text-xs text-white/50">
-        <span className="font-semibold text-[#59B8F5]">0.01</span> per drop · pump.fun buy &amp; burn
+        <span className="font-semibold text-[#f5c518]">0.01</span> per drop · pump.fun buy &amp; burn
       </div>
     </div>
   );

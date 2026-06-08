@@ -43,7 +43,7 @@ export default function BountyDropper({ children }: { children: React.ReactNode 
           className="mt-2 text-center text-[9px] font-bold uppercase tracking-[0.22em] text-[#4ade80]"
           style={{ fontFamily: "var(--font-display)" }}
         >
-          Bounty vault · Drop to claim
+          Bounty chute · Drop the bag
         </p>
       </motion.div>
 

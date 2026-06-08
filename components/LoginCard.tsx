@@ -1,8 +1,9 @@
 "use client";
 
 import { motion } from "framer-motion";
-import Image from "next/image";
 import { useState } from "react";
+
+import BountyBagIcon from "@/components/BountyBagIcon";
 
 interface LoginCardProps {
   onLoggedIn: (user: { uid: string; username: string }) => void;
@@ -37,7 +38,7 @@ export default function LoginCard({ onLoggedIn }: LoginCardProps) {
   };
 
   return (
-    <div className="fixed inset-0 z-30 grid place-items-center bg-[#081522]/85 p-4 backdrop-blur-md">
+    <div className="fixed inset-0 z-30 grid place-items-center bg-[#060a06]/85 p-4 backdrop-blur-md">
       <motion.div
         initial={{ opacity: 0, y: 20, scale: 0.96 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -45,7 +46,7 @@ export default function LoginCard({ onLoggedIn }: LoginCardProps) {
         className="glass relative w-full max-w-md overflow-hidden rounded-2xl p-7 text-white"
       >
         <div
-          className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#59B8F5] to-transparent"
+          className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#4ade80] to-transparent"
           aria-hidden="true"
         />
 
@@ -53,35 +54,28 @@ export default function LoginCard({ onLoggedIn }: LoginCardProps) {
           <motion.div
             animate={{ y: [0, -8, 0] }}
             transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-            className="relative h-24 w-24 overflow-hidden rounded-2xl ring-2 ring-[#59B8F5]/40 shadow-[0_0_32px_rgba(89,184,245,0.35)]"
           >
-            <Image
-              src="/fin-mascot.png"
-              alt="Fin mascot"
-              fill
-              className="object-cover"
-              priority
-            />
+            <BountyBagIcon size={72} />
           </motion.div>
           <h1
-            className="text-center text-2xl font-bold fin-text"
+            className="text-center text-2xl font-bold bounty-text"
             style={{ fontFamily: "var(--font-display)" }}
           >
-            FIN DROP
+            BOUNTY DROP
           </h1>
           <p className="text-center text-[11px] uppercase tracking-[0.25em] text-white/45">
-            Fin drops fin balls · Buy &amp; Burn
+            Cash bags · Buy &amp; Burn
           </p>
         </div>
 
         <p className="mb-6 text-center text-sm text-white/65">
-          Pick a handle and drop fin balls through the board every minute. Where you land sets the
+          Pick a handle and drop money bags through the board every minute. Where you land sets the
           multiplier on a live pump.fun buy &amp; on-chain burn.
         </p>
 
         <form onSubmit={onSubmit} className="flex flex-col gap-3">
           <label className="text-[10px] uppercase tracking-widest text-white/45" htmlFor="username">
-            Trainer handle
+            Bounty handle
           </label>
           <input
             id="username"
@@ -92,7 +86,7 @@ export default function LoginCard({ onLoggedIn }: LoginCardProps) {
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             placeholder="3–16 letters, numbers, underscore"
-            className="w-full rounded-lg border border-[#59B8F5]/25 bg-[#0f2238]/80 px-4 py-3 font-mono text-sm text-white placeholder:text-white/25 focus:border-[#59B8F5]/55 focus:outline-none focus:ring-1 focus:ring-[#59B8F5]/30"
+            className="w-full rounded-lg border border-[#4ade80]/25 bg-[#0c140c]/80 px-4 py-3 font-mono text-sm text-white placeholder:text-white/25 focus:border-[#f5c518]/55 focus:outline-none focus:ring-1 focus:ring-[#f5c518]/30"
             maxLength={16}
             required
           />
@@ -108,7 +102,7 @@ export default function LoginCard({ onLoggedIn }: LoginCardProps) {
             disabled={submitting || username.length < 3}
             className="btn-drop mt-2 rounded-lg px-4 py-3 font-extrabold uppercase tracking-widest disabled:cursor-not-allowed disabled:opacity-50"
           >
-            {submitting ? "Entering…" : "Enter Arena"}
+            {submitting ? "Entering…" : "Enter Vault"}
           </button>
         </form>
 

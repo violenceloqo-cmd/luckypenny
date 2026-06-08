@@ -15,13 +15,13 @@ const fredoka = Fredoka({
 });
 
 export const metadata: Metadata = {
-  title: "Fin Drop — Fin Ball Plinko Buy & Burn",
+  title: "Bounty Drop — Cash Bag Plinko Buy & Burn",
   description:
-    "Fin drops fin balls through Plinko. Every landing multiplies a pump.fun token buy and on-chain SPL burn.",
+    "Drop money bags through Plinko. Every landing multiplies a pump.fun token buy and on-chain SPL burn.",
 };
 
 export const viewport: Viewport = {
-  themeColor: "#59B8F5",
+  themeColor: "#4ade80",
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
