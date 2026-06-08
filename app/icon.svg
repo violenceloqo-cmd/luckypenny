@@ -1,20 +1,19 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
   <defs>
-    <radialGradient id="red" cx="38%" cy="28%" r="70%">
-      <stop offset="0%" stop-color="#FF5555"/>
-      <stop offset="55%" stop-color="#EE1515"/>
-      <stop offset="100%" stop-color="#C30A0A"/>
-    </radialGradient>
+    <linearGradient id="blue" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#59B8F5"/>
+      <stop offset="100%" stop-color="#3A98D8"/>
+    </linearGradient>
     <clipPath id="ball">
       <circle cx="32" cy="32" r="30"/>
     </clipPath>
   </defs>
-  <circle cx="32" cy="32" r="32" fill="#F5F5F5"/>
+  <rect width="64" height="64" rx="14" fill="#59B8F5"/>
   <g clip-path="url(#ball)">
-    <rect x="2" y="2" width="60" height="30" fill="url(#red)"/>
-    <rect x="2" y="32" width="60" height="30" fill="#F5F5F5"/>
-    <rect x="2" y="29" width="60" height="6" fill="#1D1D1B"/>
+    <path d="M2 32 C10 28, 14 36, 32 32 C50 28, 54 36, 62 32 L62 2 L2 2 Z" fill="url(#blue)"/>
+    <path d="M2 32 C10 36, 14 28, 32 32 C50 36, 54 28, 62 32 L62 62 L2 62 Z" fill="#E4F4FC"/>
   </g>
-  <circle cx="32" cy="32" r="9" fill="#F5F5F5" stroke="#1D1D1B" stroke-width="3"/>
-  <circle cx="32" cy="32" r="3.2" fill="#F5F5F5" stroke="#1D1D1B" stroke-width="1.5"/>
+  <circle cx="24" cy="28" r="2.5" fill="#1A1A1A"/>
+  <circle cx="40" cy="28" r="2.5" fill="#1A1A1A"/>
+  <path d="M28 36 Q32 39 36 36" stroke="#1A1A1A" stroke-width="1.8" stroke-linecap="round" fill="none"/>
 </svg>

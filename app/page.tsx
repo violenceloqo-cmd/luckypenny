@@ -9,8 +9,8 @@ import Board, { type DropEvent } from "@/components/Board";
 import DropButton from "@/components/DropButton";
 import LiveFeed, { type FeedDrop, useLiveFeedTicker } from "@/components/LiveFeed";
 import LoginCard from "@/components/LoginCard";
-import PokeBallIcon from "@/components/PokeBallIcon";
-import PokeDropper from "@/components/PokeDropper";
+import FinBallIcon from "@/components/FinBallIcon";
+import FinDropper from "@/components/FinDropper";
 import StatsBar from "@/components/Stats";
 import ThemeBackground from "@/components/ThemeBackground";
 import WinCameo from "@/components/WinCameo";
@@ -217,7 +217,7 @@ export default function HomePage() {
 
       setMe((cur) => ({ ...cur, cooldownRemainingMs: cur.cooldownSeconds * 1000 }));
       setStats((s) => ({ ...s, totalDrops: s.totalDrops + 1 }));
-      setAnnounce(`Pokéball thrown — targeting ${data.multiplier}x slot.`);
+      setAnnounce(`Fin ball dropped — targeting ${data.multiplier}x slot.`);
     } finally {
       setDropping(false);
     }
@@ -226,13 +226,13 @@ export default function HomePage() {
   const onBallLanded = useCallback(
     (ev: DropEvent, slot: number, multiplier: number) => {
       setPendingDrops((cur) => cur.filter((p) => p.id !== ev.id));
-      setAnnounce(`Caught: ${multiplier}x`);
+      setAnnounce(`Fin caught: ${multiplier}x`);
       if (isBigWin(slot)) {
         confetti({
           particleCount: 180,
           spread: 90,
           origin: { y: 0.7 },
-          colors: ["#EE1515", "#FFCB05", "#F5F5F5", "#ffffff"],
+          colors: ["#59B8F5", "#E4F4FC", "#3A98D8", "#ffffff"],
           scalar: 1.1,
         });
       }
@@ -278,22 +278,22 @@ export default function HomePage() {
               initial={{ opacity: 0, scale: 0.7 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.5, type: "spring", stiffness: 220, damping: 14 }}
-              className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-[#141418]/90 ring-1 ring-[#EE1515]/35 shadow-[0_0_24px_rgba(238,21,21,0.25)] sm:h-11 sm:w-11"
+              className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-[#0f2238]/90 ring-1 ring-[#59B8F5]/35 shadow-[0_0_24px_rgba(89,184,245,0.25)] sm:h-11 sm:w-11"
             >
-              <PokeBallIcon size={28} />
+              <FinBallIcon size={28} />
             </motion.div>
             <div>
               <motion.h1
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4 }}
-                className="text-lg poke-text sm:text-xl"
+                className="text-lg fin-text sm:text-xl"
                 style={{ fontFamily: "var(--font-display)" }}
               >
-                POKE DROP
+                FIN DROP
               </motion.h1>
               <span className="hidden text-[10px] uppercase tracking-[0.2em] text-white/40 sm:inline">
-                Pokéball Plinko · Buy &amp; Burn
+                Fin drops fin balls · Buy &amp; Burn
               </span>
             </div>
           </div>
@@ -304,14 +304,14 @@ export default function HomePage() {
                 onClick={onCopyCA}
                 title={`Copy contract address: ${TOKEN_MINT}`}
                 aria-label="Copy contract address"
-                className="group flex items-center gap-1.5 rounded-lg border border-[#EE1515]/30 bg-[#141418]/80 px-2.5 py-1 font-mono text-[11px] text-[#FFCB05] transition hover:border-[#FFCB05]/55 hover:bg-[#141418] sm:text-xs"
+                className="group flex items-center gap-1.5 rounded-lg border border-[#59B8F5]/30 bg-[#0f2238]/80 px-2.5 py-1 font-mono text-[11px] text-[#59B8F5] transition hover:border-[#59B8F5]/55 hover:bg-[#0f2238] sm:text-xs"
               >
                 <span className="hidden text-[10px] font-sans font-semibold uppercase tracking-widest text-white/40 sm:inline">
                   Mint
                 </span>
                 <span>{shortenAddress(TOKEN_MINT)}</span>
                 {copied ? (
-                  <Check className="h-3.5 w-3.5 text-[#FFCB05]" />
+                  <Check className="h-3.5 w-3.5 text-[#59B8F5]" />
                 ) : (
                   <Copy className="h-3.5 w-3.5 opacity-60 group-hover:opacity-100" />
                 )}
@@ -320,12 +320,12 @@ export default function HomePage() {
 
             {me.user && (
               <>
-                <span className="rounded-lg border border-[#EE1515]/20 bg-[#141418]/80 px-3 py-1 font-mono text-xs font-semibold text-white/80">
+                <span className="rounded-lg border border-[#59B8F5]/20 bg-[#0f2238]/80 px-3 py-1 font-mono text-xs font-semibold text-white/80">
                   {me.user.username}
                 </span>
                 <button
                   onClick={onLogout}
-                  className="grid h-8 w-8 place-items-center rounded-lg border border-[#EE1515]/20 bg-[#141418]/80 text-white/70 hover:border-[#FFCB05]/40 hover:text-white sm:h-9 sm:w-9"
+                  className="grid h-8 w-8 place-items-center rounded-lg border border-[#59B8F5]/20 bg-[#0f2238]/80 text-white/70 hover:border-[#E4F4FC]/40 hover:text-white sm:h-9 sm:w-9"
                   aria-label="Sign out"
                 >
                   <LogOut className="h-4 w-4" />
@@ -351,9 +351,9 @@ export default function HomePage() {
                 className="flex h-full max-h-full w-full items-center justify-center"
                 style={{ aspectRatio: "672 / 580" }}
               >
-                <PokeDropper>
+                <FinDropper>
                   <Board pending={pendingDrops} onBallLanded={onBallLanded} />
-                </PokeDropper>
+                </FinDropper>
               </div>
             </div>
             <DropButton
