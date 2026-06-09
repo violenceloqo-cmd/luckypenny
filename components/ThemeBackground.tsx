@@ -2,9 +2,9 @@
 
 import { useMemo } from "react";
 
-import BountyBagIcon from "@/components/BountyBagIcon";
+import FinBallIcon from "@/components/FinBallIcon";
 
-interface FloatingBag {
+interface FloatingBall {
   left: number;
   top: number;
   scale: number;
@@ -12,13 +12,13 @@ interface FloatingBag {
   opacity: number;
 }
 
-function generateBags(count: number, seed: number): FloatingBag[] {
+function generateBalls(count: number, seed: number): FloatingBall[] {
   let s = seed >>> 0;
   const rand = () => {
     s = (s * 1664525 + 1013904223) >>> 0;
     return s / 4294967296;
   };
-  const out: FloatingBag[] = [];
+  const out: FloatingBall[] = [];
   for (let i = 0; i < count; i++) {
     out.push({
       left: rand() * 100,
@@ -32,19 +32,19 @@ function generateBags(count: number, seed: number): FloatingBag[] {
 }
 
 export default function ThemeBackground() {
-  const bags = useMemo(() => generateBags(10, 42069), []);
+  const balls = useMemo(() => generateBalls(10, 42069), []);
 
   return (
-    <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden bg-[#060a06]">
+    <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden bg-[#081522]">
       <div
         className="absolute inset-0"
         style={{
           background: `
-            radial-gradient(ellipse 90% 70% at 50% 0%, rgba(74, 222, 128, 0.15) 0%, transparent 55%),
-            radial-gradient(ellipse 60% 50% at 15% 40%, rgba(245, 197, 24, 0.08) 0%, transparent 50%),
-            radial-gradient(ellipse 70% 60% at 85% 60%, rgba(61, 154, 92, 0.06) 0%, transparent 50%),
-            radial-gradient(ellipse 100% 50% at 50% 100%, rgba(245, 197, 24, 0.1) 0%, transparent 45%),
-            linear-gradient(180deg, #121f12 0%, #0c140c 40%, #060a06 100%)
+            radial-gradient(ellipse 90% 70% at 50% 0%, rgba(89, 184, 245, 0.18) 0%, transparent 55%),
+            radial-gradient(ellipse 60% 50% at 15% 40%, rgba(228, 244, 252, 0.08) 0%, transparent 50%),
+            radial-gradient(ellipse 70% 60% at 85% 60%, rgba(58, 152, 216, 0.06) 0%, transparent 50%),
+            radial-gradient(ellipse 100% 50% at 50% 100%, rgba(89, 184, 245, 0.1) 0%, transparent 45%),
+            linear-gradient(180deg, #152d4a 0%, #0f2238 40%, #081522 100%)
           `,
         }}
         aria-hidden="true"
@@ -54,7 +54,7 @@ export default function ThemeBackground() {
         className="grid-pulse absolute inset-0 opacity-30"
         style={{
           backgroundImage:
-            "linear-gradient(rgba(74, 222, 128, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(245, 197, 24, 0.05) 1px, transparent 1px)",
+            "linear-gradient(rgba(89, 184, 245, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(228, 244, 252, 0.05) 1px, transparent 1px)",
           backgroundSize: "40px 40px",
           maskImage: "radial-gradient(ellipse 90% 80% at 50% 45%, black 15%, transparent 75%)",
         }}
@@ -62,14 +62,14 @@ export default function ThemeBackground() {
       />
 
       <div
-        className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#4ade80]/40 to-transparent"
+        className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#59B8F5]/40 to-transparent"
         aria-hidden="true"
       />
 
-      {bags.map((o, i) => (
+      {balls.map((o, i) => (
         <div
           key={i}
-          className="bounty-float absolute"
+          className="fin-float absolute"
           style={{
             left: `${o.left}%`,
             top: `${o.top}%`,
@@ -79,14 +79,14 @@ export default function ThemeBackground() {
           }}
           aria-hidden="true"
         >
-          <BountyBagIcon size={44} glow={false} />
+          <FinBallIcon size={44} glow={false} />
         </div>
       ))}
 
       <div
-        className="bounty-shimmer absolute inset-x-0 bottom-0 h-48"
+        className="fin-shimmer absolute inset-x-0 bottom-0 h-48"
         style={{
-          background: "linear-gradient(to top, rgba(245, 197, 24, 0.1), transparent)",
+          background: "linear-gradient(to top, rgba(89, 184, 245, 0.1), transparent)",
         }}
         aria-hidden="true"
       />

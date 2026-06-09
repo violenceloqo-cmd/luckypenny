@@ -1,28 +1,19 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
   <defs>
-    <linearGradient id="bag-body" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#ffe566"/>
-      <stop offset="40%" stop-color="#f5c518"/>
-      <stop offset="100%" stop-color="#5c3d1e"/>
+    <linearGradient id="blue" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#59B8F5"/>
+      <stop offset="100%" stop-color="#3A98D8"/>
     </linearGradient>
-    <linearGradient id="bag-neck" x1="50%" y1="0%" x2="50%" y2="100%">
-      <stop offset="0%" stop-color="#a67c2e"/>
-      <stop offset="100%" stop-color="#5c3d1e"/>
-    </linearGradient>
-    <radialGradient id="glow" cx="50%" cy="50%" r="50%">
-      <stop offset="0%" stop-color="rgba(74,222,128,0.35)"/>
-      <stop offset="100%" stop-color="rgba(74,222,128,0)"/>
-    </radialGradient>
+    <clipPath id="ball">
+      <circle cx="32" cy="32" r="30"/>
+    </clipPath>
   </defs>
-  <rect width="64" height="64" rx="14" fill="#0c140c"/>
-  <circle cx="32" cy="32" r="30" fill="url(#glow)"/>
-  <ellipse cx="32" cy="54" rx="22" ry="6" fill="rgba(0,0,0,0.35)"/>
-  <path d="M18 22 C14 30 12 44 32 50 C52 44 50 30 46 22 C44 18 36 16 32 16 C28 16 20 18 18 22 Z" fill="url(#bag-body)" stroke="#5c3d1e" stroke-width="1.2"/>
-  <ellipse cx="32" cy="20" rx="12" ry="5" fill="url(#bag-neck)"/>
-  <path d="M22 21 Q32 14 42 21" fill="none" stroke="#3d2810" stroke-width="2" stroke-linecap="round"/>
-  <circle cx="32" cy="17" r="4" fill="#5c3d1e"/>
-  <rect x="14" y="14" width="14" height="8" rx="1" fill="#85bb65" stroke="#3d9a5c" stroke-width="0.8" transform="rotate(-18 21 18)"/>
-  <rect x="36" y="13" width="12" height="7" rx="1" fill="#85bb65" stroke="#3d9a5c" stroke-width="0.8" transform="rotate(14 42 16)"/>
-  <rect x="18" y="30" width="28" height="10" rx="2" fill="rgba(61,154,92,0.45)" stroke="#3d9a5c" stroke-width="0.6"/>
-  <text x="32" y="38" text-anchor="middle" dominant-baseline="middle" fill="#0c140c" font-size="18" font-weight="800" font-family="system-ui,sans-serif">$</text>
+  <rect width="64" height="64" rx="14" fill="#59B8F5"/>
+  <g clip-path="url(#ball)">
+    <path d="M2 32 C10 28, 14 36, 32 32 C50 28, 54 36, 62 32 L62 2 L2 2 Z" fill="url(#blue)"/>
+    <path d="M2 32 C10 36, 14 28, 32 32 C50 36, 54 28, 62 32 L62 62 L2 62 Z" fill="#E4F4FC"/>
+  </g>
+  <circle cx="24" cy="28" r="2.5" fill="#1A1A1A"/>
+  <circle cx="40" cy="28" r="2.5" fill="#1A1A1A"/>
+  <path d="M28 36 Q32 39 36 36" stroke="#1A1A1A" stroke-width="1.8" stroke-linecap="round" fill="none"/>
 </svg>

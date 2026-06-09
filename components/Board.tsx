@@ -15,16 +15,7 @@ import {
   slotX,
 } from "@/lib/game/physics";
 import { outcomeFromSeed } from "@/lib/game/rng";
-import {
-  drawBountyBag,
-  preloadBountyBagSprite,
-  BOUNTY_GOLD,
-  BOUNTY_GOLD_BRIGHT,
-  BOUNTY_GOLD_DARK,
-  CASH_GREEN,
-  CASH_GREEN_BRIGHT,
-  PUMP_GREEN,
-} from "@/lib/bountyBrand";
+import { drawFinBall, preloadFinBallSprite, FIN_BLUE, FIN_BLUE_DARK, FIN_LIGHT } from "@/lib/finBrand";
 
 export interface DropEvent {
   id: string;
@@ -47,7 +38,7 @@ export interface BoardProps {
   onBallLanded: (event: DropEvent, slot: number, multiplier: number) => void;
 }
 
-function drawBountyPool(
+function drawFinPool(
   ctx: CanvasRenderingContext2D,
   left: number,
   right: number,
@@ -60,10 +51,10 @@ function drawBountyPool(
   const poolTop = top + h * 0.5;
 
   const grad = ctx.createLinearGradient(0, poolTop, 0, bottom);
-  grad.addColorStop(0, "rgba(74, 222, 128, 0)");
-  grad.addColorStop(0.35, "rgba(245, 197, 24, 0.12)");
-  grad.addColorStop(0.7, "rgba(61, 154, 92, 0.18)");
-  grad.addColorStop(1, "rgba(245, 197, 24, 0.28)");
+  grad.addColorStop(0, "rgba(228, 244, 252, 0)");
+  grad.addColorStop(0.35, "rgba(89, 184, 245, 0.12)");
+  grad.addColorStop(0.7, "rgba(58, 152, 216, 0.18)");
+  grad.addColorStop(1, "rgba(89, 184, 245, 0.28)");
   ctx.fillStyle = grad;
   ctx.fillRect(left, poolTop, w, bottom - poolTop);
 
@@ -73,9 +64,9 @@ function drawBountyPool(
     const cy = bottom - 12 - bob - (i % 3) * 3;
     const orbR = 2 + (i % 2) * 0.8;
     const orbGrad = ctx.createRadialGradient(cx - 1, cy - 1, 0, cx, cy, orbR + 1);
-    orbGrad.addColorStop(0, BOUNTY_GOLD_BRIGHT);
-    orbGrad.addColorStop(0.5, PUMP_GREEN);
-    orbGrad.addColorStop(1, BOUNTY_GOLD);
+    orbGrad.addColorStop(0, FIN_LIGHT);
+    orbGrad.addColorStop(0.5, FIN_BLUE);
+    orbGrad.addColorStop(1, FIN_BLUE_DARK);
     ctx.fillStyle = orbGrad;
     ctx.beginPath();
     ctx.arc(cx, cy, orbR, 0, Math.PI * 2);
@@ -85,14 +76,14 @@ function drawBountyPool(
   for (let s = 0; s < 5; s++) {
     const sx = left + ((w * s) / 5 + (t * 0.015 + s * 31) % w);
     const sy = poolTop + 12 + ((t * 0.025 + s * 19) % (h * 0.4));
-    ctx.fillStyle = `rgba(245, 197, 24, ${0.1 + (s % 3) * 0.08})`;
+    ctx.fillStyle = `rgba(89, 184, 245, ${0.1 + (s % 3) * 0.08})`;
     ctx.beginPath();
     ctx.arc(sx, sy, 1.5, 0, Math.PI * 2);
     ctx.fill();
   }
 }
 
-/** Bounty bag Plinko — cash-stuffed bags fall through pegs into multiplier slots. */
+/** Fin ball Plinko — split-blue spheres fall through pegs into multiplier slots. */
 export default function Board({ pending, onBallLanded }: BoardProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const wrapRef = useRef<HTMLDivElement | null>(null);
@@ -137,7 +128,7 @@ export default function Board({ pending, onBallLanded }: BoardProps) {
     const wrap = wrapRef.current;
     if (!canvas || !wrap) return;
 
-    preloadBountyBagSprite();
+    preloadFinBallSprite();
 
     const layout = DEFAULT_LAYOUT;
 
@@ -167,26 +158,26 @@ export default function Board({ pending, onBallLanded }: BoardProps) {
     function drawPeg(ctx: CanvasRenderingContext2D, x: number, y: number) {
       const r = layout.pegRadius;
       const g = ctx.createRadialGradient(x - 1, y - 1, 0, x, y, r + 2);
-      g.addColorStop(0, BOUNTY_GOLD_BRIGHT);
-      g.addColorStop(0.45, PUMP_GREEN);
-      g.addColorStop(1, BOUNTY_GOLD);
+      g.addColorStop(0, FIN_LIGHT);
+      g.addColorStop(0.45, FIN_BLUE);
+      g.addColorStop(1, FIN_BLUE_DARK);
       ctx.fillStyle = g;
       ctx.beginPath();
       ctx.arc(x, y, r, 0, Math.PI * 2);
       ctx.fill();
-      ctx.strokeStyle = "rgba(74, 222, 128, 0.4)";
+      ctx.strokeStyle = "rgba(89, 184, 245, 0.4)";
       ctx.lineWidth = 0.6;
       ctx.stroke();
     }
 
     function drawWall(ctx: CanvasRenderingContext2D, x: number, topY: number, botY: number) {
       const w = 3;
-      ctx.fillStyle = "#121f12";
+      ctx.fillStyle = "#152d4a";
       ctx.fillRect(x - w / 2, topY, w, botY - topY);
-      ctx.strokeStyle = "rgba(245, 197, 24, 0.35)";
+      ctx.strokeStyle = "rgba(89, 184, 245, 0.35)";
       ctx.lineWidth = 0.6;
       ctx.strokeRect(x - w / 2, topY, w, botY - topY);
-      ctx.fillStyle = BOUNTY_GOLD;
+      ctx.fillStyle = FIN_BLUE;
       ctx.beginPath();
       ctx.arc(x, topY, 2.5, 0, Math.PI * 2);
       ctx.fill();
@@ -228,13 +219,13 @@ export default function Board({ pending, onBallLanded }: BoardProps) {
       ctx.lineTo(botRightX, botY);
       ctx.lineTo(botLeftX, botY);
       ctx.closePath();
-      ctx.fillStyle = "rgba(6, 10, 6, 0.97)";
+      ctx.fillStyle = "rgba(8, 16, 28, 0.97)";
       ctx.fill();
       ctx.clip();
 
-      drawBountyPool(ctx, botLeftX, botRightX, topY, botY, t);
+      drawFinPool(ctx, botLeftX, botRightX, topY, botY, t);
 
-      ctx.strokeStyle = "rgba(74, 222, 128, 0.06)";
+      ctx.strokeStyle = "rgba(89, 184, 245, 0.06)";
       ctx.lineWidth = 0.5;
       for (let gy = topY + 10; gy < botY; gy += 16) {
         ctx.beginPath();
@@ -258,14 +249,14 @@ export default function Board({ pending, onBallLanded }: BoardProps) {
       ctx.closePath();
       ctx.lineWidth = 4;
       const borderGrad = ctx.createLinearGradient(topLeftX, topY, botRightX, botY);
-      borderGrad.addColorStop(0, BOUNTY_GOLD_BRIGHT);
-      borderGrad.addColorStop(0.35, PUMP_GREEN);
-      borderGrad.addColorStop(0.7, BOUNTY_GOLD);
-      borderGrad.addColorStop(1, CASH_GREEN_BRIGHT);
+      borderGrad.addColorStop(0, FIN_LIGHT);
+      borderGrad.addColorStop(0.35, FIN_BLUE);
+      borderGrad.addColorStop(0.7, FIN_BLUE_DARK);
+      borderGrad.addColorStop(1, FIN_LIGHT);
       ctx.strokeStyle = borderGrad;
       ctx.stroke();
       ctx.lineWidth = 1;
-      ctx.strokeStyle = "rgba(74, 222, 128, 0.2)";
+      ctx.strokeStyle = "rgba(89, 184, 245, 0.2)";
       ctx.stroke();
 
       for (let r = 0; r < layout.rows; r++) {
@@ -277,7 +268,7 @@ export default function Board({ pending, onBallLanded }: BoardProps) {
       const binTopY = layout.slotY - SLOT_BIN_HEIGHT / 2;
       const binBotY = layout.slotY + SLOT_BIN_HEIGHT / 2;
 
-      ctx.strokeStyle = "rgba(245, 197, 24, 0.45)";
+      ctx.strokeStyle = "rgba(89, 184, 245, 0.45)";
       ctx.lineWidth = 2;
       ctx.beginPath();
       ctx.moveTo(botLeftX + 4, binBotY);
@@ -309,7 +300,7 @@ export default function Board({ pending, onBallLanded }: BoardProps) {
         const prevIdx = Math.max(0, Math.min(maxIdx, Math.floor(b.frame - PLINKO_DROP_FRAME_STEP)));
         const prev = b.path[prevIdx] ?? a;
         const velocityY = pt.y - prev.y;
-        drawBountyBag(ctx, pt.x, pt.y, layout.ballRadius, { velocityY });
+        drawFinBall(ctx, pt.x, pt.y, layout.ballRadius, { velocityY });
         b.frame += PLINKO_DROP_FRAME_STEP;
         if (b.frame >= b.path.length) {
           if (!b.finished) {
@@ -350,14 +341,14 @@ export default function Board({ pending, onBallLanded }: BoardProps) {
           const width = layout.colSpacing * scaleInfo.scale - 6;
           const tier =
             m >= 100
-              ? "from-[#ffe566] via-[#4ade80] to-[#f5c518] text-[#0c140c] border-[#4ade80]/70"
+              ? "from-[#E4F4FC] via-[#59B8F5] to-[#3A98D8] text-[#081522] border-[#59B8F5]/70"
               : m >= 10
-                ? "from-[#f5c518] via-[#4ade80] to-[#b8860b] text-[#0c140c] border-[#f5c518]/55"
+                ? "from-[#59B8F5] via-[#E4F4FC] to-[#3A98D8] text-[#081522] border-[#59B8F5]/55"
                 : m >= 3
-                  ? "from-[#1a2e1a] via-[#121f12] to-[#0c140c] text-[#4ade80] border-[#4ade80]/40"
+                  ? "from-[#152d4a] via-[#0f2238] to-[#081522] text-[#59B8F5] border-[#59B8F5]/40"
                   : m >= 1
-                    ? "from-[#121f12] via-[#0c140c] to-[#060a06] text-[#f5c518] border-[#f5c518]/25"
-                    : "from-[#121f12] via-[#0c140c] to-[#060a06] text-[#3d9a5c] border-green-900/40";
+                    ? "from-[#0f2238] via-[#081522] to-[#050508] text-[#E4F4FC] border-[#59B8F5]/25"
+                    : "from-[#0f2238] via-[#081522] to-[#050508] text-[#3A98D8] border-blue-900/40";
           const flashing = slotFlash === i;
           return (
             <div
