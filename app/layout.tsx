@@ -15,13 +15,13 @@ const fredoka = Fredoka({
 });
 
 export const metadata: Metadata = {
-  title: "Fin Drop — Fin Ball Plinko Buy & Burn",
+  title: "Poke Drop — Pokéball Plinko Buy & Burn",
   description:
-    "Fin drops fin balls through Plinko. Every landing multiplies a pump.fun token buy and on-chain SPL burn.",
+    "Drop Pokéballs through Plinko. Every landing multiplies a pump.fun token buy and on-chain SPL burn.",
 };
 
 export const viewport: Viewport = {
-  themeColor: "#59B8F5",
+  themeColor: "#EE1515",
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,

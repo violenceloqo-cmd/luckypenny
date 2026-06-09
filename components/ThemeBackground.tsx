@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 
-import FinBallIcon from "@/components/FinBallIcon";
+import PokeBallIcon from "@/components/PokeBallIcon";
 
 interface FloatingBall {
   left: number;
@@ -35,16 +35,16 @@ export default function ThemeBackground() {
   const balls = useMemo(() => generateBalls(10, 42069), []);
 
   return (
-    <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden bg-[#081522]">
+    <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden bg-[#0a0a0c]">
       <div
         className="absolute inset-0"
         style={{
           background: `
-            radial-gradient(ellipse 90% 70% at 50% 0%, rgba(89, 184, 245, 0.18) 0%, transparent 55%),
-            radial-gradient(ellipse 60% 50% at 15% 40%, rgba(228, 244, 252, 0.08) 0%, transparent 50%),
-            radial-gradient(ellipse 70% 60% at 85% 60%, rgba(58, 152, 216, 0.06) 0%, transparent 50%),
-            radial-gradient(ellipse 100% 50% at 50% 100%, rgba(89, 184, 245, 0.1) 0%, transparent 45%),
-            linear-gradient(180deg, #152d4a 0%, #0f2238 40%, #081522 100%)
+            radial-gradient(ellipse 90% 70% at 50% 0%, rgba(238, 21, 21, 0.18) 0%, transparent 55%),
+            radial-gradient(ellipse 60% 50% at 15% 40%, rgba(255, 203, 5, 0.08) 0%, transparent 50%),
+            radial-gradient(ellipse 70% 60% at 85% 60%, rgba(238, 21, 21, 0.06) 0%, transparent 50%),
+            radial-gradient(ellipse 100% 50% at 50% 100%, rgba(255, 203, 5, 0.1) 0%, transparent 45%),
+            linear-gradient(180deg, #1e1e24 0%, #141418 40%, #0a0a0c 100%)
           `,
         }}
         aria-hidden="true"
@@ -54,7 +54,7 @@ export default function ThemeBackground() {
         className="grid-pulse absolute inset-0 opacity-30"
         style={{
           backgroundImage:
-            "linear-gradient(rgba(89, 184, 245, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(228, 244, 252, 0.05) 1px, transparent 1px)",
+            "linear-gradient(rgba(238, 21, 21, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 203, 5, 0.05) 1px, transparent 1px)",
           backgroundSize: "40px 40px",
           maskImage: "radial-gradient(ellipse 90% 80% at 50% 45%, black 15%, transparent 75%)",
         }}
@@ -62,14 +62,14 @@ export default function ThemeBackground() {
       />
 
       <div
-        className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#59B8F5]/40 to-transparent"
+        className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#EE1515]/40 to-transparent"
         aria-hidden="true"
       />
 
       {balls.map((o, i) => (
         <div
           key={i}
-          className="fin-float absolute"
+          className="poke-float absolute"
           style={{
             left: `${o.left}%`,
             top: `${o.top}%`,
@@ -79,14 +79,14 @@ export default function ThemeBackground() {
           }}
           aria-hidden="true"
         >
-          <FinBallIcon size={44} glow={false} />
+          <PokeBallIcon size={44} glow={false} />
         </div>
       ))}
 
       <div
-        className="fin-shimmer absolute inset-x-0 bottom-0 h-48"
+        className="poke-shimmer absolute inset-x-0 bottom-0 h-48"
         style={{
-          background: "linear-gradient(to top, rgba(89, 184, 245, 0.1), transparent)",
+          background: "linear-gradient(to top, rgba(238, 21, 21, 0.1), transparent)",
         }}
         aria-hidden="true"
       />
