@@ -52,27 +52,27 @@ export default function StatsBar({
     <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 sm:gap-3">
       <Tile
         icon={<CircleDot className="h-4 w-4" />}
-        label="Throws"
+        label="SOL Drops"
         value={totalDrops.toLocaleString()}
-        accent="#EE1515"
+        accent="#14F195"
       />
       <Tile
         icon={<Coins className="h-4 w-4" />}
         label="SOL Out"
         value={formatSol(totalSolOut)}
-        accent="#FFCB05"
+        accent="#00D1FF"
       />
       <Tile
         icon={<Flame className="h-4 w-4" />}
         label="Tokens Burned"
         value={formatTokens(totalTokensBurned, 6)}
-        accent="#F5F5F5"
+        accent="#9945FF"
       />
       <Tile
         icon={<Trophy className="h-4 w-4" />}
-        label="Best Catch"
+        label="Best Multiplier"
         value={`${biggestMultiplier}x`}
-        accent="#EE1515"
+        accent="#14F195"
       />
     </div>
   );

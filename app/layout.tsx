@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Fredoka, Outfit } from "next/font/google";
+import { Outfit, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 
 const outfit = Outfit({
@@ -8,20 +8,20 @@ const outfit = Outfit({
   weight: ["400", "500", "600", "700", "800"],
 });
 
-const fredoka = Fredoka({
+const spaceGrotesk = Space_Grotesk({
   variable: "--font-display",
   subsets: ["latin"],
   weight: ["500", "600", "700"],
 });
 
 export const metadata: Metadata = {
-  title: "Poke Drop — Pokéball Plinko Buy & Burn",
+  title: "SOL Drop — Solana Plinko Buy & Burn",
   description:
-    "Drop Pokéballs through Plinko. Every landing multiplies a pump.fun token buy and on-chain SPL burn.",
+    "Drop Solana orbs through Plinko. Every landing multiplies a pump.fun token buy and on-chain SPL burn.",
 };
 
 export const viewport: Viewport = {
-  themeColor: "#EE1515",
+  themeColor: "#9945FF",
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
@@ -33,7 +33,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${outfit.variable} ${fredoka.variable} h-full antialiased`}>
+    <html lang="en" className={`${outfit.variable} ${spaceGrotesk.variable} h-full antialiased`}>
       <body className="min-h-full">{children}</body>
     </html>
   );
