@@ -4,20 +4,22 @@ import { AnimatePresence, motion } from "framer-motion";
 import { ExternalLink } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
-import { formatSol, formatTime, formatTokens, shortSig } from "@/lib/utils";
-import { solscanTxUrl } from "@/lib/solana/cluster";
+import { blockscoutTxUrl } from "@/lib/evm/explorer";
+import { getPublicTokenDecimals } from "@/lib/token";
+import { formatTime, formatTokens, formatUsd, shortSig } from "@/lib/utils";
+
+export type DropStatus = "pending" | "bought" | "failed" | "skipped";
 
 export interface FeedDrop {
   id: string;
   username: string;
   slot_index: number;
   multiplier: number;
-  sol_in: number;
-  sol_out: number;
-  status: "pending" | "bought" | "burned" | "failed" | "skipped";
-  buy_sig?: string | null;
-  burn_sig?: string | null;
-  tokens_burned?: string | null;
+  usd_in: number;
+  usd_out: number;
+  status: DropStatus;
+  buy_tx?: string | null;
+  tokens_bought?: string | null;
   error?: string | null;
   created_at: string;
 }
@@ -27,31 +29,31 @@ export interface LiveFeedProps {
   className?: string;
 }
 
-const BURNED_BADGE =
-  "bg-[#14F195]/20 text-[#86efac] border-[#14F195]/35";
+/** Each status gets its own badge. Never label a row as something it isn't. */
+const STATUS_BADGE: Record<DropStatus, string> = {
+  bought: "bg-[#CCFF00]/20 text-[#CCFF00] border-[#CCFF00]/35",
+  pending: "bg-white/10 text-white/60 border-white/20",
+  skipped: "bg-[#8FB800]/15 text-[#8FB800] border-[#8FB800]/30",
+  failed: "bg-red-500/15 text-red-300 border-red-500/30",
+};
 
-function SolscanLink({
-  sig,
-  label,
-}: {
-  sig: string;
-  label: string;
-}) {
+function BlockscoutLink({ hash, label }: { hash: string; label: string }) {
   return (
     <a
-      href={solscanTxUrl(sig)}
+      href={blockscoutTxUrl(hash)}
       target="_blank"
       rel="noreferrer"
-      className="inline-flex items-center gap-1 rounded border border-[#00D1FF]/25 bg-[#00D1FF]/10 px-1.5 py-0.5 text-[#00D1FF] hover:border-[#14F195]/40 hover:text-[#14F195]"
-      title={`View ${label.toLowerCase()} on Solscan`}
+      className="inline-flex items-center gap-1 rounded border border-[#E9FF7A]/25 bg-[#E9FF7A]/10 px-1.5 py-0.5 text-[#E9FF7A] hover:border-[#CCFF00]/40 hover:text-[#CCFF00]"
+      title={`View ${label.toLowerCase()} on Blockscout`}
     >
-      {label} {shortSig(sig)}
+      {label} {shortSig(hash)}
       <ExternalLink className="h-3 w-3" />
     </a>
   );
 }
 
 export default function LiveFeed({ drops, className = "" }: LiveFeedProps) {
+  const decimals = getPublicTokenDecimals();
   const visibleDrops = useMemo(
     () => drops.filter((d) => d.status !== "failed").slice(0, 50),
     [drops],
@@ -62,8 +64,8 @@ export default function LiveFeed({ drops, className = "" }: LiveFeedProps) {
       <div className="mb-2 flex items-center justify-between border-b border-white/8 pb-2 px-1">
         <div className="flex items-center gap-2">
           <span className="relative flex h-2 w-2">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#14F195] opacity-60" />
-            <span className="relative inline-flex h-2 w-2 rounded-full bg-[#14F195]" />
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#CCFF00] opacity-60" />
+            <span className="relative inline-flex h-2 w-2 rounded-full bg-[#CCFF00]" />
           </span>
           <h2 className="text-xs font-bold uppercase tracking-widest text-white/70">Live Drops</h2>
         </div>
@@ -78,46 +80,46 @@ export default function LiveFeed({ drops, className = "" }: LiveFeedProps) {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, scale: 0.97 }}
               transition={{ duration: 0.25 }}
-              className="rounded-lg border border-[#00D1FF]/15 bg-black/40 px-3 py-2 text-xs"
+              className="rounded-lg border border-[#E9FF7A]/15 bg-black/40 px-3 py-2 text-xs"
             >
               <div className="flex items-center justify-between gap-2">
                 <span className="truncate font-bold text-white/90">{d.username}</span>
                 <span
-                  className={`shrink-0 rounded border px-1.5 py-0.5 font-mono text-[10px] uppercase ${BURNED_BADGE}`}
+                  className={`shrink-0 rounded border px-1.5 py-0.5 font-mono text-[10px] uppercase ${STATUS_BADGE[d.status]}`}
                 >
-                  {d.burn_sig ? "burned" : d.status === "pending" ? "pending" : "burned"}
+                  {d.status}
                 </span>
               </div>
               <div className="mt-1 flex items-center justify-between gap-2 text-[11px]">
                 <span>
-                  <span className="font-extrabold text-[#00D1FF]">{Number(d.multiplier)}x</span>
+                  <span className="font-extrabold text-[#E9FF7A]">{Number(d.multiplier)}x</span>
                   {" → "}
-                  <span className="font-mono text-[#14F195]">{formatSol(Number(d.sol_out))}</span>
+                  <span className="font-mono text-[#CCFF00]">{formatUsd(Number(d.usd_out))}</span>
                 </span>
                 <span className="text-white/40">{formatTime(d.created_at)} ago</span>
               </div>
 
               <div className="mt-1.5 flex flex-wrap items-center gap-1.5 border-t border-white/5 pt-1.5 text-[10px]">
-                {d.tokens_burned && (
+                {d.tokens_bought && (
                   <span className="text-white/45">
-                    burned{" "}
-                    <span className="font-mono text-[#9945FF]">
-                      {formatTokens(d.tokens_burned, 6)}
+                    bought{" "}
+                    <span className="font-mono text-[#8FB800]">
+                      {formatTokens(d.tokens_bought, decimals)}
                     </span>
                   </span>
                 )}
-                {d.burn_sig && <SolscanLink sig={d.burn_sig} label="Burn" />}
-                {d.buy_sig && <SolscanLink sig={d.buy_sig} label="Buy" />}
-                {!d.burn_sig && !d.buy_sig && (
-                  <span className="text-white/35">Solscan proof pending…</span>
+                {d.buy_tx ? (
+                  <BlockscoutLink hash={d.buy_tx} label="Buy" />
+                ) : (
+                  <span className="text-white/35">Blockscout proof pending…</span>
                 )}
               </div>
             </motion.div>
           ))}
         </AnimatePresence>
         {visibleDrops.length === 0 && (
-          <div className="rounded-lg border border-dashed border-[#00D1FF]/25 bg-[#0a0a14]/50 py-8 text-center text-xs text-white/45">
-            Waiting for the first SOL drop…
+          <div className="rounded-lg border border-dashed border-[#E9FF7A]/25 bg-[#0b0e06]/50 py-8 text-center text-xs text-white/45">
+            Waiting for the first Hood drop…
           </div>
         )}
       </div>

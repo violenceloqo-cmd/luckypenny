@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 
 import { setSessionCookie, signSession } from "@/lib/auth/session";
 import { validateUsername } from "@/lib/auth/username";
-import { supabaseAdmin } from "@/lib/supabase/server";
+import { describeSupabaseError, supabaseAdmin, supabaseErrorStatus } from "@/lib/supabase/server";
 
 export const runtime = "nodejs";
 
@@ -20,43 +20,52 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: check.reason ?? "Invalid username" }, { status: 400 });
   }
 
-  // Upsert: insert if new, otherwise re-use existing row. Username is unique citext,
-  // so two different casings collapse to the same user.
-  const { data: existing, error: selErr } = await supabaseAdmin
-    .from("users")
-    .select("id, username")
-    .ilike("username", check.normalized)
-    .maybeSingle();
-
-  if (selErr) {
-    return NextResponse.json({ error: selErr.message }, { status: 500 });
-  }
-
-  let userId: string;
-  let storedUsername: string;
-
-  if (existing) {
-    userId = existing.id as string;
-    storedUsername = existing.username as string;
-  } else {
-    const { data: inserted, error: insErr } = await supabaseAdmin
+  try {
+    // Upsert: insert if new, otherwise re-use existing row. Username is unique citext,
+    // so two different casings collapse to the same user.
+    const { data: existing, error: selErr } = await supabaseAdmin
       .from("users")
-      .insert({ username: check.normalized })
       .select("id, username")
-      .single();
+      .ilike("username", check.normalized)
+      .maybeSingle();
 
-    if (insErr || !inserted) {
+    if (selErr) {
       return NextResponse.json(
-        { error: insErr?.message ?? "Failed to create user" },
-        { status: 500 },
+        { error: describeSupabaseError(selErr) },
+        { status: supabaseErrorStatus(selErr) },
       );
     }
-    userId = inserted.id as string;
-    storedUsername = inserted.username as string;
+
+    let userId: string;
+    let storedUsername: string;
+
+    if (existing) {
+      userId = existing.id as string;
+      storedUsername = existing.username as string;
+    } else {
+      const { data: inserted, error: insErr } = await supabaseAdmin
+        .from("users")
+        .insert({ username: check.normalized })
+        .select("id, username")
+        .single();
+
+      if (insErr || !inserted) {
+        return NextResponse.json(
+          { error: insErr ? describeSupabaseError(insErr) : "Failed to create user" },
+          { status: insErr ? supabaseErrorStatus(insErr) : 500 },
+        );
+      }
+      userId = inserted.id as string;
+      storedUsername = inserted.username as string;
+    }
+
+    const token = await signSession({ uid: userId, username: storedUsername });
+    await setSessionCookie(token);
+
+    return NextResponse.json({ uid: userId, username: storedUsername });
+  } catch (e) {
+    // A dead/paused project rejects at the socket, before Supabase can hand back
+    // an `error` object — so it lands here rather than in `selErr`.
+    return NextResponse.json({ error: describeSupabaseError(e) }, { status: 503 });
   }
-
-  const token = await signSession({ uid: userId, username: storedUsername });
-  await setSessionCookie(token);
-
-  return NextResponse.json({ uid: userId, username: storedUsername });
 }

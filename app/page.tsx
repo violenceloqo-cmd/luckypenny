@@ -9,35 +9,37 @@ import Board, { type DropEvent } from "@/components/Board";
 import DropButton from "@/components/DropButton";
 import LiveFeed, { type FeedDrop, useLiveFeedTicker } from "@/components/LiveFeed";
 import LoginCard from "@/components/LoginCard";
-import SolanaBallIcon from "@/components/SolanaBallIcon";
-import SolDropper from "@/components/SolDropper";
+import HoodBallIcon from "@/components/HoodBallIcon";
+import HoodDropper from "@/components/HoodDropper";
 import StatsBar from "@/components/Stats";
 import ThemeBackground from "@/components/ThemeBackground";
 import WinCameo from "@/components/WinCameo";
 import { isBigWin } from "@/lib/game/multipliers";
 import { getSupabaseClient } from "@/lib/supabase/client";
-import { DEFAULT_PUMPFUN_TOKEN_MINT } from "@/lib/token";
+import { getPublicTokenAddress } from "@/lib/token";
 import { upsertFeedDrop } from "@/lib/feed";
 
 interface Me {
   user: { uid: string; username: string } | null;
   cooldownRemainingMs: number;
   cooldownSeconds: number;
+  dropCostUsd: number;
 }
 
 interface DropsResponse {
   drops: FeedDrop[];
   stats: {
     totalDrops: number;
-    totalSolOut: number;
-    totalTokensBurned: string;
+    totalUsdOut: number;
+    totalTokensBought: string;
     biggestMultiplier: number;
   };
 }
 
 const DEFAULT_COOLDOWN_SEC = 60;
+const DEFAULT_DROP_COST_USD = 1;
 
-const TOKEN_MINT = DEFAULT_PUMPFUN_TOKEN_MINT;
+const TOKEN_ADDRESS = getPublicTokenAddress();
 
 function shortenAddress(addr: string) {
   if (!addr) return "";
@@ -46,13 +48,13 @@ function shortenAddress(addr: string) {
 }
 
 export default function HomePage() {
-  const [me, setMe] = useState<Me>({ user: null, cooldownRemainingMs: 0, cooldownSeconds: DEFAULT_COOLDOWN_SEC });
+  const [me, setMe] = useState<Me>({ user: null, cooldownRemainingMs: 0, cooldownSeconds: DEFAULT_COOLDOWN_SEC, dropCostUsd: DEFAULT_DROP_COST_USD });
   const [loadingMe, setLoadingMe] = useState(true);
   const [feed, setFeed] = useState<FeedDrop[]>([]);
   const [stats, setStats] = useState<DropsResponse["stats"]>({
     totalDrops: 0,
-    totalSolOut: 0,
-    totalTokensBurned: "0",
+    totalUsdOut: 0,
+    totalTokensBought: "0",
     biggestMultiplier: 0,
   });
   const [pendingDrops, setPendingDrops] = useState<DropEvent[]>([]);
@@ -62,9 +64,9 @@ export default function HomePage() {
   const [copied, setCopied] = useState(false);
 
   const onCopyCA = useCallback(async () => {
-    if (!TOKEN_MINT) return;
+    if (!TOKEN_ADDRESS) return;
     try {
-      await navigator.clipboard.writeText(TOKEN_MINT);
+      await navigator.clipboard.writeText(TOKEN_ADDRESS);
       setCopied(true);
       window.setTimeout(() => setCopied(false), 1500);
     } catch {
@@ -125,12 +127,11 @@ export default function HomePage() {
               username: row.username,
               slot_index: row.slot_index,
               multiplier: Number(row.multiplier),
-              sol_in: Number(row.sol_in),
-              sol_out: Number(row.sol_out),
+              usd_in: Number(row.usd_in),
+              usd_out: Number(row.usd_out),
               status: row.status,
-              buy_sig: row.buy_sig ?? null,
-              burn_sig: row.burn_sig ?? null,
-              tokens_burned: row.tokens_burned ?? null,
+              buy_tx: row.buy_tx ?? null,
+              tokens_bought: row.tokens_bought ?? null,
               created_at: row.created_at,
             }),
           );
@@ -152,21 +153,20 @@ export default function HomePage() {
             upsertFeedDrop(cur, {
               id: row.id,
               status: row.status,
-              buy_sig: row.buy_sig ?? null,
-              burn_sig: row.burn_sig ?? null,
-              tokens_burned: row.tokens_burned ?? null,
+              buy_tx: row.buy_tx ?? null,
+              tokens_bought: row.tokens_bought ?? null,
               error: row.error ?? null,
             }),
           );
-          if (row.status === "burned" || row.status === "skipped") {
+          if (row.status === "bought" || row.status === "skipped") {
             setStats((s) => ({
               ...s,
-              totalSolOut: s.totalSolOut + Number(row.sol_out),
-              totalTokensBurned: (() => {
+              totalUsdOut: s.totalUsdOut + Number(row.usd_out),
+              totalTokensBought: (() => {
                 try {
-                  return (BigInt(s.totalTokensBurned) + BigInt(row.tokens_burned ?? "0")).toString();
+                  return (BigInt(s.totalTokensBought) + BigInt(row.tokens_bought ?? "0")).toString();
                 } catch {
-                  return s.totalTokensBurned;
+                  return s.totalTokensBought;
                 }
               })(),
             }));
@@ -207,8 +207,8 @@ export default function HomePage() {
             username: me.user!.username,
             slot_index: data.slotIndex as number,
             multiplier: Number(data.multiplier),
-            sol_in: Number(data.solIn),
-            sol_out: Number(data.solOut),
+            usd_in: Number(data.usdIn),
+            usd_out: Number(data.usdOut),
             status: "pending",
             created_at: new Date().toISOString(),
           }),
@@ -217,7 +217,7 @@ export default function HomePage() {
 
       setMe((cur) => ({ ...cur, cooldownRemainingMs: cur.cooldownSeconds * 1000 }));
       setStats((s) => ({ ...s, totalDrops: s.totalDrops + 1 }));
-      setAnnounce(`SOL orb dropped — targeting ${data.multiplier}x slot.`);
+      setAnnounce(`Hood ball dropped — targeting ${data.multiplier}x slot.`);
     } finally {
       setDropping(false);
     }
@@ -232,7 +232,7 @@ export default function HomePage() {
           particleCount: 180,
           spread: 90,
           origin: { y: 0.7 },
-          colors: ["#14F195", "#00D1FF", "#9945FF", "#ffffff"],
+          colors: ["#CCFF00", "#E9FF7A", "#8FB800", "#ffffff"],
           scalar: 1.1,
         });
       }
@@ -246,7 +246,7 @@ export default function HomePage() {
 
   const onLogout = useCallback(async () => {
     await fetch("/api/me", { method: "DELETE" });
-    setMe({ user: null, cooldownRemainingMs: 0, cooldownSeconds: DEFAULT_COOLDOWN_SEC });
+    setMe((cur) => ({ ...cur, user: null, cooldownRemainingMs: 0 }));
   }, []);
 
   useEffect(() => {
@@ -267,7 +267,7 @@ export default function HomePage() {
 
       {!loadingMe && !me.user && (
         <LoginCard
-          onLoggedIn={(u) => setMe({ user: u, cooldownRemainingMs: 0, cooldownSeconds: DEFAULT_COOLDOWN_SEC })}
+          onLoggedIn={(u) => setMe((cur) => ({ ...cur, user: u, cooldownRemainingMs: 0 }))}
         />
       )}
 
@@ -278,40 +278,40 @@ export default function HomePage() {
               initial={{ opacity: 0, scale: 0.7 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.5, type: "spring", stiffness: 220, damping: 14 }}
-              className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-[#0a0a14]/90 ring-1 ring-[#00D1FF]/35 shadow-[0_0_24px_rgba(0,209,255,0.25)] sm:h-11 sm:w-11"
+              className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-[#0b0e06]/90 ring-1 ring-[#E9FF7A]/35 shadow-[0_0_24px_rgba(233,255,122,0.25)] sm:h-11 sm:w-11"
             >
-              <SolanaBallIcon size={28} />
+              <HoodBallIcon size={28} />
             </motion.div>
             <div>
               <motion.h1
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4 }}
-                className="text-lg sol-text sm:text-xl"
+                className="text-lg hood-text sm:text-xl"
                 style={{ fontFamily: "var(--font-display)" }}
               >
-                SOL DROP
+                HOOD DROP
               </motion.h1>
               <span className="hidden text-[10px] uppercase tracking-[0.2em] text-white/40 sm:inline">
-                Solana Plinko · Buy &amp; Burn
+                Robinhood Chain Plinko · Buy &amp; Hold
               </span>
             </div>
           </div>
 
           <div className="flex items-center gap-2 text-sm text-white/90">
-            {TOKEN_MINT && (
+            {TOKEN_ADDRESS && (
               <button
                 onClick={onCopyCA}
-                title={`Copy contract address: ${TOKEN_MINT}`}
+                title={`Copy contract address: ${TOKEN_ADDRESS}`}
                 aria-label="Copy contract address"
-                className="group flex items-center gap-1.5 rounded-lg border border-[#00D1FF]/30 bg-[#0a0a14]/80 px-2.5 py-1 font-mono text-[11px] text-[#00D1FF] transition hover:border-[#00D1FF]/55 hover:bg-[#0a0a14] sm:text-xs"
+                className="group flex items-center gap-1.5 rounded-lg border border-[#E9FF7A]/30 bg-[#0b0e06]/80 px-2.5 py-1 font-mono text-[11px] text-[#E9FF7A] transition hover:border-[#E9FF7A]/55 hover:bg-[#0b0e06] sm:text-xs"
               >
                 <span className="hidden text-[10px] font-sans font-semibold uppercase tracking-widest text-white/40 sm:inline">
                   Mint
                 </span>
-                <span>{shortenAddress(TOKEN_MINT)}</span>
+                <span>{shortenAddress(TOKEN_ADDRESS)}</span>
                 {copied ? (
-                  <Check className="h-3.5 w-3.5 text-[#14F195]" />
+                  <Check className="h-3.5 w-3.5 text-[#CCFF00]" />
                 ) : (
                   <Copy className="h-3.5 w-3.5 opacity-60 group-hover:opacity-100" />
                 )}
@@ -320,12 +320,12 @@ export default function HomePage() {
 
             {me.user && (
               <>
-                <span className="rounded-lg border border-[#00D1FF]/20 bg-[#0a0a14]/80 px-3 py-1 font-mono text-xs font-semibold text-white/80">
+                <span className="rounded-lg border border-[#E9FF7A]/20 bg-[#0b0e06]/80 px-3 py-1 font-mono text-xs font-semibold text-white/80">
                   {me.user.username}
                 </span>
                 <button
                   onClick={onLogout}
-                  className="grid h-8 w-8 place-items-center rounded-lg border border-[#00D1FF]/20 bg-[#0a0a14]/80 text-white/70 hover:border-[#00D1FF]/40 hover:text-white sm:h-9 sm:w-9"
+                  className="grid h-8 w-8 place-items-center rounded-lg border border-[#E9FF7A]/20 bg-[#0b0e06]/80 text-white/70 hover:border-[#E9FF7A]/40 hover:text-white sm:h-9 sm:w-9"
                   aria-label="Sign out"
                 >
                   <LogOut className="h-4 w-4" />
@@ -338,8 +338,8 @@ export default function HomePage() {
         <div className="shrink-0">
           <StatsBar
             totalDrops={stats.totalDrops}
-            totalSolOut={stats.totalSolOut}
-            totalTokensBurned={stats.totalTokensBurned}
+            totalUsdOut={stats.totalUsdOut}
+            totalTokensBought={stats.totalTokensBought}
             biggestMultiplier={stats.biggestMultiplier}
           />
         </div>
@@ -351,14 +351,15 @@ export default function HomePage() {
                 className="flex h-full max-h-full w-full items-center justify-center"
                 style={{ aspectRatio: "672 / 580" }}
               >
-                <SolDropper>
+                <HoodDropper>
                   <Board pending={pendingDrops} onBallLanded={onBallLanded} />
-                </SolDropper>
+                </HoodDropper>
               </div>
             </div>
             <DropButton
               cooldownMs={me.cooldownRemainingMs}
               cooldownTotalMs={me.cooldownSeconds * 1000}
+              dropCostUsd={me.dropCostUsd}
               onDrop={onDrop}
               disabled={!me.user}
               busy={dropping}

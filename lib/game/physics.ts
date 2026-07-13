@@ -36,8 +36,13 @@ export const SLOT_BIN_HEIGHT = 48;
 /** Frames per peg segment — higher = slower drop through the board. */
 export const PLINKO_FRAMES_PER_SEGMENT = 22;
 
-/** Progress per animation frame (0–1). Lower = slower playback. */
-export const PLINKO_DROP_FRAME_STEP = 0.72;
+/**
+ * Progress per animation frame (0–1). Lower = slower playback.
+ *
+ * Purely visual: the path is already decided when the ball spawns, so this
+ * changes only how fast we draw along it — never where it lands.
+ */
+export const PLINKO_DROP_FRAME_STEP = 0.55;
 
 export const DEFAULT_LAYOUT: BoardLayout = (() => {
   const rows = BOARD_ROWS;

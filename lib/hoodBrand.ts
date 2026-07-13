@@ -1,24 +1,26 @@
-import { drawSolLogo } from "@/lib/solLogo";
+import { drawFeather } from "@/lib/hoodFeather";
 
-/** Solana brand tokens for canvas + UI */
-export const SOL_GREEN = "#14F195";
-export const SOL_CYAN = "#00D1FF";
-export const SOL_PURPLE = "#9945FF";
-export const SOL_BG = "#0a0a14";
-export const SOL_BG_DEEP = "#050508";
+/** Robinhood brand tokens for canvas + UI. */
+export const HOOD_LIME = "#CCFF00";
+export const HOOD_LIME_SOFT = "#E9FF7A";
+export const HOOD_LIME_DEEP = "#8FB800";
+export const HOOD_BLACK = "#0B0B0B";
+export const HOOD_BG = "#0B0E06";
+export const HOOD_BG_DEEP = "#050703";
+export const HOOD_BG_MID = "#141A0A";
 
-export interface DrawSolBallOptions {
+export interface DrawHoodBallOptions {
   velocityY?: number;
 }
 
-const SPRITE_VERSION = 1;
+const SPRITE_VERSION = 2;
 const spriteCache = new Map<string, HTMLCanvasElement>();
 
-export function preloadSolBallSprite() {
-  getSolBallSprite(128);
+export function preloadHoodBallSprite() {
+  getHoodBallSprite(128);
 }
 
-function getSolBallSprite(pixelSize: number): HTMLCanvasElement {
+function getHoodBallSprite(pixelSize: number): HTMLCanvasElement {
   const key = `${SPRITE_VERSION}-${pixelSize}`;
   const cached = spriteCache.get(key);
   if (cached) return cached;
@@ -29,12 +31,12 @@ function getSolBallSprite(pixelSize: number): HTMLCanvasElement {
   const ctx = canvas.getContext("2d");
   if (!ctx) return canvas;
 
-  paintSolBallSprite(ctx, pixelSize / 2, pixelSize / 2, pixelSize * 0.38);
+  paintHoodBallSprite(ctx, pixelSize / 2, pixelSize / 2, pixelSize * 0.38);
   spriteCache.set(key, canvas);
   return canvas;
 }
 
-function paintSolBallSprite(
+function paintHoodBallSprite(
   ctx: CanvasRenderingContext2D,
   cx: number,
   cy: number,
@@ -43,9 +45,9 @@ function paintSolBallSprite(
   ctx.save();
 
   const glow = ctx.createRadialGradient(cx, cy, r * 0.3, cx, cy, r * 1.55);
-  glow.addColorStop(0, "rgba(20, 241, 149, 0.35)");
-  glow.addColorStop(0.45, "rgba(0, 209, 255, 0.2)");
-  glow.addColorStop(1, "rgba(153, 69, 255, 0)");
+  glow.addColorStop(0, "rgba(204, 255, 0, 0.4)");
+  glow.addColorStop(0.45, "rgba(204, 255, 0, 0.18)");
+  glow.addColorStop(1, "rgba(204, 255, 0, 0)");
   ctx.fillStyle = glow;
   ctx.beginPath();
   ctx.arc(cx, cy, r * 1.5, 0, Math.PI * 2);
@@ -56,29 +58,33 @@ function paintSolBallSprite(
   ctx.ellipse(cx, cy + r * 1.05, r * 0.95, r * 0.28, 0, 0, Math.PI * 2);
   ctx.fill();
 
+  // Light lime at the top-left shoulder, deepening to olive at the rim — this
+  // is what makes a flat brand colour read as a sphere.
   const sphere = ctx.createRadialGradient(cx - r * 0.35, cy - r * 0.35, r * 0.1, cx, cy, r * 1.05);
-  sphere.addColorStop(0, SOL_GREEN);
-  sphere.addColorStop(0.45, SOL_CYAN);
-  sphere.addColorStop(1, SOL_PURPLE);
+  sphere.addColorStop(0, HOOD_LIME_SOFT);
+  sphere.addColorStop(0.45, HOOD_LIME);
+  sphere.addColorStop(1, HOOD_LIME_DEEP);
   ctx.fillStyle = sphere;
   ctx.beginPath();
   ctx.arc(cx, cy, r, 0, Math.PI * 2);
   ctx.fill();
 
   const shine = ctx.createRadialGradient(cx - r * 0.3, cy - r * 0.35, 0, cx - r * 0.1, cy, r * 0.7);
-  shine.addColorStop(0, "rgba(255, 255, 255, 0.75)");
+  shine.addColorStop(0, "rgba(255, 255, 255, 0.7)");
   shine.addColorStop(1, "rgba(255, 255, 255, 0)");
   ctx.fillStyle = shine;
   ctx.beginPath();
   ctx.arc(cx, cy, r, 0, Math.PI * 2);
   ctx.fill();
 
-  drawSolLogo(ctx, cx, cy, r * 0.42, "rgba(255,255,255,0.95)");
+  // The feather is a thin mark, so it needs a large share of the face to stay
+  // legible once the sprite scales down to an 8px ball radius.
+  drawFeather(ctx, cx, cy, r * 0.55, HOOD_BLACK);
 
   ctx.restore();
 }
 
-function drawSolTrail(
+function drawHoodTrail(
   ctx: CanvasRenderingContext2D,
   cx: number,
   cy: number,
@@ -92,10 +98,10 @@ function drawSolTrail(
   ctx.globalAlpha = 0.35 + strength * 0.25;
 
   const streak = ctx.createLinearGradient(cx, top, cx, cy);
-  streak.addColorStop(0, "rgba(153, 69, 255, 0)");
-  streak.addColorStop(0.35, "rgba(0, 209, 255, 0.35)");
-  streak.addColorStop(0.7, "rgba(20, 241, 149, 0.55)");
-  streak.addColorStop(1, "rgba(255, 255, 255, 0.45)");
+  streak.addColorStop(0, "rgba(143, 184, 0, 0)");
+  streak.addColorStop(0.35, "rgba(204, 255, 0, 0.3)");
+  streak.addColorStop(0.7, "rgba(204, 255, 0, 0.55)");
+  streak.addColorStop(1, "rgba(233, 255, 122, 0.5)");
 
   ctx.fillStyle = streak;
   ctx.beginPath();
@@ -109,27 +115,27 @@ function drawSolTrail(
   ctx.restore();
 }
 
-/** Draw glossy Solana ball on the Plinko board. */
-export function drawSolBall(
+/** Draw the glossy Hood ball on the Plinko board. */
+export function drawHoodBall(
   ctx: CanvasRenderingContext2D,
   cx: number,
   cy: number,
   radius: number,
-  options: DrawSolBallOptions = {},
+  options: DrawHoodBallOptions = {},
 ) {
   const vy = options.velocityY ?? 0;
   const speed = Math.min(1, Math.max(0, vy / 4));
 
   if (speed > 0.06) {
-    drawSolTrail(ctx, cx, cy, radius, speed);
+    drawHoodTrail(ctx, cx, cy, radius, speed);
   }
 
   const pixelSize = Math.round(Math.max(64, Math.min(160, radius * 5.5)));
-  const sprite = getSolBallSprite(pixelSize);
+  const sprite = getHoodBallSprite(pixelSize);
   const size = radius * 2.35;
 
   ctx.save();
-  ctx.shadowColor = "rgba(0, 209, 255, 0.55)";
+  ctx.shadowColor = "rgba(204, 255, 0, 0.5)";
   ctx.shadowBlur = radius * 0.55;
   ctx.drawImage(sprite, cx - size / 2, cy - size / 2, size, size);
   ctx.restore();

@@ -15,7 +15,7 @@ import {
   slotX,
 } from "@/lib/game/physics";
 import { outcomeFromSeed } from "@/lib/game/rng";
-import { drawSolBall, preloadSolBallSprite } from "@/lib/solBrand";
+import { drawHoodBall, preloadHoodBallSprite } from "@/lib/hoodBrand";
 
 export interface DropEvent {
   id: string;
@@ -39,7 +39,7 @@ export interface BoardProps {
   onBallLanded: (event: DropEvent, slot: number, multiplier: number) => void;
 }
 
-function drawSolPool(
+function drawHoodPool(
   ctx: CanvasRenderingContext2D,
   left: number,
   right: number,
@@ -52,10 +52,10 @@ function drawSolPool(
   const poolTop = top + h * 0.5;
 
   const grad = ctx.createLinearGradient(0, poolTop, 0, bottom);
-  grad.addColorStop(0, "rgba(153, 69, 255, 0)");
-  grad.addColorStop(0.35, "rgba(0, 209, 255, 0.12)");
-  grad.addColorStop(0.7, "rgba(20, 241, 149, 0.22)");
-  grad.addColorStop(1, "rgba(153, 69, 255, 0.32)");
+  grad.addColorStop(0, "rgba(143, 184, 0, 0)");
+  grad.addColorStop(0.35, "rgba(233, 255, 122, 0.12)");
+  grad.addColorStop(0.7, "rgba(204, 255, 0, 0.22)");
+  grad.addColorStop(1, "rgba(143, 184, 0, 0.32)");
   ctx.fillStyle = grad;
   ctx.fillRect(left, poolTop, w, bottom - poolTop);
 
@@ -65,9 +65,9 @@ function drawSolPool(
     const cy = bottom - 12 - bob - (i % 3) * 3;
     const orbR = 2 + (i % 2) * 0.8;
     const orbGrad = ctx.createRadialGradient(cx - 1, cy - 1, 0, cx, cy, orbR + 1);
-    orbGrad.addColorStop(0, "#14F195");
-    orbGrad.addColorStop(0.5, "#00D1FF");
-    orbGrad.addColorStop(1, "#9945FF");
+    orbGrad.addColorStop(0, "#CCFF00");
+    orbGrad.addColorStop(0.5, "#E9FF7A");
+    orbGrad.addColorStop(1, "#8FB800");
     ctx.fillStyle = orbGrad;
     ctx.beginPath();
     ctx.arc(cx, cy, orbR, 0, Math.PI * 2);
@@ -77,14 +77,14 @@ function drawSolPool(
   for (let s = 0; s < 5; s++) {
     const sx = left + ((w * s) / 5 + (t * 0.015 + s * 31) % w);
     const sy = poolTop + 12 + ((t * 0.025 + s * 19) % (h * 0.4));
-    ctx.fillStyle = `rgba(0, 209, 255, ${0.1 + (s % 3) * 0.08})`;
+    ctx.fillStyle = `rgba(233, 255, 122, ${0.1 + (s % 3) * 0.08})`;
     ctx.beginPath();
     ctx.arc(sx, sy, 1.5, 0, Math.PI * 2);
     ctx.fill();
   }
 }
 
-/** Solana Plinko — SOL orbs fall through pegs into multiplier slots. */
+/** Hood Plinko — lime feather balls fall through pegs into multiplier slots. */
 export default function Board({ pending, onBallLanded }: BoardProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const wrapRef = useRef<HTMLDivElement | null>(null);
@@ -129,7 +129,7 @@ export default function Board({ pending, onBallLanded }: BoardProps) {
     const wrap = wrapRef.current;
     if (!canvas || !wrap) return;
 
-    preloadSolBallSprite();
+    preloadHoodBallSprite();
 
     const layout = DEFAULT_LAYOUT;
 
@@ -159,26 +159,26 @@ export default function Board({ pending, onBallLanded }: BoardProps) {
     function drawPeg(ctx: CanvasRenderingContext2D, x: number, y: number) {
       const r = layout.pegRadius;
       const g = ctx.createRadialGradient(x - 1, y - 1, 0, x, y, r + 2);
-      g.addColorStop(0, "#14F195");
-      g.addColorStop(0.45, "#00D1FF");
-      g.addColorStop(1, "#9945FF");
+      g.addColorStop(0, "#CCFF00");
+      g.addColorStop(0.45, "#E9FF7A");
+      g.addColorStop(1, "#8FB800");
       ctx.fillStyle = g;
       ctx.beginPath();
       ctx.arc(x, y, r, 0, Math.PI * 2);
       ctx.fill();
-      ctx.strokeStyle = "rgba(0, 209, 255, 0.4)";
+      ctx.strokeStyle = "rgba(233, 255, 122, 0.4)";
       ctx.lineWidth = 0.6;
       ctx.stroke();
     }
 
     function drawWall(ctx: CanvasRenderingContext2D, x: number, topY: number, botY: number) {
       const w = 3;
-      ctx.fillStyle = "#12101f";
+      ctx.fillStyle = "#141a0a";
       ctx.fillRect(x - w / 2, topY, w, botY - topY);
-      ctx.strokeStyle = "rgba(0, 209, 255, 0.35)";
+      ctx.strokeStyle = "rgba(233, 255, 122, 0.35)";
       ctx.lineWidth = 0.6;
       ctx.strokeRect(x - w / 2, topY, w, botY - topY);
-      ctx.fillStyle = "#14F195";
+      ctx.fillStyle = "#CCFF00";
       ctx.beginPath();
       ctx.arc(x, topY, 2.5, 0, Math.PI * 2);
       ctx.fill();
@@ -224,9 +224,9 @@ export default function Board({ pending, onBallLanded }: BoardProps) {
       ctx.fill();
       ctx.clip();
 
-      drawSolPool(ctx, botLeftX, botRightX, topY, botY, t);
+      drawHoodPool(ctx, botLeftX, botRightX, topY, botY, t);
 
-      ctx.strokeStyle = "rgba(0, 209, 255, 0.06)";
+      ctx.strokeStyle = "rgba(233, 255, 122, 0.06)";
       ctx.lineWidth = 0.5;
       for (let gy = topY + 10; gy < botY; gy += 16) {
         ctx.beginPath();
@@ -250,14 +250,14 @@ export default function Board({ pending, onBallLanded }: BoardProps) {
       ctx.closePath();
       ctx.lineWidth = 4;
       const borderGrad = ctx.createLinearGradient(topLeftX, topY, botRightX, botY);
-      borderGrad.addColorStop(0, "#14F195");
-      borderGrad.addColorStop(0.4, "#00D1FF");
-      borderGrad.addColorStop(0.75, "#9945FF");
-      borderGrad.addColorStop(1, "#14F195");
+      borderGrad.addColorStop(0, "#CCFF00");
+      borderGrad.addColorStop(0.4, "#E9FF7A");
+      borderGrad.addColorStop(0.75, "#8FB800");
+      borderGrad.addColorStop(1, "#CCFF00");
       ctx.strokeStyle = borderGrad;
       ctx.stroke();
       ctx.lineWidth = 1;
-      ctx.strokeStyle = "rgba(0, 209, 255, 0.2)";
+      ctx.strokeStyle = "rgba(233, 255, 122, 0.2)";
       ctx.stroke();
 
       for (let r = 0; r < layout.rows; r++) {
@@ -269,7 +269,7 @@ export default function Board({ pending, onBallLanded }: BoardProps) {
       const binTopY = layout.slotY - SLOT_BIN_HEIGHT / 2;
       const binBotY = layout.slotY + SLOT_BIN_HEIGHT / 2;
 
-      ctx.strokeStyle = "rgba(0, 209, 255, 0.45)";
+      ctx.strokeStyle = "rgba(233, 255, 122, 0.45)";
       ctx.lineWidth = 2;
       ctx.beginPath();
       ctx.moveTo(botLeftX + 4, binBotY);
@@ -301,7 +301,7 @@ export default function Board({ pending, onBallLanded }: BoardProps) {
         const prevIdx = Math.max(0, Math.min(maxIdx, Math.floor(b.frame - PLINKO_DROP_FRAME_STEP)));
         const prev = b.path[prevIdx] ?? a;
         const velocityY = pt.y - prev.y;
-        drawSolBall(ctx, pt.x, pt.y, layout.ballRadius, { velocityY });
+        drawHoodBall(ctx, pt.x, pt.y, layout.ballRadius, { velocityY });
         b.frame += PLINKO_DROP_FRAME_STEP;
         if (b.frame >= b.path.length) {
           if (!b.finished) {
@@ -342,14 +342,14 @@ export default function Board({ pending, onBallLanded }: BoardProps) {
           const width = layout.colSpacing * scaleInfo.scale - 6;
           const tier =
             m >= 100
-              ? "from-[#14F195] via-[#00D1FF] to-[#9945FF] text-[#050508] border-[#00D1FF]/70"
+              ? "from-[#CCFF00] via-[#E9FF7A] to-[#8FB800] text-[#050703] border-[#E9FF7A]/70"
               : m >= 10
-                ? "from-[#00D1FF] via-[#14F195] to-[#9945FF] text-[#050508] border-[#14F195]/55"
+                ? "from-[#E9FF7A] via-[#CCFF00] to-[#8FB800] text-[#050703] border-[#CCFF00]/55"
                 : m >= 3
-                  ? "from-[#1a1530] via-[#12101f] to-[#0a0a14] text-[#00D1FF] border-[#00D1FF]/40"
+                  ? "from-[#1f2a0d] via-[#141a0a] to-[#0b0e06] text-[#E9FF7A] border-[#E9FF7A]/40"
                   : m >= 1
-                    ? "from-[#12101f] via-[#0a0a14] to-[#050508] text-[#14F195] border-[#14F195]/25"
-                    : "from-[#12101f] via-[#0a0a14] to-[#050508] text-[#9945FF] border-purple-900/40";
+                    ? "from-[#141a0a] via-[#0b0e06] to-[#050703] text-[#CCFF00] border-[#CCFF00]/25"
+                    : "from-[#141a0a] via-[#0b0e06] to-[#050703] text-[#8FB800] border-[#8FB800]/40";
           const flashing = slotFlash === i;
           return (
             <div

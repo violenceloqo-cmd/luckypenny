@@ -5,10 +5,11 @@ export function cn(...inputs: ClassValue[]): string {
   return twMerge(clsx(inputs));
 }
 
-export function formatSol(sol: number): string {
-  if (sol === 0) return "0";
-  if (sol >= 1) return sol.toFixed(3).replace(/\.?0+$/, "");
-  return sol.toFixed(4).replace(/0+$/, "").replace(/\.$/, "");
+export function formatUsd(usd: number): string {
+  if (!Number.isFinite(usd) || usd === 0) return "$0";
+  if (usd >= 100) return `$${Math.round(usd).toLocaleString()}`;
+  if (usd >= 1) return `$${usd.toFixed(2).replace(/\.00$/, "")}`;
+  return `$${usd.toFixed(2)}`;
 }
 
 export function formatTokens(rawAmount: bigint | string | null | undefined, decimals = 6): string {

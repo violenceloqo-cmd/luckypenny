@@ -37,6 +37,61 @@ export function getSupabaseReader(): SupabaseClient {
   return cachedAnon;
 }
 
+/** Substrings that mean "we never reached Postgres", not "Postgres said no". */
+const NETWORK_HINTS = [
+  "fetch failed",
+  "enotfound",
+  "eai_again",
+  "econnrefused",
+  "etimedout",
+  "getaddrinfo",
+  "socket hang up",
+];
+
+export function supabaseHost(): string {
+  try {
+    return new URL(process.env.NEXT_PUBLIC_SUPABASE_URL ?? "").host;
+  } catch {
+    return "(NEXT_PUBLIC_SUPABASE_URL unset)";
+  }
+}
+
+function messageOf(err: unknown): string {
+  return err instanceof Error
+    ? err.message
+    : typeof err === "string"
+      ? err
+      : ((err as { message?: string })?.message ?? String(err));
+}
+
+/** True when we never reached Postgres at all (DNS, refused, timeout). */
+export function isSupabaseUnreachable(err: unknown): boolean {
+  const lower = messageOf(err).toLowerCase();
+  return NETWORK_HINTS.some((h) => lower.includes(h));
+}
+
+/** An unreachable dependency is a 503, not a 500. */
+export function supabaseErrorStatus(err: unknown): 500 | 503 {
+  return isSupabaseUnreachable(err) ? 503 : 500;
+}
+
+/**
+ * Supabase surfaces a bare `TypeError: fetch failed` when its host doesn't
+ * resolve, which tells an operator nothing. Name the actual failure instead.
+ */
+export function describeSupabaseError(err: unknown): string {
+  const msg = messageOf(err);
+  const lower = msg.toLowerCase();
+
+  if (isSupabaseUnreachable(err)) {
+    return `Database unreachable: ${supabaseHost()} did not respond. The Supabase project may be paused or deleted — check NEXT_PUBLIC_SUPABASE_URL.`;
+  }
+  if (lower.includes("does not exist") || lower.includes("schema cache")) {
+    return `${msg} — run the migrations in supabase/migrations/ (0001 → 0003).`;
+  }
+  return msg;
+}
+
 /**
  * Proxy that defers client creation until first property access. Routes can
  * keep doing `supabaseAdmin.from(...)` without crashing during build-time

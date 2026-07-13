@@ -1,7 +1,7 @@
-import { solLogoPathD } from "@/lib/solLogo";
+import { featherPathD } from "@/lib/hoodFeather";
 
-/** Glowing Solana orb with the SOL logo mark on the ball. */
-export default function SolanaBallIcon({
+/** Glowing lime orb with the black feather mark — the SVG twin of the canvas sprite. */
+export default function HoodBallIcon({
   size = 32,
   className = "",
   glow = true,
@@ -10,8 +10,8 @@ export default function SolanaBallIcon({
   className?: string;
   glow?: boolean;
 }) {
-  const id = `sol-ball-${size}`;
-  const logoScale = 22;
+  const id = `hood-ball-${size}`;
+  const featherScale = 26;
   return (
     <svg
       width={size}
@@ -24,12 +24,12 @@ export default function SolanaBallIcon({
     >
       <defs>
         <radialGradient id={`${id}-sphere`} cx="35%" cy="30%" r="65%">
-          <stop offset="0%" stopColor="#14F195" />
-          <stop offset="45%" stopColor="#00D1FF" />
-          <stop offset="100%" stopColor="#9945FF" />
+          <stop offset="0%" stopColor="#E9FF7A" />
+          <stop offset="45%" stopColor="#CCFF00" />
+          <stop offset="100%" stopColor="#8FB800" />
         </radialGradient>
         <radialGradient id={`${id}-shine`} cx="30%" cy="25%" r="40%">
-          <stop offset="0%" stopColor="#ffffff" stopOpacity="0.85" />
+          <stop offset="0%" stopColor="#ffffff" stopOpacity="0.8" />
           <stop offset="100%" stopColor="#ffffff" stopOpacity="0" />
         </radialGradient>
         {glow && (
@@ -51,7 +51,7 @@ export default function SolanaBallIcon({
       />
       <circle cx="32" cy="32" r="26" fill={`url(#${id}-shine)`} />
       <g transform="translate(32, 32)">
-        <path d={solLogoPathD(logoScale)} fill="rgba(255,255,255,0.95)" />
+        <path d={featherPathD(featherScale)} fill="#0B0B0B" />
       </g>
     </svg>
   );

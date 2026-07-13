@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import { useState } from "react";
 
-import SolanaBallIcon from "@/components/SolanaBallIcon";
+import HoodBallIcon from "@/components/HoodBallIcon";
 
 interface LoginCardProps {
   onLoggedIn: (user: { uid: string; username: string }) => void;
@@ -38,7 +38,7 @@ export default function LoginCard({ onLoggedIn }: LoginCardProps) {
   };
 
   return (
-    <div className="fixed inset-0 z-30 grid place-items-center bg-[#050508]/85 p-4 backdrop-blur-md">
+    <div className="fixed inset-0 z-30 grid place-items-center bg-[#050703]/85 p-4 backdrop-blur-md">
       <motion.div
         initial={{ opacity: 0, y: 20, scale: 0.96 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -46,7 +46,7 @@ export default function LoginCard({ onLoggedIn }: LoginCardProps) {
         className="glass relative w-full max-w-md overflow-hidden rounded-2xl p-7 text-white"
       >
         <div
-          className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#00D1FF] to-transparent"
+          className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#E9FF7A] to-transparent"
           aria-hidden="true"
         />
 
@@ -55,22 +55,22 @@ export default function LoginCard({ onLoggedIn }: LoginCardProps) {
             animate={{ y: [0, -8, 0] }}
             transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
           >
-            <SolanaBallIcon size={64} />
+            <HoodBallIcon size={64} />
           </motion.div>
           <h1
-            className="text-center text-2xl font-bold sol-text"
+            className="text-center text-2xl font-bold hood-text"
             style={{ fontFamily: "var(--font-display)" }}
           >
-            SOL DROP
+            HOOD DROP
           </h1>
           <p className="text-center text-[11px] uppercase tracking-[0.25em] text-white/45">
-            Solana Plinko · Buy &amp; Burn
+            Robinhood Chain Plinko · Buy &amp; Hold
           </p>
         </div>
 
         <p className="mb-6 text-center text-sm text-white/65">
-          Pick a handle and drop SOL orbs through the board every minute. Where you land sets the
-          multiplier on a live pump.fun buy &amp; on-chain burn.
+          Pick a handle and drop Hood balls through the board every minute. Where you land sets the
+          multiplier on a live Noxa buy, straight into the treasury.
         </p>
 
         <form onSubmit={onSubmit} className="flex flex-col gap-3">
@@ -86,7 +86,7 @@ export default function LoginCard({ onLoggedIn }: LoginCardProps) {
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             placeholder="3–16 letters, numbers, underscore"
-            className="w-full rounded-lg border border-[#00D1FF]/25 bg-[#0a0a14]/80 px-4 py-3 font-mono text-sm text-white placeholder:text-white/25 focus:border-[#00D1FF]/55 focus:outline-none focus:ring-1 focus:ring-[#00D1FF]/30"
+            className="w-full rounded-lg border border-[#E9FF7A]/25 bg-[#0b0e06]/80 px-4 py-3 font-mono text-sm text-white placeholder:text-white/25 focus:border-[#E9FF7A]/55 focus:outline-none focus:ring-1 focus:ring-[#E9FF7A]/30"
             maxLength={16}
             required
           />
