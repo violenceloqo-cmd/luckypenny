@@ -19,12 +19,12 @@ async function handleGet() {
   // the DropButton renders it, and hardcoding it there let it drift from the DB.
   const { data: configRow } = await reader
     .from("config")
-    .select("cooldown_seconds, drop_cost_usd")
+    .select("cooldown_seconds, drop_cost_sol")
     .eq("id", 1)
     .maybeSingle();
 
   const cooldownSec = (configRow?.cooldown_seconds as number | undefined) ?? 60;
-  const dropCostUsd = Number(configRow?.drop_cost_usd ?? 1);
+  const dropCostSol = Number(configRow?.drop_cost_sol ?? 0.01);
 
   const sess = await getSession();
   if (!sess) {
@@ -32,7 +32,7 @@ async function handleGet() {
       user: null,
       cooldownRemainingMs: 0,
       cooldownSeconds: cooldownSec,
-      dropCostUsd,
+      dropCostSol,
     });
   }
 
@@ -44,7 +44,7 @@ async function handleGet() {
 
   if (!user) {
     await clearSessionCookie();
-    return NextResponse.json({ user: null, cooldownRemainingMs: 0, cooldownSeconds: cooldownSec, dropCostUsd });
+    return NextResponse.json({ user: null, cooldownRemainingMs: 0, cooldownSeconds: cooldownSec, dropCostSol });
   }
 
   let cooldownRemainingMs = 0;
@@ -58,7 +58,7 @@ async function handleGet() {
     user: { uid: user.id, username: user.username },
     cooldownRemainingMs,
     cooldownSeconds: cooldownSec,
-    dropCostUsd,
+    dropCostSol,
   });
 }
 

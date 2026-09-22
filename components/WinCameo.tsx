@@ -2,7 +2,7 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 
-import HoodBallIcon from "@/components/HoodBallIcon";
+import SolanaBallIcon from "@/components/SolanaBallIcon";
 
 interface CameoProps {
   show: boolean;
@@ -18,7 +18,7 @@ function SolCascade() {
           animate={{ y: [0, -12, 0], scale: [1, 1.1, 1] }}
           transition={{ duration: 0.85, repeat: Infinity, delay: i * 0.1 }}
         >
-          <HoodBallIcon size={36 + i * 8} />
+          <SolanaBallIcon size={36 + i * 8} />
         </motion.div>
       ))}
     </div>
@@ -41,9 +41,9 @@ export default function WinCameo({ show, multiplier }: CameoProps) {
           <motion.div
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
-            className="hood-badge mt-2 px-4 py-2 text-sm font-black"
+            className="sol-badge mt-2 px-4 py-2 text-sm font-black"
           >
-            {multiplier}x · MEGA DROP
+            {multiplier}x · MEGA BURN
           </motion.div>
         </motion.div>
       )}

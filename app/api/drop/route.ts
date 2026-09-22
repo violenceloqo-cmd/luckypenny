@@ -4,20 +4,21 @@ import { waitUntil } from "@vercel/functions";
 import { NextResponse } from "next/server";
 
 import { getSession } from "@/lib/auth/session";
-import { buyback } from "@/lib/evm/buyback";
 import { computeOutcome } from "@/lib/game/outcome";
+import { buyAndBurn } from "@/lib/solana/buyAndBurn";
+import { reconcileStuckDrops } from "@/lib/solana/reconcile";
 import { describeSupabaseError, supabaseAdmin, supabaseErrorStatus } from "@/lib/supabase/server";
 
 export const runtime = "nodejs";
 // Drops do real on-chain work; never cache or render statically.
 export const dynamic = "force-dynamic";
-// Quote + approve + swap + receipt = ~5–15s. Hobby plan caps at 60.
+// PumpPortal build + buy confirm + burn confirm = ~5–15s. Hobby plan caps at 60.
 export const maxDuration = 60;
 
 interface ConfigRow {
-  drop_cost_usd: string | number;
+  drop_cost_sol: string | number;
   cooldown_seconds: number;
-  max_usd_per_drop: string | number;
+  max_sol_per_drop: string | number;
 }
 
 export async function POST() {
@@ -36,7 +37,7 @@ async function handlePost() {
 
   const { data: configRow, error: cfgErr } = await supabaseAdmin
     .from("config")
-    .select("drop_cost_usd, cooldown_seconds, max_usd_per_drop")
+    .select("drop_cost_sol, cooldown_seconds, max_sol_per_drop")
     .eq("id", 1)
     .single();
 
@@ -48,8 +49,9 @@ async function handlePost() {
   }
 
   const config = configRow as ConfigRow;
-  const dropCost = Number(config.drop_cost_usd);
+  const dropCost = Number(config.drop_cost_sol);
   const cooldownSec = Number(config.cooldown_seconds);
+  const maxSol = Number(config.max_sol_per_drop);
 
   // Atomic cooldown claim — if this returns claimed=false the user is rate-limited.
   const { data: claimRows, error: claimErr } = await supabaseAdmin.rpc("claim_drop", {
@@ -74,7 +76,7 @@ async function handlePost() {
   const serverSeed = randomBytes(16).toString("hex");
   const nonce = Date.now();
   const outcome = computeOutcome({ serverSeed, username: sess.username, nonce });
-  const usdOut = +(dropCost * outcome.multiplier).toFixed(6);
+  const solOut = +(dropCost * outcome.multiplier).toFixed(9);
 
   // Insert pending drop FIRST — this is what the live feed picks up.
   const { data: inserted, error: insErr } = await supabaseAdmin
@@ -87,8 +89,8 @@ async function handlePost() {
       seed_hash: outcome.seedHash,
       slot_index: outcome.slotIndex,
       multiplier: outcome.multiplier,
-      usd_in: dropCost,
-      usd_out: usdOut,
+      sol_in: dropCost,
+      sol_out: solOut,
       status: "pending",
     })
     .select("id")
@@ -103,12 +105,17 @@ async function handlePost() {
 
   const dropId = inserted.id as string;
 
-  // Run the buyback after the response. `waitUntil` keeps the serverless function
-  // alive on Vercel (and is a no-op-friendly wrapper locally) so the swap isn't
-  // killed when we `return`. Clients pick up the status flip via Supabase
-  // Realtime — no need to await on the HTTP response.
+  // Buy + burn after the response. `waitUntil` keeps the serverless function
+  // alive on Vercel so the burn isn't killed when we `return`. Clients follow
+  // pending → bought (burning) → burned via Supabase Realtime.
   waitUntil((async () => {
-    const res = await buyback({ usdAmount: usdOut });
+    const res = await buyAndBurn({
+      solAmount: solOut,
+      maxSol: Number.isFinite(maxSol) && maxSol > 0 ? maxSol : undefined,
+      onBought: async (buySig) => {
+        await supabaseAdmin.from("drops").update({ status: "bought", buy_sig: buySig }).eq("id", dropId);
+      },
+    });
     if (res.ok && res.skipped) {
       await supabaseAdmin
         .from("drops")
@@ -118,21 +125,29 @@ async function handlePost() {
       await supabaseAdmin
         .from("drops")
         .update({
-          status: "bought",
-          buy_tx: res.buyTx,
-          tokens_bought: res.tokensBought.toString(),
+          status: "burned",
+          buy_sig: res.buySig,
+          burn_sig: res.burnSig,
+          tokens_burned: res.tokensBurned.toString(),
         })
         .eq("id", dropId);
+    } else if (res.buySig) {
+      // Bought but not burned: stay `bought` so the reconciler burns it later.
+      // Marking it failed would strand the tokens in the treasury.
+      await supabaseAdmin.from("drops").update({ status: "bought", buy_sig: res.buySig }).eq("id", dropId);
     } else {
       await supabaseAdmin
         .from("drops")
         .update({
           status: "failed",
-          buy_tx: res.buyTx ?? null,
+          buy_sig: res.buySig ?? null,
           error: res.error,
         })
         .eq("id", dropId);
     }
+
+    // Piggyback: burn/record any earlier drop whose process died mid-burn.
+    await reconcileStuckDrops().catch(() => undefined);
   })());
 
   return NextResponse.json({
@@ -140,8 +155,8 @@ async function handlePost() {
     seed: outcome.seed,
     slotIndex: outcome.slotIndex,
     multiplier: outcome.multiplier,
-    usdIn: dropCost,
-    usdOut,
+    solIn: dropCost,
+    solOut,
     cooldownSeconds: cooldownSec,
   });
 }

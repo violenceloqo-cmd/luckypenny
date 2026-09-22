@@ -2,10 +2,10 @@
 
 import { motion } from "framer-motion";
 
-import HoodBallIcon from "@/components/HoodBallIcon";
+import SolanaBallIcon from "@/components/SolanaBallIcon";
 
-/** Hood orb above the board — drops into the Plinko field. */
-export default function HoodDropper({ children }: { children: React.ReactNode }) {
+/** Solana orb above the board — drops into the Plinko field. */
+export default function SolDropper({ children }: { children: React.ReactNode }) {
   return (
     <div className="relative flex h-full w-full min-h-0 flex-col items-center">
       <motion.div
@@ -14,14 +14,14 @@ export default function HoodDropper({ children }: { children: React.ReactNode })
         transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
       >
         <div className="relative h-14 w-14 sm:h-16 sm:w-16">
-          <HoodBallIcon size={56} glow className="relative z-10 h-full w-full" />
+          <SolanaBallIcon size={56} glow className="relative z-10 h-full w-full" />
           <motion.div
             className="pointer-events-none absolute left-1/2 top-full z-0 -translate-x-1/2"
             style={{
               width: 16,
               height: 44,
               background:
-                "linear-gradient(to bottom, rgba(143,184,0,0), rgba(204,255,0,0.4) 40%, rgba(204,255,0,0.7))",
+                "linear-gradient(to bottom, rgba(153,69,255,0), rgba(0,209,255,0.45) 40%, rgba(20,241,149,0.65))",
               borderRadius: "50% / 14%",
               filter: "blur(1px)",
             }}
@@ -35,18 +35,18 @@ export default function HoodDropper({ children }: { children: React.ReactNode })
             transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
             aria-hidden="true"
           >
-            <HoodBallIcon size={22} glow />
+            <SolanaBallIcon size={22} glow />
           </motion.div>
         </div>
         <p
-          className="mt-2 text-center text-[9px] font-bold uppercase tracking-[0.22em] text-[#CCFF00]"
+          className="mt-2 text-center text-[9px] font-bold uppercase tracking-[0.22em] text-[#00D1FF]"
           style={{ fontFamily: "var(--font-display)" }}
         >
-          Hood chute · Drop to buy
+          SOL chute · Every drop burns
         </p>
       </motion.div>
 
-      <div className="hood-board relative z-10 -mt-1 min-h-0 w-full flex-1">{children}</div>
+      <div className="sol-board relative z-10 -mt-1 min-h-0 w-full flex-1">{children}</div>
     </div>
   );
 }

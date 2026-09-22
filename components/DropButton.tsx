@@ -3,8 +3,8 @@
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 
-import HoodBallIcon from "@/components/HoodBallIcon";
-import { cn, formatUsd } from "@/lib/utils";
+import SolanaBallIcon from "@/components/SolanaBallIcon";
+import { cn, formatSol } from "@/lib/utils";
 
 export interface DropButtonProps {
   disabled?: boolean;
@@ -12,8 +12,8 @@ export interface DropButtonProps {
   cooldownTotalMs: number;
   onDrop: () => void;
   busy?: boolean;
-  /** Comes from `config.drop_cost_usd` via /api/me — never hardcode it here. */
-  dropCostUsd: number;
+  /** Comes from `config.drop_cost_sol` via /api/me — never hardcode it here. */
+  dropCostSol: number;
 }
 
 interface Drain {
@@ -27,7 +27,7 @@ export default function DropButton({
   cooldownTotalMs,
   onDrop,
   busy,
-  dropCostUsd,
+  dropCostSol,
 }: DropButtonProps) {
   const [drain, setDrain] = useState<Drain>({ anchorMs: cooldownMs, remainingMs: cooldownMs });
   if (drain.anchorMs !== cooldownMs) {
@@ -92,9 +92,9 @@ export default function DropButton({
           />
           <defs>
             <linearGradient id="drop-grad" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stopColor="#CCFF00" />
-              <stop offset="50%" stopColor="#E9FF7A" />
-              <stop offset="100%" stopColor="#8FB800" />
+              <stop offset="0%" stopColor="#9945FF" />
+              <stop offset="50%" stopColor="#00D1FF" />
+              <stop offset="100%" stopColor="#14F195" />
             </linearGradient>
           </defs>
         </svg>
@@ -104,7 +104,7 @@ export default function DropButton({
           whileHover={{ scale: isDisabled ? 1 : 1.03 }}
           onClick={onDrop}
           disabled={isDisabled}
-          aria-label="Drop Hood ball"
+          aria-label="Drop SOL ball"
           className={cn(
             "btn-drop relative grid place-items-center rounded-full font-extrabold uppercase tracking-wide",
             "transition-all",
@@ -113,7 +113,7 @@ export default function DropButton({
           style={{ width: size - stroke * 2, height: size - stroke * 2, margin: stroke }}
         >
           {busy ? (
-            <span className="text-xs text-[#E9FF7A]">Dropping…</span>
+            <span className="text-xs text-[#00D1FF]">Dropping…</span>
           ) : onCooldown ? (
             <span className="flex flex-col items-center leading-tight">
               <span className="mono-stat text-2xl font-black text-white">{seconds}s</span>
@@ -121,14 +121,14 @@ export default function DropButton({
             </span>
           ) : (
             <span className="flex flex-col items-center leading-tight">
-              <HoodBallIcon size={32} className="mb-1" />
-              <span className="text-[10px] tracking-widest text-[#E9FF7A]">DROP</span>
+              <SolanaBallIcon size={32} className="mb-1" />
+              <span className="text-[10px] tracking-widest text-[#14F195]">DROP</span>
             </span>
           )}
         </motion.button>
       </div>
       <div className="text-xs text-white/50">
-        <span className="font-semibold text-[#CCFF00]">{formatUsd(dropCostUsd)}</span> per drop · Noxa buy
+        <span className="font-semibold text-[#14F195]">{formatSol(dropCostSol)} SOL</span> × multiplier · bought &amp; burned
       </div>
     </div>
   );

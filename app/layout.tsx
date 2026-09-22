@@ -15,13 +15,13 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
-  title: "Hood Drop — Robinhood Chain Plinko",
+  title: "SOL Drop — Solana Plinko · Buy & Burn",
   description:
-    "Drop Hood balls through Plinko. Every landing multiplies a $1 buy of a Noxa token, straight into the treasury.",
+    "Drop Solana balls through Plinko. The slot you land in multiplies a pump.fun buy — and every token bought is burned on-chain instantly.",
 };
 
 export const viewport: Viewport = {
-  themeColor: "#CCFF00",
+  themeColor: "#050508",
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,

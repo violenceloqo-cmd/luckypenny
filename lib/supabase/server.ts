@@ -87,7 +87,7 @@ export function describeSupabaseError(err: unknown): string {
     return `Database unreachable: ${supabaseHost()} did not respond. The Supabase project may be paused or deleted — check NEXT_PUBLIC_SUPABASE_URL.`;
   }
   if (lower.includes("does not exist") || lower.includes("schema cache")) {
-    return `${msg} — run the migrations in supabase/migrations/ (0001 → 0003).`;
+    return `${msg} — run the migrations in supabase/migrations/ (0001 → 0004).`;
   }
   return msg;
 }

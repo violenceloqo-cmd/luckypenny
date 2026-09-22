@@ -1,14 +1,14 @@
 "use client";
 
-import { Coins, CircleDot, TrendingUp, Trophy } from "lucide-react";
+import { CircleDot, Coins, Flame, Trophy } from "lucide-react";
 
 import { getPublicTokenDecimals } from "@/lib/token";
-import { formatTokens, formatUsd } from "@/lib/utils";
+import { formatSol, formatTokens } from "@/lib/utils";
 
 export interface StatsBarProps {
   totalDrops: number;
-  totalUsdOut: number;
-  totalTokensBought: string;
+  totalSolBurned: number;
+  totalTokensBurned: string;
   biggestMultiplier: number;
 }
 
@@ -45,35 +45,35 @@ function Tile({
 
 export default function StatsBar({
   totalDrops,
-  totalUsdOut,
-  totalTokensBought,
+  totalSolBurned,
+  totalTokensBurned,
   biggestMultiplier,
 }: StatsBarProps) {
   return (
     <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 sm:gap-3">
       <Tile
         icon={<CircleDot className="h-4 w-4" />}
-        label="Hood Drops"
+        label="SOL Drops"
         value={totalDrops.toLocaleString()}
-        accent="#CCFF00"
+        accent="#9945FF"
       />
       <Tile
         icon={<Coins className="h-4 w-4" />}
-        label="USD Spent"
-        value={formatUsd(totalUsdOut)}
-        accent="#E9FF7A"
+        label="SOL Burned In"
+        value={`${formatSol(totalSolBurned)} SOL`}
+        accent="#00D1FF"
       />
       <Tile
-        icon={<TrendingUp className="h-4 w-4" />}
-        label="Tokens Bought"
-        value={formatTokens(totalTokensBought, getPublicTokenDecimals())}
-        accent="#8FB800"
+        icon={<Flame className="h-4 w-4" />}
+        label="Tokens Burned"
+        value={formatTokens(totalTokensBurned, getPublicTokenDecimals())}
+        accent="#FF8A3D"
       />
       <Tile
         icon={<Trophy className="h-4 w-4" />}
         label="Best Multiplier"
         value={`${biggestMultiplier}x`}
-        accent="#CCFF00"
+        accent="#14F195"
       />
     </div>
   );
